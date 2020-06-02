@@ -35,10 +35,13 @@ namespace FDR.Tools.Library
 
             foreach (var drive in drives)
             {
-                var root = drive.RootDirectory;
-                var dirs = root.GetDirectories("DCIM", SearchOption.TopDirectoryOnly);
-                if (dirs != null && dirs.Length > 0)
-                    result.Add(dirs[0]);
+                if (drive.IsReady)
+                {
+                    var root = drive.RootDirectory;
+                    var dirs = root.GetDirectories("DCIM", SearchOption.TopDirectoryOnly);
+                    if (dirs != null && dirs.Length > 0)
+                        result.Add(dirs[0]);
+                }
             }
 
             return result;
