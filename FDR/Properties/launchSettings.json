@@ -2,7 +2,7 @@
   "profiles": {
     "FDR": {
       "commandName": "Project",
-      "commandLineArgs": "-i -a -v"
+      "commandLineArgs": "-i -v"
     }
   }
 }
