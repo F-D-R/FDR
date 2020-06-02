@@ -202,7 +202,7 @@ namespace FDR
         {
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = color;
-            Console.WriteLine(msg);
+            Console.WriteLine("\r" + msg);
             Console.ResetColor();
         }
 

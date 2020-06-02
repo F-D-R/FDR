@@ -413,9 +413,9 @@ namespace FDR.Tools.Library
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = color;
             if (newline)
-                Console.WriteLine(msg);
+                Console.WriteLine("\r" + msg);
             else
-                Console.Write(msg);
+                Console.Write("\r" + msg);
             Console.ResetColor();
         }
 
