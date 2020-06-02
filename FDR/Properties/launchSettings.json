@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FDR": {
+      "commandName": "Project",
+      "commandLineArgs": "-i -a -v"
+    }
+  }
+}
