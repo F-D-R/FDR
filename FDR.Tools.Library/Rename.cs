@@ -225,7 +225,7 @@ namespace FDR.Tools.Library
         {
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = color;
-            Console.WriteLine("\r" + msg);
+            Console.WriteLine(msg);
             Console.ResetColor();
         }
     }

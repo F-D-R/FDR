@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using FDR.Tools.Library;
+using System.Threading;
 //using MetadataExtractor;
 //using ExifLibrary;
 //using ExifLib;
@@ -174,7 +175,6 @@ namespace FDR
 
 
 
-
                 if (import)
                 {
                     // FDR
@@ -198,11 +198,14 @@ namespace FDR
             }
         }
 
-        private static void Msg(string msg, ConsoleColor color = ConsoleColor.White)
+        private static void Msg(string msg, ConsoleColor color = ConsoleColor.White, bool newline = true)
         {
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = color;
-            Console.WriteLine("\r" + msg);
+            if (newline)
+                Console.WriteLine(msg);
+            else
+                Console.Write(msg);
             Console.ResetColor();
         }
 

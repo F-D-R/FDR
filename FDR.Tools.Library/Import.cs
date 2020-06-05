@@ -137,10 +137,13 @@ namespace FDR.Tools.Library
             {
                 files.AddRange(folder.GetFiles(tmpfilter));
             }
+            var filecount = files.Count();
 
             var destfolder = Path.Combine(folder.FullName, config.RelativeFolder);
             if (!Directory.Exists(destfolder)) Directory.CreateDirectory(destfolder);
 
+            var i = 0;
+            Progress(0);
             foreach (var file in files.OrderBy(f => f.CreationTimeUtc).ToList())
             {
                 try
@@ -148,6 +151,8 @@ namespace FDR.Tools.Library
                     var destfile = Path.Combine(destfolder, file.Name);
                     Trace.WriteLine($"Moving file {file.Name} to {destfile}");
                     file.MoveTo(destfile);
+                    i++;
+                    Progress(100 * i / filecount);
                 }
                 catch (IOException)
                 {
@@ -168,6 +173,7 @@ namespace FDR.Tools.Library
             if (!Directory.Exists(config.DestRoot)) throw new DirectoryNotFoundException($"Destination root folder doesn't exist! ({config.DestRoot})");
 
             var files = GetFiles(source, config.FileFilter);
+            var filecount = files.Count();
 
             var foldernames = new List<string>();
             //TODO: exif date...
@@ -206,7 +212,14 @@ namespace FDR.Tools.Library
 
                 Msg($"Copying {count} files to {folder}");
                 Trace.Indent();
-                files.Where(file => file.CreationTime.Date == date).OrderBy(file => file.CreationTime).ToList().ForEach(file => CopyFile(config.DestRoot, file, config.DestStructure, config.DateFormat));
+                var i = 0;
+                Progress(0);
+                foreach (var file in files.Where(file => file.CreationTime.Date == date).OrderBy(file => file.CreationTime))
+                {
+                    CopyFile(config.DestRoot, file, config.DestStructure, config.DateFormat);
+                    i++;
+                    Progress(100 * i / filecount);
+                }
                 Trace.Unindent();
             }
 
@@ -404,7 +417,7 @@ namespace FDR.Tools.Library
 
             Import.ImportFiles(selectedSI.DirectoryInfo, config);
 
-            Msg("");
+            Msg("                        ");
             Msg("Successfully finished...", ConsoleColor.Green);
         }
 
@@ -413,11 +426,18 @@ namespace FDR.Tools.Library
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = color;
             if (newline)
-                Console.WriteLine("\r" + msg);
+                Console.WriteLine(msg);
             else
-                Console.Write("\r" + msg);
+                Console.Write(msg);
             Console.ResetColor();
         }
 
+        private static void Progress(int percent, int? overall = null)
+        {
+            if (overall.HasValue)
+                Msg($"    {percent}% ({percent}%)      \r", ConsoleColor.Gray, false);
+            else
+                Msg($"    {percent}%                   \r", ConsoleColor.Gray, false);
+        }
     }
 }
