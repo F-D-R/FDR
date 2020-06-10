@@ -202,19 +202,20 @@ namespace FDR.Tools.Library
                 files.AddRange(folder.GetFiles(tmpfilter));
             }
 
+            int fileCount = files.Count;
             int counter = 1;
+            Core.Progress(0);
             foreach (var file in files.OrderBy(f => f.CreationTimeUtc).ToList())
             {
                 try
                 {
                     RenameFile(file, counter, config);
                 }
-                //catch (Exception)
-                //catch (Exception ex) when (ex is FileNotFoundException || ex is DirectoryNotFoundException)
                 catch (IOException)
                 {
                     if (config.StopOnError) throw;
                 }
+                Core.Progress(100 * counter / fileCount);
                 counter++;
             }
 
