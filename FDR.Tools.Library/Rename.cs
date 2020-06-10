@@ -190,7 +190,7 @@ namespace FDR.Tools.Library
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
             var filter = config.Filter;
-            Msg($"Renaming {filter} files in {folder.FullName}");
+            Core.Msg($"Renaming {filter} files in {folder.FullName}");
             Trace.Indent();
 
             if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
@@ -219,14 +219,6 @@ namespace FDR.Tools.Library
             }
 
             Trace.Unindent();
-        }
-
-        private static void Msg(string msg, ConsoleColor color = ConsoleColor.White)
-        {
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = color;
-            Console.WriteLine(msg);
-            Console.ResetColor();
         }
     }
 }

@@ -88,23 +88,23 @@ namespace FDR
                 {
                     if (operation == Operation.Help)
                     {
-                        Msg($"FDR Tools {version} - Help", ConsoleColor.Yellow);
-                        Msg("Usage:");
-                        Msg("    fdr.exe [options]");
-                        Msg("");
-                        Msg("Where options can be:");
-                        Msg("    -h    --help         Help (this screen)");
-                        Msg("    -v    --verbose      Detailed output");
-                        Msg("    -i    --import       Import memory card content");
-                        Msg("          --verify       Verify the files in a folder");
-                        Msg("    -a    --auto         Automatic start");
-                        Msg("    -r    --recursive    Recursive folder operation");
-                        Msg("    --folder <folder>    Subject folder");
+                        Core.Msg($"FDR Tools {version} - Help", ConsoleColor.Yellow);
+                        Core.Msg("Usage:");
+                        Core.Msg("    fdr.exe [options]");
+                        Core.Msg("");
+                        Core.Msg("Where options can be:");
+                        Core.Msg("    -h    --help         Help (this screen)");
+                        Core.Msg("    -v    --verbose      Detailed output");
+                        Core.Msg("    -i    --import       Import memory card content");
+                        Core.Msg("          --verify       Verify the files in a folder");
+                        Core.Msg("    -a    --auto         Automatic start");
+                        Core.Msg("    -r    --recursive    Recursive folder operation");
+                        Core.Msg("    --folder <folder>    Subject folder");
                         //Msg("    --file <file>        Subject file");
                     }
                     else if (operation == Operation.Import)
                     {
-                        Msg($"FDR Tools {version} - Import", ConsoleColor.Yellow);
+                        Core.Msg($"FDR Tools {version} - Import", ConsoleColor.Yellow);
 
                         var appPath = Assembly.GetExecutingAssembly().Location;
                         var configPath = Path.Combine(Path.GetDirectoryName(appPath), "appsettings.json");
@@ -114,23 +114,23 @@ namespace FDR
                     }
                     else if (operation == Operation.Verify)
                     {
-                        Msg($"FDR Tools {version} - Verify", ConsoleColor.Yellow);
+                        Core.Msg($"FDR Tools {version} - Verify", ConsoleColor.Yellow);
 
                         //Trace.WriteLine($"Folder: {folder}");
                         //Trace.WriteLine($"File: {file}");
 
                         if (string.IsNullOrWhiteSpace(folder))
                         {
-                            Msg("Folder name is missing!", ConsoleColor.Red);
+                            Core.Msg("Folder name is missing!", ConsoleColor.Red);
                             return;
                         }
                         if (!Directory.Exists(folder))
                         {
-                            Msg("Folder must be an existing one!", ConsoleColor.Red);
+                            Core.Msg("Folder must be an existing one!", ConsoleColor.Red);
                             return;
                         }
                         folder = Path.GetFullPath(folder);
-                        Msg($"Verifying folder {folder}");
+                        Core.Msg($"Verifying folder {folder}");
 
                         Verify.VerifyFolder(folder, recursive);
                     }
@@ -142,17 +142,6 @@ namespace FDR
                     consoleTracer.Close();
                 }
             }
-        }
-
-        private static void Msg(string msg, ConsoleColor color = ConsoleColor.White, bool newline = true)
-        {
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = color;
-            if (newline)
-                Console.WriteLine(msg);
-            else
-                Console.Write(msg);
-            Console.ResetColor();
         }
 
         //private static IServiceCollection ConfigureServices()

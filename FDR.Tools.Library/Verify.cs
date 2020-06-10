@@ -69,37 +69,18 @@ namespace FDR.Tools.Library
             if (errCount > 0)
             {
                 if (warnCount > 0)
-                    Msg($"Verification of {fileCount} files in {folder} folder resulted in {errCount} errors and {warnCount} warnings! ({time})", ConsoleColor.Red);
+                    Core.Msg($"Verification of {fileCount} files in {folder} folder resulted in {errCount} errors and {warnCount} warnings! ({time})", ConsoleColor.Red);
                 else
-                    Msg($"Verification of {fileCount} files in {folder} folder resulted in {errCount} errors! ({time})", ConsoleColor.Red);
+                    Core.Msg($"Verification of {fileCount} files in {folder} folder resulted in {errCount} errors! ({time})", ConsoleColor.Red);
             }
             else if (warnCount > 0)
             {
-                Msg($"Verification of {fileCount} files in {folder} folder succeeded with {warnCount} warnings... ({time})", ConsoleColor.Yellow);
+                Core.Msg($"Verification of {fileCount} files in {folder} folder succeeded with {warnCount} warnings... ({time})", ConsoleColor.Yellow);
             }
             else
             {
-                Msg($"Verification of {fileCount} files in {folder} folder succeeded... ({time})", ConsoleColor.Green);
+                Core.Msg($"Verification of {fileCount} files in {folder} folder succeeded... ({time})", ConsoleColor.Green);
             }
-        }
-
-        private static void Msg(string msg, ConsoleColor color = ConsoleColor.White, bool newline = true)
-        {
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = color;
-            if (newline)
-                Console.WriteLine(msg);
-            else
-                Console.Write(msg);
-            Console.ResetColor();
-        }
-
-        private static void Progress(int percent, int? overall = null)
-        {
-            if (overall.HasValue)
-                Msg($"    {percent}% ({percent}%)      \r", ConsoleColor.Gray, false);
-            else
-                Msg($"    {percent}%                   \r", ConsoleColor.Gray, false);
         }
     }
 }
