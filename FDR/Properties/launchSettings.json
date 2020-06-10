@@ -2,7 +2,7 @@
   "profiles": {
     "FDR": {
       "commandName": "Project",
-      "commandLineArgs": "-i -v"
+      "commandLineArgs": "--verify --folder D:\\FDR\\2020 -v"
     }
   }
 }
