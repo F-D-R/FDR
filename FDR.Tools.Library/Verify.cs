@@ -3,6 +3,7 @@ using System.Diagnostics;
 //using System.Drawing;
 using System.IO;
 using System.Security.Cryptography;
+using System.Threading;
 
 namespace FDR.Tools.Library
 {
@@ -17,6 +18,9 @@ namespace FDR.Tools.Library
             int fileCount = files.Count;
             int errCount = 0;
             int warnCount = 0;
+
+            var i = 0;
+            Core.Progress(0);
 
             Trace.Indent();
             foreach (var file in files)
@@ -60,6 +64,8 @@ namespace FDR.Tools.Library
                         File.SetLastWriteTimeUtc(md5File, fileDate);
                     }
                 }
+                i++;
+                Core.Progress(100 * i / fileCount);
             }
             Trace.Unindent();
 

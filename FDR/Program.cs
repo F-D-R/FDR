@@ -100,7 +100,7 @@ namespace FDR
                         Core.Msg("    -a    --auto         Automatic start");
                         Core.Msg("    -r    --recursive    Recursive folder operation");
                         Core.Msg("    --folder <folder>    Subject folder");
-                        //Msg("    --file <file>        Subject file");
+                        //Core.Msg("    --file <file>        Subject file");
                     }
                     else if (operation == Operation.Import)
                     {
@@ -115,9 +115,6 @@ namespace FDR
                     else if (operation == Operation.Verify)
                     {
                         Core.Msg($"FDR Tools {version} - Verify", ConsoleColor.Yellow);
-
-                        //Trace.WriteLine($"Folder: {folder}");
-                        //Trace.WriteLine($"File: {file}");
 
                         if (string.IsNullOrWhiteSpace(folder))
                         {
