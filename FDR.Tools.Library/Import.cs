@@ -108,13 +108,14 @@ namespace FDR.Tools.Library
             return files.OrderBy(f => f.CreationTimeUtc).ToList();
         }
 
-        private static void CopyFile(string destroot, FileInfo file, FolderStructure deststruct, string dateFormat)
+        private static void CopyFile(string destroot, FileInfo file, FolderStructure deststruct, string dateFormat, int progressPercent)
         {
             var destfolder = GetAbsoluteDestFolder(destroot, deststruct, file.CreationTime, dateFormat);
             if (!Directory.Exists(destfolder)) Directory.CreateDirectory(destfolder);
 
             var dest = Path.Combine(destfolder, file.Name);
             Trace.WriteLine($"Copying {file.FullName} to {dest}");
+            Core.Progress(progressPercent);
             file.CopyTo(dest);
         }
 
@@ -150,9 +151,9 @@ namespace FDR.Tools.Library
                 {
                     var destfile = Path.Combine(destfolder, file.Name);
                     Trace.WriteLine($"Moving file {file.Name} to {destfile}");
+                    Core.Progress(100 * i / filecount);
                     file.MoveTo(destfile);
                     i++;
-                    Core.Progress(100 * i / filecount);
                 }
                 catch (IOException)
                 {
@@ -216,9 +217,8 @@ namespace FDR.Tools.Library
                 Core.Progress(0);
                 foreach (var file in files.Where(file => file.CreationTime.Date == date).OrderBy(file => file.CreationTime))
                 {
-                    CopyFile(config.DestRoot, file, config.DestStructure, config.DateFormat);
+                    CopyFile(config.DestRoot, file, config.DestStructure, config.DateFormat, 100 * i / filecount);
                     i++;
-                    Core.Progress(100 * i / filecount);
                 }
                 Trace.Unindent();
             }

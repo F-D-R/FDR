@@ -137,7 +137,7 @@ namespace FDR.Tools.Library
         //    folder.MoveTo(name);
         //}
 
-        public static void RenameFile(FileInfo file, int counter, RenameConfig config)
+        public static void RenameFile(FileInfo file, int counter, RenameConfig config, int progressPercent)
         {
             if (config == null) throw new ArgumentNullException("config");
             if (file == null) throw new ArgumentNullException("file");
@@ -159,6 +159,7 @@ namespace FDR.Tools.Library
                 extension = extension.ToUpper();
 
             Trace.WriteLine($"Renaming file {file.Name} to {newName + extension}");
+            Core.Progress(progressPercent);
             file.MoveTo(Path.Combine(path, newName + extension));
 
             if (config.AdditionalFileTypes != null)
@@ -209,13 +210,12 @@ namespace FDR.Tools.Library
             {
                 try
                 {
-                    RenameFile(file, counter, config);
+                    RenameFile(file, counter, config, 100 * counter / fileCount);
                 }
                 catch (IOException)
                 {
                     if (config.StopOnError) throw;
                 }
-                Core.Progress(100 * counter / fileCount);
                 counter++;
             }
 
