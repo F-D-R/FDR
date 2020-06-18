@@ -9,6 +9,11 @@ namespace FDR.Tools.Library
 {
     public static class Verify
     {
+        public static void HashFolder(string folder, bool recursive = false)
+        {
+
+        }
+
         public static void VerifyFolder(string folder, bool recursive = false)
         {
             var start = DateTime.Now.Ticks;
@@ -18,6 +23,8 @@ namespace FDR.Tools.Library
             int fileCount = files.Count;
             int errCount = 0;
             int warnCount = 0;
+
+            Core.Msg($"Verifying folder {folder}");
 
             var i = 0;
             Core.Progress(0);

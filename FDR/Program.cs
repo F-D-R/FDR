@@ -18,12 +18,13 @@ namespace FDR
     {
         Help,
         Import,
+        Hash,
         Verify
     }
 
     public class Program
     {
-        private static Operation operation;
+        private static Operation operation = Operation.Help;
 
         public static void Main(string[] args)
         {
@@ -41,42 +42,35 @@ namespace FDR
             {
                 switch (args[i].ToLower())
                 {
-                    case "/?":
-                    case "-?":
-                    case "-h":
-                    case "--help":
-                        operation = Operation.Help;
-                        break;
-
-                    case "-v":
-                    case "--verbose":
+                    case "-verbose":
                         verbose = true;
                         break;
 
-                    case "--verify":
+                    case "-hash":
+                        operation = Operation.Hash;
+                        break;
+
+                    case "-verify":
                         operation = Operation.Verify;
                         break;
 
-                    case "-i":
-                    case "--import":
+                    case "-import":
                         operation = Operation.Import;
                         break;
 
-                    case "-a":
-                    case "--auto":
+                    case "-auto":
                         auto = true;
                         break;
 
-                    case "--folder":
+                    case "-folder":
                         folder = args[i + 1];
                         break;
 
-                    case "--file":
+                    case "-file":
                         file = args[i + 1];
                         break;
 
-                    case "-r":
-                    case "--recursive":
+                    case "-recursive":
                         recursive = true;
                         break;
                 }
@@ -97,19 +91,20 @@ namespace FDR
                             Core.Msg("    dotnet FDR.dll [options]");
                         else
                         {
-                            Core.Msg("    fdr.exe [options]");
+                            Core.Msg("    dotnet FDR.dll [options]");
                             Core.Msg("    Unsupported OS version!", ConsoleColor.Red);
                         }
                         Core.Msg("");
                         Core.Msg("Where options can be:");
-                        Core.Msg("    -h    --help         Help (this screen)");
-                        Core.Msg("    -v    --verbose      Detailed output");
-                        Core.Msg("    -i    --import       Import memory card content");
-                        Core.Msg("          --verify       Verify the files in a folder");
-                        Core.Msg("    -a    --auto         Automatic start");
-                        Core.Msg("    -r    --recursive    Recursive folder operation");
-                        Core.Msg("    --folder <folder>    Subject folder");
-                        //Core.Msg("    --file <file>        Subject file");
+                        Core.Msg("    -help                Help (this screen)");
+                        Core.Msg("    -verbose             Detailed output");
+                        Core.Msg("    -import              Import memory card content");
+                        Core.Msg("    -hash                Create hash of the files in a folder");
+                        Core.Msg("    -verify              Verify the files in a folder");
+                        Core.Msg("    -auto                Automatic start");
+                        Core.Msg("    -recursive           Recursive folder operation");
+                        Core.Msg("    -folder <folder>     Subject folder");
+                        //Core.Msg("    -file <file>         Subject file");
                     }
                     else if (operation == Operation.Import)
                     {
@@ -121,22 +116,21 @@ namespace FDR
 
                         Import.ImportWizard(appConfig.ImportConfigs, auto);
                     }
+                    else if (operation == Operation.Hash)
+                    {
+                        Core.Msg($"FDR Tools {version} - Hash", ConsoleColor.Yellow);
+
+                        if (!Core.IsFolderValid(folder)) return;
+                        folder = Path.GetFullPath(folder);
+
+                        Verify.HashFolder(folder, recursive);
+                    }
                     else if (operation == Operation.Verify)
                     {
                         Core.Msg($"FDR Tools {version} - Verify", ConsoleColor.Yellow);
 
-                        if (string.IsNullOrWhiteSpace(folder))
-                        {
-                            Core.Msg("Folder name is missing!", ConsoleColor.Red);
-                            return;
-                        }
-                        if (!Directory.Exists(folder))
-                        {
-                            Core.Msg("Folder must be an existing one!", ConsoleColor.Red);
-                            return;
-                        }
+                        if (!Core.IsFolderValid(folder)) return;
                         folder = Path.GetFullPath(folder);
-                        Core.Msg($"Verifying folder {folder}");
 
                         Verify.VerifyFolder(folder, recursive);
                     }

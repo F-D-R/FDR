@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace FDR.Tools.Library
@@ -23,6 +24,21 @@ namespace FDR.Tools.Library
                 Msg($"    {percent}% ({percent}%)      \r", ConsoleColor.Gray, false);
             else
                 Msg($"    {percent}%                   \r", ConsoleColor.Gray, false);
+        }
+
+        public static bool IsFolderValid(string folder)
+        {
+            if (string.IsNullOrWhiteSpace(folder))
+            {
+                Core.Msg("Folder name is missing!", ConsoleColor.Red);
+                return false;
+            }
+            if (!Directory.Exists(folder))
+            {
+                Core.Msg("Folder must be an existing one!", ConsoleColor.Red);
+                return false;
+            }
+            return true;
         }
     }
 }
