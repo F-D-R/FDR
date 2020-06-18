@@ -25,7 +25,7 @@ namespace FDR.Tools.Library
             Trace.Indent();
             foreach (var file in files)
             {
-                var md5File = file.FullName + ".md5";
+                var md5File = Path.Combine(file.DirectoryName, "." + file.Name + ".md5");
                 var errFile = file.FullName + ".error";
                 //var exifFile = file.FullName + ".exif";
                 var fileDate = file.LastWriteTimeUtc;

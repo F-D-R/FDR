@@ -3,6 +3,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
 using Microsoft.Extensions.Logging;
@@ -90,7 +91,15 @@ namespace FDR
                     {
                         Core.Msg($"FDR Tools {version} - Help", ConsoleColor.Yellow);
                         Core.Msg("Usage:");
-                        Core.Msg("    fdr.exe [options]");
+                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                            Core.Msg("    fdr.exe [options]");
+                        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                            Core.Msg("    dotnet FDR.dll [options]");
+                        else
+                        {
+                            Core.Msg("    fdr.exe [options]");
+                            Core.Msg("    Unsupported OS version!", ConsoleColor.Red);
+                        }
                         Core.Msg("");
                         Core.Msg("Where options can be:");
                         Core.Msg("    -h    --help         Help (this screen)");
