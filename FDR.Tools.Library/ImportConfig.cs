@@ -36,7 +36,7 @@ namespace FDR.Tools.Library
 
     public class ImportConfig
     {
-        private const string DEFAULT_FILTER = "*.CR2|*.JPG|*.MP4|*.AVI|*.MOV";
+        private const string DEFAULT_FILTER = "*.CR2|*.CRW|*.JPG|*.MP4|*.AVI|*.MOV";
 
         public string Name { get; set; }
 
