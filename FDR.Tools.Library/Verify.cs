@@ -60,7 +60,7 @@ namespace FDR.Tools.Library
                     else
                     {
                         File.WriteAllText(md5File, newHash);
-                        File.SetAttributes(md5File, FileAttributes.Hidden);
+                        File.SetAttributes(md5File, File.GetAttributes(md5File) | FileAttributes.Hidden);
                         File.SetLastWriteTimeUtc(md5File, fileDate);
                     }
                 }
