@@ -198,9 +198,12 @@ namespace FDR.Tools.Library
             string[] filters = filter.Split('|');
 
             var files = new List<FileInfo>();
+            var options = new EnumerationOptions();
+            options.MatchCasing = MatchCasing.CaseInsensitive;
+            options.RecurseSubdirectories = true;
             foreach (var tmpfilter in filters)
             {
-                files.AddRange(folder.GetFiles(tmpfilter));
+                files.AddRange(folder.GetFiles(tmpfilter, options));
             }
 
             int fileCount = files.Count;

@@ -100,9 +100,12 @@ namespace FDR.Tools.Library
 
             var files = new List<FileInfo>();
             var filters = filter.Split('|');
+            var options = new EnumerationOptions();
+            options.MatchCasing = MatchCasing.CaseInsensitive;
+            options.RecurseSubdirectories = true;
             foreach (var tmpfilter in filters)
             {
-                files.AddRange(folder.GetFiles(tmpfilter, SearchOption.AllDirectories));
+                files.AddRange(folder.GetFiles(tmpfilter, options));
             }
 
             return files.OrderBy(f => f.CreationTimeUtc).ToList();
@@ -134,9 +137,12 @@ namespace FDR.Tools.Library
             string[] filters = filter.Split('|');
 
             var files = new List<FileInfo>();
+            var options = new EnumerationOptions();
+            options.MatchCasing = MatchCasing.CaseInsensitive;
+            options.RecurseSubdirectories = true;
             foreach (var tmpfilter in filters)
             {
-                files.AddRange(folder.GetFiles(tmpfilter));
+                files.AddRange(folder.GetFiles(tmpfilter, options));
             }
             var filecount = files.Count();
 
@@ -179,6 +185,9 @@ namespace FDR.Tools.Library
             var foldernames = new List<string>();
             //TODO: exif date...
             var dates = files.Select(f => f.CreationTime.Date).Distinct().OrderBy(d => d).ToList();
+            var options = new EnumerationOptions();
+            options.MatchCasing = MatchCasing.CaseInsensitive;
+            options.RecurseSubdirectories = true;
             foreach (var date in dates)
             {
                 var count = files.Where(f => f.CreationTime.Date == date).Count();
@@ -192,7 +201,7 @@ namespace FDR.Tools.Library
                     var childFolders = Directory.GetDirectories(rootFolder, folderName + "*");
                     if (childFolders.Length > 0)
                     {
-                        var destFiles = Directory.GetFiles(childFolders[0], "*", SearchOption.AllDirectories);
+                        var destFiles = Directory.GetFiles(childFolders[0], "*", options);
                         Core.Msg($"{date:yyyy-MM-dd}: Destination exists ({destFiles.Length} files in {childFolders[0]}), ignoring {count} files", ConsoleColor.Yellow);
                         files = files.Where(f => f.CreationTime.Date != date).OrderBy(f => f.CreationTimeUtc).ToList();
                         continue;
@@ -239,6 +248,9 @@ namespace FDR.Tools.Library
         private static ImportConfig FindConfig(string sourcePath, ImportConfig[] configs)
         {
             var matchingConfigs = new List<ImportConfig>();
+            var options = new EnumerationOptions();
+            options.MatchCasing = MatchCasing.CaseInsensitive;
+            options.RecurseSubdirectories = true;
 
             foreach (var config in configs)
             {
@@ -259,7 +271,7 @@ namespace FDR.Tools.Library
                                 break;
 
                             case RuleType.contains_file:
-                                if (Directory.GetFiles(sourcePath, rule.Param, SearchOption.AllDirectories).Any())
+                                if (Directory.GetFiles(sourcePath, rule.Param, options).Any())
                                     tmpconfig = config;
                                 else
                                     ok = false;

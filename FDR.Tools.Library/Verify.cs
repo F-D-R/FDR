@@ -14,7 +14,7 @@ namespace FDR.Tools.Library
             var start = DateTime.Now.Ticks;
 
             var di = new DirectoryInfo(folder);
-            var files = Import.GetFiles(di, "*.JPG|*.CR2");
+            var files = Import.GetFiles(di, "*.JPG|*.CR2|*.CRW");
             int fileCount = files.Count;
             int errCount = 0;
             int warnCount = 0;
