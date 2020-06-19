@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Linq;
 
 namespace FDR.Tools.Library
 {
@@ -40,5 +40,33 @@ namespace FDR.Tools.Library
             }
             return true;
         }
+
+        public static List<FileInfo> GetFiles(DirectoryInfo folder, ImportConfig config)
+        {
+            if (config == null) throw new ArgumentNullException("config");
+            config.Validate();
+
+            return GetFiles(folder, config.FileFilter);
+        }
+
+        public static List<FileInfo> GetFiles(DirectoryInfo folder, string filter)
+        {
+            if (string.IsNullOrWhiteSpace(filter)) throw new ArgumentNullException("filter");
+            if (folder == null) throw new ArgumentNullException("folder");
+            if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
+
+            var files = new List<FileInfo>();
+            var filters = filter.Split('|');
+            var options = new EnumerationOptions();
+            options.MatchCasing = MatchCasing.CaseInsensitive;
+            options.RecurseSubdirectories = true;
+            foreach (var tmpfilter in filters)
+            {
+                files.AddRange(folder.GetFiles(tmpfilter, options));
+            }
+
+            return files.OrderBy(f => f.CreationTimeUtc).ToList();
+        }
+
     }
 }

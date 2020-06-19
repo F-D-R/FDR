@@ -84,33 +84,6 @@ namespace FDR.Tools.Library
             return Path.Combine(destRoot, GetRelativeDestFolder(destStruct, date, dateFormat));
         }
 
-        public static List<FileInfo> GetFiles(DirectoryInfo folder, ImportConfig config)
-        {
-            if (config == null) throw new ArgumentNullException("config");
-            config.Validate();
-
-            return GetFiles(folder, config.FileFilter);
-        }
-
-        public static List<FileInfo> GetFiles(DirectoryInfo folder, string filter)
-        {
-            if (string.IsNullOrWhiteSpace(filter)) throw new ArgumentNullException("filter");
-            if (folder == null) throw new ArgumentNullException("folder");
-            if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
-
-            var files = new List<FileInfo>();
-            var filters = filter.Split('|');
-            var options = new EnumerationOptions();
-            options.MatchCasing = MatchCasing.CaseInsensitive;
-            options.RecurseSubdirectories = true;
-            foreach (var tmpfilter in filters)
-            {
-                files.AddRange(folder.GetFiles(tmpfilter, options));
-            }
-
-            return files.OrderBy(f => f.CreationTimeUtc).ToList();
-        }
-
         private static void CopyFile(string destroot, FileInfo file, FolderStructure deststruct, string dateFormat, int progressPercent)
         {
             var destfolder = GetAbsoluteDestFolder(destroot, deststruct, file.CreationTime, dateFormat);
@@ -135,7 +108,7 @@ namespace FDR.Tools.Library
 
             if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
 
-            var files = GetFiles(folder, filter);
+            var files = Common.GetFiles(folder, filter);
             var filecount = files.Count();
 
             var destfolder = Path.Combine(folder.FullName, config.RelativeFolder);
@@ -171,7 +144,7 @@ namespace FDR.Tools.Library
             if (string.IsNullOrWhiteSpace(config.DestRoot)) throw new ArgumentNullException("DestRoot");
             if (!Directory.Exists(config.DestRoot)) throw new DirectoryNotFoundException($"Destination root folder doesn't exist! ({config.DestRoot})");
 
-            var files = GetFiles(source, config.FileFilter);
+            var files = Common.GetFiles(source, config.FileFilter);
             var filecount = files.Count();
 
             var foldernames = new List<string>();
@@ -234,7 +207,7 @@ namespace FDR.Tools.Library
                         MoveFilesInFolder(new DirectoryInfo(fn), mc);
         }
 
-        private static ImportConfig FindConfig(string sourcePath, ImportConfig[] configs)
+        private static ImportConfig FindConfig(DirectoryInfo source, ImportConfig[] configs)
         {
             var matchingConfigs = new List<ImportConfig>();
             var options = new EnumerationOptions();
@@ -253,21 +226,22 @@ namespace FDR.Tools.Library
                         switch (rule.Type)
                         {
                             case RuleType.volume_label:
-                                if (string.Compare(GetVolumeLabel(sourcePath), rule.Param, true) == 0)
+                                if (string.Compare(GetVolumeLabel(source.FullName), rule.Param, true) == 0)
                                     tmpconfig = config;
                                 else
                                     ok = false;
                                 break;
 
                             case RuleType.contains_file:
-                                if (Directory.GetFiles(sourcePath, rule.Param, options).Any())
+                                if (Common.GetFiles(source, rule.Param).Any())
                                     tmpconfig = config;
                                 else
                                     ok = false;
                                 break;
 
                             case RuleType.contains_folder:
-                                if (Directory.GetDirectories(sourcePath, rule.Param, SearchOption.AllDirectories).Any())
+                                //TODO: Common.GetDirectories
+                                if (Directory.GetDirectories(source.FullName, rule.Param, SearchOption.AllDirectories).Any())
                                     tmpconfig = config;
                                 else
                                     ok = false;
@@ -303,9 +277,9 @@ namespace FDR.Tools.Library
                 var si = new SourceInfo();
                 si.DirectoryInfo = source;
                 si.Path = source.FullName;
-                si.ImportConfig = FindConfig(source.FullName, configs);
+                si.ImportConfig = FindConfig(source, configs);
                 if (si.ImportConfig != null)
-                    si.SumFileCount = GetFiles(source, si.ImportConfig).Count();
+                    si.SumFileCount = Common.GetFiles(source, si.ImportConfig).Count();
                 sourceInfos.Add(si);
             }
 
@@ -396,7 +370,7 @@ namespace FDR.Tools.Library
 
                 if (config != null)
                 {
-                    selectedSI.SumFileCount = GetFiles(selectedSI.DirectoryInfo, config).Count();
+                    selectedSI.SumFileCount = Common.GetFiles(selectedSI.DirectoryInfo, config).Count();
                     Common.Msg($"Selected source: {selectedSI.Path}\tConfig: {selectedSI.ConfigName} ({selectedSI.SumFileCount} files on drive {GetVolumeLabel(selectedSI.Path)})");
                 }
             }

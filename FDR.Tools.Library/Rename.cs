@@ -195,16 +195,8 @@ namespace FDR.Tools.Library
             Trace.Indent();
 
             if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
-            string[] filters = filter.Split('|');
 
-            var files = new List<FileInfo>();
-            var options = new EnumerationOptions();
-            options.MatchCasing = MatchCasing.CaseInsensitive;
-            options.RecurseSubdirectories = true;
-            foreach (var tmpfilter in filters)
-            {
-                files.AddRange(folder.GetFiles(tmpfilter, options));
-            }
+            var files = Common.GetFiles(folder, filter);
 
             int fileCount = files.Count;
             int counter = 1;
