@@ -24,10 +24,10 @@ namespace FDR.Tools.Library
             int errCount = 0;
             int warnCount = 0;
 
-            Core.Msg($"Verifying folder {folder}");
+            Common.Msg($"Verifying folder {folder}");
 
             var i = 0;
-            Core.Progress(0);
+            Common.Progress(0);
 
             Trace.Indent();
             foreach (var file in files)
@@ -72,7 +72,7 @@ namespace FDR.Tools.Library
                     }
                 }
                 i++;
-                Core.Progress(100 * i / fileCount);
+                Common.Progress(100 * i / fileCount);
             }
             Trace.Unindent();
 
@@ -82,17 +82,17 @@ namespace FDR.Tools.Library
             if (errCount > 0)
             {
                 if (warnCount > 0)
-                    Core.Msg($"Verification of {fileCount} files in {folder} folder resulted in {errCount} errors and {warnCount} warnings! ({time})", ConsoleColor.Red);
+                    Common.Msg($"Verification of {fileCount} files in {folder} folder resulted in {errCount} errors and {warnCount} warnings! ({time})", ConsoleColor.Red);
                 else
-                    Core.Msg($"Verification of {fileCount} files in {folder} folder resulted in {errCount} errors! ({time})", ConsoleColor.Red);
+                    Common.Msg($"Verification of {fileCount} files in {folder} folder resulted in {errCount} errors! ({time})", ConsoleColor.Red);
             }
             else if (warnCount > 0)
             {
-                Core.Msg($"Verification of {fileCount} files in {folder} folder succeeded with {warnCount} warnings... ({time})", ConsoleColor.Yellow);
+                Common.Msg($"Verification of {fileCount} files in {folder} folder succeeded with {warnCount} warnings... ({time})", ConsoleColor.Yellow);
             }
             else
             {
-                Core.Msg($"Verification of {fileCount} files in {folder} folder succeeded... ({time})", ConsoleColor.Green);
+                Common.Msg($"Verification of {fileCount} files in {folder} folder succeeded... ({time})", ConsoleColor.Green);
             }
         }
     }

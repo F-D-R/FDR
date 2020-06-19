@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FDR.Tools.Library
 {
-    public static class Core
+    public static class Common
     {
         public static void Msg(string msg, ConsoleColor color = ConsoleColor.White, bool newline = true)
         {
@@ -30,12 +30,12 @@ namespace FDR.Tools.Library
         {
             if (string.IsNullOrWhiteSpace(folder))
             {
-                Core.Msg("Folder name is missing!", ConsoleColor.Red);
+                Common.Msg("Folder name is missing!", ConsoleColor.Red);
                 return false;
             }
             if (!Directory.Exists(folder))
             {
-                Core.Msg("Folder must be an existing one!", ConsoleColor.Red);
+                Common.Msg("Folder must be an existing one!", ConsoleColor.Red);
                 return false;
             }
             return true;

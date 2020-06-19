@@ -159,7 +159,7 @@ namespace FDR.Tools.Library
                 extension = extension.ToUpper();
 
             Trace.WriteLine($"Renaming file {file.Name} to {newName + extension}");
-            Core.Progress(progressPercent);
+            Common.Progress(progressPercent);
             file.MoveTo(Path.Combine(path, newName + extension));
 
             if (config.AdditionalFileTypes != null)
@@ -191,7 +191,7 @@ namespace FDR.Tools.Library
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
             var filter = config.Filter;
-            Core.Msg($"Renaming {filter} files in {folder.FullName}");
+            Common.Msg($"Renaming {filter} files in {folder.FullName}");
             Trace.Indent();
 
             if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
@@ -208,7 +208,7 @@ namespace FDR.Tools.Library
 
             int fileCount = files.Count;
             int counter = 1;
-            Core.Progress(0);
+            Common.Progress(0);
             foreach (var file in files.OrderBy(f => f.CreationTimeUtc).ToList())
             {
                 try

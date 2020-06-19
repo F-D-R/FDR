@@ -83,32 +83,32 @@ namespace FDR
                 {
                     if (operation == Operation.Help)
                     {
-                        Core.Msg($"FDR Tools {version} - Help", ConsoleColor.Yellow);
-                        Core.Msg("Usage:");
+                        Common.Msg($"FDR Tools {version} - Help", ConsoleColor.Yellow);
+                        Common.Msg("Usage:");
                         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                            Core.Msg("    fdr.exe [options]");
+                            Common.Msg("    fdr.exe [options]");
                         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                            Core.Msg("    dotnet FDR.dll [options]");
+                            Common.Msg("    dotnet FDR.dll [options]");
                         else
                         {
-                            Core.Msg("    dotnet FDR.dll [options]");
-                            Core.Msg("    Unsupported OS version!", ConsoleColor.Red);
+                            Common.Msg("    dotnet FDR.dll [options]");
+                            Common.Msg("    Unsupported OS version!", ConsoleColor.Red);
                         }
-                        Core.Msg("");
-                        Core.Msg("Where options can be:");
-                        Core.Msg("    -help                Help (this screen)");
-                        Core.Msg("    -verbose             Detailed output");
-                        Core.Msg("    -import              Import memory card content");
-                        Core.Msg("    -hash                Create hash of the files in a folder");
-                        Core.Msg("    -verify              Verify the files in a folder");
-                        Core.Msg("    -auto                Automatic start");
-                        Core.Msg("    -recursive           Recursive folder operation");
-                        Core.Msg("    -folder <folder>     Subject folder");
+                        Common.Msg("");
+                        Common.Msg("Where options can be:");
+                        Common.Msg("    -help                Help (this screen)");
+                        Common.Msg("    -verbose             Detailed output");
+                        Common.Msg("    -import              Import memory card content");
+                        Common.Msg("    -hash                Create hash of the files in a folder");
+                        Common.Msg("    -verify              Verify the files in a folder");
+                        Common.Msg("    -auto                Automatic start");
+                        Common.Msg("    -recursive           Recursive folder operation");
+                        Common.Msg("    -folder <folder>     Subject folder");
                         //Core.Msg("    -file <file>         Subject file");
                     }
                     else if (operation == Operation.Import)
                     {
-                        Core.Msg($"FDR Tools {version} - Import", ConsoleColor.Yellow);
+                        Common.Msg($"FDR Tools {version} - Import", ConsoleColor.Yellow);
 
                         var appPath = Assembly.GetExecutingAssembly().Location;
                         var configPath = Path.Combine(Path.GetDirectoryName(appPath), "appsettings.json");
@@ -118,18 +118,18 @@ namespace FDR
                     }
                     else if (operation == Operation.Hash)
                     {
-                        Core.Msg($"FDR Tools {version} - Hash", ConsoleColor.Yellow);
+                        Common.Msg($"FDR Tools {version} - Hash", ConsoleColor.Yellow);
 
-                        if (!Core.IsFolderValid(folder)) return;
+                        if (!Common.IsFolderValid(folder)) return;
                         folder = Path.GetFullPath(folder);
 
                         Verify.HashFolder(folder, recursive);
                     }
                     else if (operation == Operation.Verify)
                     {
-                        Core.Msg($"FDR Tools {version} - Verify", ConsoleColor.Yellow);
+                        Common.Msg($"FDR Tools {version} - Verify", ConsoleColor.Yellow);
 
-                        if (!Core.IsFolderValid(folder)) return;
+                        if (!Common.IsFolderValid(folder)) return;
                         folder = Path.GetFullPath(folder);
 
                         Verify.VerifyFolder(folder, recursive);

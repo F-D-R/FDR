@@ -118,7 +118,7 @@ namespace FDR.Tools.Library
 
             var dest = Path.Combine(destfolder, file.Name);
             Trace.WriteLine($"Copying {file.FullName} to {dest}");
-            Core.Progress(progressPercent);
+            Common.Progress(progressPercent);
             file.CopyTo(dest);
         }
 
@@ -130,7 +130,7 @@ namespace FDR.Tools.Library
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
             var filter = config.Filter;
-            Core.Msg($"Moving {filter} files in {folder.FullName} to {config.RelativeFolder}");
+            Common.Msg($"Moving {filter} files in {folder.FullName} to {config.RelativeFolder}");
             Trace.Indent();
 
             if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
@@ -142,14 +142,14 @@ namespace FDR.Tools.Library
             if (!Directory.Exists(destfolder)) Directory.CreateDirectory(destfolder);
 
             var i = 0;
-            Core.Progress(0);
+            Common.Progress(0);
             foreach (var file in files.OrderBy(f => f.CreationTimeUtc).ToList())
             {
                 try
                 {
                     var destfile = Path.Combine(destfolder, file.Name);
                     Trace.WriteLine($"Moving file {file.Name} to {destfile}");
-                    Core.Progress(100 * i / filecount);
+                    Common.Progress(100 * i / filecount);
                     file.MoveTo(destfile);
                     i++;
                 }
@@ -191,16 +191,16 @@ namespace FDR.Tools.Library
                     if (childFolders.Length > 0)
                     {
                         var destFiles = Directory.GetFiles(childFolders[0], "*");
-                        Core.Msg($"{date:yyyy-MM-dd}: Destination exists ({destFiles.Length} files in {childFolders[0]}), ignoring {count} files", ConsoleColor.Yellow);
+                        Common.Msg($"{date:yyyy-MM-dd}: Destination exists ({destFiles.Length} files in {childFolders[0]}), ignoring {count} files", ConsoleColor.Yellow);
                         files = files.Where(f => f.CreationTime.Date != date).OrderBy(f => f.CreationTimeUtc).ToList();
                         continue;
                     }
                 }
 
-                Core.Msg($"{date:yyyy-MM-dd}: Importing {count} files to {destFolder}");
+                Common.Msg($"{date:yyyy-MM-dd}: Importing {count} files to {destFolder}");
                 foldernames.Add(destFolder);
             }
-            Core.Msg("");
+            Common.Msg("");
 
             // Copy
             dates = files.Select(f => f.CreationTime.Date).Distinct().OrderBy(d => d).ToList();
@@ -209,10 +209,10 @@ namespace FDR.Tools.Library
                 var count = files.Where(f => f.CreationTime.Date == date).Count();
                 var folder = GetAbsoluteDestFolder(config.DestRoot, config.DestStructure, date, config.DateFormat);
 
-                Core.Msg($"Copying {count} files to {folder}");
+                Common.Msg($"Copying {count} files to {folder}");
                 Trace.Indent();
                 var i = 0;
-                Core.Progress(0);
+                Common.Progress(0);
                 foreach (var file in files.Where(file => file.CreationTime.Date == date).OrderBy(file => file.CreationTime))
                 {
                     CopyFile(config.DestRoot, file, config.DestStructure, config.DateFormat, 100 * i / filecount);
@@ -293,7 +293,7 @@ namespace FDR.Tools.Library
             if (configs.Length == 0) throw new ArgumentNullException("Import configurations cannot be empty!");
             foreach (var c in configs) c.Validate();
 
-            Core.Msg("Import");
+            Common.Msg("Import");
 
             var sources = DetectSources();
 
@@ -312,7 +312,7 @@ namespace FDR.Tools.Library
             SourceInfo selectedSI = null;
             if (sourceInfos.Count == 0)
             {
-                Core.Msg("No source has been found!", ConsoleColor.Red);
+                Common.Msg("No source has been found!", ConsoleColor.Red);
                 return;
             }
             else if (auto && sourceInfos.Count == 1)
@@ -321,17 +321,17 @@ namespace FDR.Tools.Library
             }
             else
             {
-                Core.Msg("Select source:");
+                Common.Msg("Select source:");
                 int i = 1;
                 foreach (var si in sourceInfos)
                 {
                     if (si.ImportConfig == null)
-                        Core.Msg($"    {i}. {si.Path}\tNo configuration for drive {GetVolumeLabel(si.Path)}");
+                        Common.Msg($"    {i}. {si.Path}\tNo configuration for drive {GetVolumeLabel(si.Path)}");
                     else
-                        Core.Msg($"    {i}. {si.Path}\tConfig: {si.ConfigName} ({si.SumFileCount} files on drive {GetVolumeLabel(si.Path)})");
+                        Common.Msg($"    {i}. {si.Path}\tConfig: {si.ConfigName} ({si.SumFileCount} files on drive {GetVolumeLabel(si.Path)})");
                     i++;
                 }
-                Core.Msg($"Enter the number or the source (1..{i - 1}) or ESC to abort: ", ConsoleColor.White, false);
+                Common.Msg($"Enter the number or the source (1..{i - 1}) or ESC to abort: ", ConsoleColor.White, false);
 
                 while (selectedSI == null)
                 {
@@ -340,15 +340,15 @@ namespace FDR.Tools.Library
 
                     if (key.Key == ConsoleKey.Escape)
                     {
-                        Core.Msg("");
-                        Core.Msg("Import aborted...", ConsoleColor.Red);
+                        Common.Msg("");
+                        Common.Msg("Import aborted...", ConsoleColor.Red);
                         return;
                     }
 
                     int selection = 0;
                     if (int.TryParse(key.KeyChar.ToString(), out selection) && selection < i)
                     {
-                        Core.Msg($"{key.KeyChar}");
+                        Common.Msg($"{key.KeyChar}");
                         selectedSI = sourceInfos[selection - 1];
                     }
                 }
@@ -356,22 +356,22 @@ namespace FDR.Tools.Library
             if (selectedSI == null) return;
 
             if (selectedSI.ImportConfig == null)
-                Core.Msg($"Selected source: {selectedSI.Path}\tNo configuration for drive {GetVolumeLabel(selectedSI.Path)}");
+                Common.Msg($"Selected source: {selectedSI.Path}\tNo configuration for drive {GetVolumeLabel(selectedSI.Path)}");
             else
-                Core.Msg($"Selected source: {selectedSI.Path}\tConfig: {selectedSI.ConfigName} ({selectedSI.SumFileCount} files on drive {GetVolumeLabel(selectedSI.Path)})");
+                Common.Msg($"Selected source: {selectedSI.Path}\tConfig: {selectedSI.ConfigName} ({selectedSI.SumFileCount} files on drive {GetVolumeLabel(selectedSI.Path)})");
 
             var config = selectedSI.ImportConfig;
 
             if (config == null)
             {
-                Core.Msg("Select configuration:");
+                Common.Msg("Select configuration:");
                 int i = 1;
                 foreach (var c in configs)
                 {
-                    Core.Msg($"    {i}. {c.Name} ({c.DestRoot})");
+                    Common.Msg($"    {i}. {c.Name} ({c.DestRoot})");
                     i++;
                 }
-                Core.Msg($"Enter the number or the configuration (1..{i - 1}) or ESC to abort: ", ConsoleColor.White, false);
+                Common.Msg($"Enter the number or the configuration (1..{i - 1}) or ESC to abort: ", ConsoleColor.White, false);
 
                 while (config == null)
                 {
@@ -380,15 +380,15 @@ namespace FDR.Tools.Library
 
                     if (key.Key == ConsoleKey.Escape)
                     {
-                        Core.Msg("");
-                        Core.Msg("Import aborted...", ConsoleColor.Red);
+                        Common.Msg("");
+                        Common.Msg("Import aborted...", ConsoleColor.Red);
                         return;
                     }
 
                     int selection = 0;
                     if (int.TryParse(key.KeyChar.ToString(), out selection) && selection < i)
                     {
-                        Core.Msg($"{key.KeyChar}");
+                        Common.Msg($"{key.KeyChar}");
                         config = configs[selection - 1];
                         selectedSI.ImportConfig = config;
                     }
@@ -397,7 +397,7 @@ namespace FDR.Tools.Library
                 if (config != null)
                 {
                     selectedSI.SumFileCount = GetFiles(selectedSI.DirectoryInfo, config).Count();
-                    Core.Msg($"Selected source: {selectedSI.Path}\tConfig: {selectedSI.ConfigName} ({selectedSI.SumFileCount} files on drive {GetVolumeLabel(selectedSI.Path)})");
+                    Common.Msg($"Selected source: {selectedSI.Path}\tConfig: {selectedSI.ConfigName} ({selectedSI.SumFileCount} files on drive {GetVolumeLabel(selectedSI.Path)})");
                 }
             }
             if (config == null) return;
@@ -418,8 +418,8 @@ namespace FDR.Tools.Library
 
             Import.ImportFiles(selectedSI.DirectoryInfo, config);
 
-            Core.Msg("                        ");
-            Core.Msg("Successfully finished...", ConsoleColor.Green);
+            Common.Msg("                        ");
+            Common.Msg("Successfully finished...", ConsoleColor.Green);
         }
     }
 }
