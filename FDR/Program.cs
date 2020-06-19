@@ -106,9 +106,9 @@ namespace FDR
             Common.Msg("");
             Common.Msg("Where options can be:");
             Common.Msg("    -help                Help (this screen)");
-            Common.Msg("    -verbose             Detailed output");
+            Common.Msg("    -verbose             More detailed output");
             Common.Msg("    -import              Import memory card content");
-            Common.Msg("    -hash                Create hash of the files in a folder");
+            Common.Msg("    -hash                Create hash of files in a folder");
             Common.Msg("    -verify              Verify the files in a folder");
             Common.Msg("    -auto                Automatic start");
             Common.Msg("    -folder <folder>     Subject folder");
