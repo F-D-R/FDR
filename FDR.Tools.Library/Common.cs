@@ -68,5 +68,11 @@ namespace FDR.Tools.Library
             return files.OrderBy(f => f.CreationTimeUtc).ToList();
         }
 
+        public static string GetTimeString(long startTicks)
+        {
+            var ms = (DateTime.Now.Ticks - startTicks) / 10000;
+            return (ms < 1000) ? $"{ms}ms" : $"{ms / 1000}s";
+        }
+
     }
 }

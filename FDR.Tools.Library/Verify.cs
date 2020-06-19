@@ -20,12 +20,6 @@ namespace FDR.Tools.Library
             }
         }
 
-        private static string GetTimeString(long startTicks)
-        {
-            var ms = (DateTime.Now.Ticks - startTicks) / 10000;
-            return (ms < 1000) ? $"{ms}ms" : $"{ms / 1000}s";
-        }
-
         private static string GetMd5FileName(FileInfo file)
         {
             return Path.Combine(file.DirectoryName, "." + file.Name + ".md5");
@@ -69,7 +63,7 @@ namespace FDR.Tools.Library
                 Common.Progress(100 * i / fileCount);
             }
 
-            var time = GetTimeString(start);
+            var time = Common.GetTimeString(start);
             Common.Msg($"{hashCount} new hash files were created for {fileCount} files in {folder} folder... ({time})", ConsoleColor.Green);
         }
 
@@ -123,7 +117,7 @@ namespace FDR.Tools.Library
             }
             Trace.Unindent();
 
-            var time = GetTimeString(start);
+            var time = Common.GetTimeString(start);
             if (errCount > 0)
             {
                 if (warnCount > 0)
