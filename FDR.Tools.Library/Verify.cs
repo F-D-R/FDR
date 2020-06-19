@@ -18,17 +18,16 @@ namespace FDR.Tools.Library
             }
         }
 
-        public static void HashFolder(string folder)
+        public static void HashFolder(DirectoryInfo folder)
         {
 
         }
 
-        public static void VerifyFolder(string folder)
+        public static void VerifyFolder(DirectoryInfo folder)
         {
             var start = DateTime.Now.Ticks;
 
-            var di = new DirectoryInfo(folder);
-            var files = Common.GetFiles(di, "*.CR2|*.CRW|*.JPG|*.MP4|*.AVI|*.MOV");
+            var files = Common.GetFiles(folder, "*.CR2|*.CRW|*.JPG|*.MP4|*.AVI|*.MOV");
             int fileCount = files.Count;
             int errCount = 0;
             int warnCount = 0;

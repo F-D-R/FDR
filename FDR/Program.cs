@@ -41,33 +41,13 @@ namespace FDR
             {
                 switch (args[i].ToLower())
                 {
-                    case "-verbose":
-                        verbose = true;
-                        break;
-
-                    case "-hash":
-                        operation = Operation.Hash;
-                        break;
-
-                    case "-verify":
-                        operation = Operation.Verify;
-                        break;
-
-                    case "-import":
-                        operation = Operation.Import;
-                        break;
-
-                    case "-auto":
-                        auto = true;
-                        break;
-
-                    case "-folder":
-                        folder = args[i + 1];
-                        break;
-
-                    case "-file":
-                        file = args[i + 1];
-                        break;
+                    case "-verbose": verbose = true; break;
+                    case "-hash": operation = Operation.Hash; break;
+                    case "-verify": operation = Operation.Verify; break;
+                    case "-import": operation = Operation.Import; break;
+                    case "-auto": auto = true; break;
+                    case "-folder": folder = args[i + 1]; break;
+                    case "-file": file = args[i + 1]; break;
                 }
             }
 
@@ -77,37 +57,12 @@ namespace FDR
                 try
                 {
                     if (operation == Operation.Help)
-                    {
-                        Common.Msg($"FDR Tools {version} - Help", ConsoleColor.Yellow);
-                        Common.Msg("Usage:");
-                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                            Common.Msg("    fdr.exe [options]");
-                        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                            Common.Msg("    dotnet FDR.dll [options]");
-                        else
-                        {
-                            Common.Msg("    dotnet FDR.dll [options]");
-                            Common.Msg("    Unsupported OS version!", ConsoleColor.Red);
-                        }
-                        Common.Msg("");
-                        Common.Msg("Where options can be:");
-                        Common.Msg("    -help                Help (this screen)");
-                        Common.Msg("    -verbose             Detailed output");
-                        Common.Msg("    -import              Import memory card content");
-                        Common.Msg("    -hash                Create hash of the files in a folder");
-                        Common.Msg("    -verify              Verify the files in a folder");
-                        Common.Msg("    -auto                Automatic start");
-                        Common.Msg("    -folder <folder>     Subject folder");
-                        //Core.Msg("    -file <file>         Subject file");
-                    }
+                        DisplayHelp(version);
                     else if (operation == Operation.Import)
                     {
                         Common.Msg($"FDR Tools {version} - Import", ConsoleColor.Yellow);
 
-                        var appPath = Assembly.GetExecutingAssembly().Location;
-                        var configPath = Path.Combine(Path.GetDirectoryName(appPath), "appsettings.json");
-                        var appConfig = JsonConvert.DeserializeObject<AppConfig>(File.ReadAllText(configPath, Encoding.UTF8));
-
+                        var appConfig = LoadAppConfig();
                         Import.ImportWizard(appConfig.ImportConfigs, auto);
                     }
                     else if (operation == Operation.Hash)
@@ -115,18 +70,14 @@ namespace FDR
                         Common.Msg($"FDR Tools {version} - Hash", ConsoleColor.Yellow);
 
                         if (!Common.IsFolderValid(folder)) return;
-                        folder = Path.GetFullPath(folder);
-
-                        Verify.HashFolder(folder);
+                        Verify.HashFolder(new DirectoryInfo(Path.GetFullPath(folder)));
                     }
                     else if (operation == Operation.Verify)
                     {
                         Common.Msg($"FDR Tools {version} - Verify", ConsoleColor.Yellow);
 
                         if (!Common.IsFolderValid(folder)) return;
-                        folder = Path.GetFullPath(folder);
-
-                        Verify.VerifyFolder(folder);
+                        Verify.VerifyFolder(new DirectoryInfo(Path.GetFullPath(folder)));
                     }
                 }
                 finally
@@ -136,6 +87,38 @@ namespace FDR
                     consoleTracer.Close();
                 }
             }
+        }
+
+        private static void DisplayHelp(string version)
+        {
+            Common.Msg($"FDR Tools {version} - Help", ConsoleColor.Yellow);
+            Common.Msg("Usage:");
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                Common.Msg("    fdr.exe [options]");
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                Common.Msg("    dotnet FDR.dll [options]");
+            else
+            {
+                Common.Msg("    dotnet FDR.dll [options]");
+                Common.Msg("    Unsupported OS version!", ConsoleColor.Red);
+            }
+            Common.Msg("");
+            Common.Msg("Where options can be:");
+            Common.Msg("    -help                Help (this screen)");
+            Common.Msg("    -verbose             Detailed output");
+            Common.Msg("    -import              Import memory card content");
+            Common.Msg("    -hash                Create hash of the files in a folder");
+            Common.Msg("    -verify              Verify the files in a folder");
+            Common.Msg("    -auto                Automatic start");
+            Common.Msg("    -folder <folder>     Subject folder");
+            //Core.Msg("    -file <file>         Subject file");
+        }
+
+        private static AppConfig LoadAppConfig()
+        {
+            var appPath = Assembly.GetExecutingAssembly().Location;
+            var configPath = Path.Combine(Path.GetDirectoryName(appPath), "appsettings.json");
+            return JsonConvert.DeserializeObject<AppConfig>(File.ReadAllText(configPath, Encoding.UTF8));
         }
 
         //private static IServiceCollection ConfigureServices()
