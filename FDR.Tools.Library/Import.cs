@@ -7,14 +7,7 @@ using System.Threading;
 
 namespace FDR.Tools.Library
 {
-    public enum SourceStructure
-    {
-        daily_folders,
-        monthly_folders,
-        mixed_folders
-    }
-
-    public class SourceInfo
+    internal class SourceInfo
     {
         public DirectoryInfo DirectoryInfo { get; set; }
         public string Path { get; set; }
