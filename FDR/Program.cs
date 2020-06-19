@@ -56,28 +56,29 @@ namespace FDR
                 if (verbose) Trace.Listeners.Add(consoleTracer);
                 try
                 {
-                    if (operation == Operation.Help)
-                        DisplayHelp(version);
-                    else if (operation == Operation.Import)
+                    switch (operation)
                     {
-                        Common.Msg($"FDR Tools {version} - Import", ConsoleColor.Yellow);
+                        case Operation.Help:
+                            DisplayHelp(version);
+                            break;
 
-                        var appConfig = LoadAppConfig();
-                        Import.ImportWizard(appConfig.ImportConfigs, auto);
-                    }
-                    else if (operation == Operation.Hash)
-                    {
-                        Common.Msg($"FDR Tools {version} - Hash", ConsoleColor.Yellow);
+                        case Operation.Import:
+                            Common.Msg($"FDR Tools {version} - Import", ConsoleColor.Yellow);
+                            var appConfig = LoadAppConfig();
+                            Import.ImportWizard(appConfig.ImportConfigs, auto);
+                            break;
 
-                        if (!Common.IsFolderValid(folder)) return;
-                        Verify.HashFolder(new DirectoryInfo(Path.GetFullPath(folder)));
-                    }
-                    else if (operation == Operation.Verify)
-                    {
-                        Common.Msg($"FDR Tools {version} - Verify", ConsoleColor.Yellow);
+                        case Operation.Hash:
+                            Common.Msg($"FDR Tools {version} - Hash", ConsoleColor.Yellow);
+                            if (!Common.IsFolderValid(folder)) return;
+                            Verify.HashFolder(new DirectoryInfo(Path.GetFullPath(folder)));
+                            break;
 
-                        if (!Common.IsFolderValid(folder)) return;
-                        Verify.VerifyFolder(new DirectoryInfo(Path.GetFullPath(folder)));
+                        case Operation.Verify:
+                            Common.Msg($"FDR Tools {version} - Verify", ConsoleColor.Yellow);
+                            if (!Common.IsFolderValid(folder)) return;
+                            Verify.VerifyFolder(new DirectoryInfo(Path.GetFullPath(folder)));
+                            break;
                     }
                 }
                 finally
