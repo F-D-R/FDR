@@ -31,7 +31,6 @@ namespace FDR
             var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             bool verbose = false;
             bool auto = false;
-            bool recursive = false;
             string folder = string.Empty;
             string file = string.Empty;
 
@@ -69,10 +68,6 @@ namespace FDR
                     case "-file":
                         file = args[i + 1];
                         break;
-
-                    case "-recursive":
-                        recursive = true;
-                        break;
                 }
             }
 
@@ -102,7 +97,6 @@ namespace FDR
                         Common.Msg("    -hash                Create hash of the files in a folder");
                         Common.Msg("    -verify              Verify the files in a folder");
                         Common.Msg("    -auto                Automatic start");
-                        Common.Msg("    -recursive           Recursive folder operation");
                         Common.Msg("    -folder <folder>     Subject folder");
                         //Core.Msg("    -file <file>         Subject file");
                     }
@@ -123,7 +117,7 @@ namespace FDR
                         if (!Common.IsFolderValid(folder)) return;
                         folder = Path.GetFullPath(folder);
 
-                        Verify.HashFolder(folder, recursive);
+                        Verify.HashFolder(folder);
                     }
                     else if (operation == Operation.Verify)
                     {
@@ -132,7 +126,7 @@ namespace FDR
                         if (!Common.IsFolderValid(folder)) return;
                         folder = Path.GetFullPath(folder);
 
-                        Verify.VerifyFolder(folder, recursive);
+                        Verify.VerifyFolder(folder);
                     }
                 }
                 finally

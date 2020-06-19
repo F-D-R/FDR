@@ -18,12 +18,12 @@ namespace FDR.Tools.Library
             }
         }
 
-        public static void HashFolder(string folder, bool recursive = false)
+        public static void HashFolder(string folder)
         {
 
         }
 
-        public static void VerifyFolder(string folder, bool recursive = false)
+        public static void VerifyFolder(string folder)
         {
             var start = DateTime.Now.Ticks;
 
