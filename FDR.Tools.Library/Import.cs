@@ -7,26 +7,23 @@ using System.Threading;
 
 namespace FDR.Tools.Library
 {
-    internal class SourceInfo
-    {
-        public DirectoryInfo DirectoryInfo { get; set; }
-        public string Path { get; set; }
-        public int SumFileCount { get; set; }
-        public int IgnoredFileCount { get; set; }
-        public int ImportFileCount { get; set; }
-        public string ConfigName { get { return (ImportConfig == null) ? null : ImportConfig.Name; } }
-        public ImportConfig ImportConfig { get; set; }
-    }
-
     public static class Import
     {
+        private class SourceInfo
+        {
+            public DirectoryInfo DirectoryInfo { get; set; }
+            public string Path { get; set; }
+            public int SumFileCount { get; set; }
+            public int IgnoredFileCount { get; set; }
+            public int ImportFileCount { get; set; }
+            public string ConfigName { get { return (ImportConfig == null) ? null : ImportConfig.Name; } }
+            public ImportConfig ImportConfig { get; set; }
+        }
+
         public static List<DirectoryInfo> DetectSources()
         {
             var result = new List<DirectoryInfo>();
-
-            var drives = DriveInfo.GetDrives();
-
-            foreach (var drive in drives)
+            foreach (var drive in DriveInfo.GetDrives())
             {
                 if (drive.IsReady)
                 {
@@ -36,13 +33,11 @@ namespace FDR.Tools.Library
                         result.Add(dirs[0]);
                 }
             }
-
             return result;
         }
 
         private static string GetVolumeLabel(string path)
         {
-            string label = string.Empty;
             if (Path.IsPathRooted(path))
             {
                 var root = Path.GetPathRoot(path);
@@ -66,7 +61,6 @@ namespace FDR.Tools.Library
                 case FolderStructure.year_month_date: return $"{date:yyyy}{sep}{date:MM}{sep}{dateString}";
                 case FolderStructure.year_month_day: return $"{date:yyyy}{sep}{date:MM}{sep}{date:dd}";
                 case FolderStructure.year_month: return $"{date:yyyy}{sep}{date:MM}";
-
                 default:
                     throw new NotImplementedException($"Unhandled destination structure: {destStruct}");
             }
@@ -77,9 +71,9 @@ namespace FDR.Tools.Library
             return Path.Combine(destRoot, GetRelativeDestFolder(destStruct, date, dateFormat));
         }
 
-        private static void CopyFile(string destroot, FileInfo file, FolderStructure deststruct, string dateFormat, int progressPercent)
+        private static void CopyFile(string destRoot, FileInfo file, FolderStructure destStruct, string dateFormat, int progressPercent)
         {
-            var destfolder = GetAbsoluteDestFolder(destroot, deststruct, file.CreationTime, dateFormat);
+            var destfolder = GetAbsoluteDestFolder(destRoot, destStruct, file.CreationTime, dateFormat);
             if (!Directory.Exists(destfolder)) Directory.CreateDirectory(destfolder);
 
             var dest = Path.Combine(destfolder, file.Name);
@@ -96,10 +90,10 @@ namespace FDR.Tools.Library
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
             var filter = config.Filter;
+            if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
+
             Common.Msg($"Moving {filter} files in {folder.FullName} to {config.RelativeFolder}");
             Trace.Indent();
-
-            if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
 
             var files = Common.GetFiles(folder, filter);
             var filecount = files.Count();
@@ -138,9 +132,9 @@ namespace FDR.Tools.Library
             if (!Directory.Exists(config.DestRoot)) throw new DirectoryNotFoundException($"Destination root folder doesn't exist! ({config.DestRoot})");
 
             var files = Common.GetFiles(source, config.FileFilter);
-            var filecount = files.Count();
+            var fileCount = files.Count();
 
-            var foldernames = new List<string>();
+            var folderNames = new List<string>();
             //TODO: exif date...
             var dates = files.Select(f => f.CreationTime.Date).Distinct().OrderBy(d => d).ToList();
             foreach (var date in dates)
@@ -164,7 +158,7 @@ namespace FDR.Tools.Library
                 }
 
                 Common.Msg($"{date:yyyy-MM-dd}: Importing {count} files to {destFolder}");
-                foldernames.Add(destFolder);
+                folderNames.Add(destFolder);
             }
             Common.Msg("");
 
@@ -181,7 +175,7 @@ namespace FDR.Tools.Library
                 Common.Progress(0);
                 foreach (var file in files.Where(file => file.CreationTime.Date == date).OrderBy(file => file.CreationTime))
                 {
-                    CopyFile(config.DestRoot, file, config.DestStructure, config.DateFormat, 100 * i / filecount);
+                    CopyFile(config.DestRoot, file, config.DestStructure, config.DateFormat, 100 * i / fileCount);
                     i++;
                 }
                 Trace.Unindent();
@@ -189,13 +183,13 @@ namespace FDR.Tools.Library
 
             // Rename
             if (config.RenameConfigs != null)
-                foreach (var fn in foldernames)
+                foreach (var fn in folderNames)
                     foreach (var rc in config.RenameConfigs)
                         Rename.RenameFilesInFolder(new DirectoryInfo(fn), rc);
 
             // Move
             if (config.MoveConfigs != null)
-                foreach (var fn in foldernames)
+                foreach (var fn in folderNames)
                     foreach (var mc in config.MoveConfigs)
                         MoveFilesInFolder(new DirectoryInfo(fn), mc);
         }
