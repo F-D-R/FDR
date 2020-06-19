@@ -19,7 +19,8 @@ namespace FDR
         Help,
         Import,
         Hash,
-        Verify
+        Verify,
+        Diff
     }
 
     public class Program
@@ -33,6 +34,7 @@ namespace FDR
             bool auto = false;
             string folder = string.Empty;
             string file = string.Empty;
+            string reference = string.Empty;
 
             //var services = ConfigureServices();
             //var serviceProvider = services.BuildServiceProvider();
@@ -41,13 +43,15 @@ namespace FDR
             {
                 switch (args[i].ToLower())
                 {
-                    case "-verbose": verbose = true; break;
+                    case "-import": operation = Operation.Import; break;
                     case "-hash": operation = Operation.Hash; break;
                     case "-verify": operation = Operation.Verify; break;
-                    case "-import": operation = Operation.Import; break;
+                    case "-diff": operation = Operation.Diff; break;
+                    case "-verbose": verbose = true; break;
                     case "-auto": auto = true; break;
                     case "-folder": folder = args[i + 1]; break;
                     case "-file": file = args[i + 1]; break;
+                    case "-reference": reference = args[i + 1]; break;
                 }
             }
 
@@ -58,10 +62,6 @@ namespace FDR
                 {
                     switch (operation)
                     {
-                        case Operation.Help:
-                            DisplayHelp(version);
-                            break;
-
                         case Operation.Import:
                             Common.Msg($"FDR Tools {version} - Import", ConsoleColor.Yellow);
                             var appConfig = LoadAppConfig();
@@ -78,6 +78,17 @@ namespace FDR
                             Common.Msg($"FDR Tools {version} - Verify", ConsoleColor.Yellow);
                             if (!Common.IsFolderValid(folder)) return;
                             Verify.VerifyFolder(new DirectoryInfo(Path.GetFullPath(folder)));
+                            break;
+
+                        case Operation.Diff:
+                            Common.Msg($"FDR Tools {version} - Diff", ConsoleColor.Yellow);
+                            if (!Common.IsFolderValid(folder)) return;
+                            if (!Common.IsFolderValid(reference)) return;
+                            Verify.DiffFolder(new DirectoryInfo(Path.GetFullPath(folder)), new DirectoryInfo(Path.GetFullPath(reference)));
+                            break;
+
+                        default:
+                            DisplayHelp(version);
                             break;
                     }
                 }
@@ -110,9 +121,11 @@ namespace FDR
             Common.Msg("    -import              Import memory card content");
             Common.Msg("    -hash                Create hash of files in a folder");
             Common.Msg("    -verify              Verify the files in a folder");
+            Common.Msg("    -diff                Compare the files of a folder to a reference one");
             Common.Msg("    -auto                Automatic start");
             Common.Msg("    -folder <folder>     Subject folder");
             //Core.Msg("    -file <file>         Subject file");
+            Common.Msg("    -reference <folder>  Reference folder");
         }
 
         private static AppConfig LoadAppConfig()

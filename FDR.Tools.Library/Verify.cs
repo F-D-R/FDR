@@ -130,5 +130,79 @@ namespace FDR.Tools.Library
             else
                 Common.Msg($"Verification of {fileCount} files in {folder} folder succeeded... ({time})", ConsoleColor.Green);
         }
+
+        public static void DiffFolder(DirectoryInfo folder, DirectoryInfo reference)
+        {
+            var start = DateTime.Now.Ticks;
+
+            Common.Msg($"Comparing hashes of files in {folder} folder to {reference} folder");
+
+            var files = Common.GetFiles(folder, DEFAULT_FILTER);
+            int fileCount = files.Count;
+
+            var i = 0;
+            var verified = 0;
+            var diff = 0;
+            var plus = 0;
+            Common.Progress(0);
+
+            Trace.Indent();
+            foreach (var file in files)
+            {
+                var md5File = GetMd5FileName(file);
+                if (File.Exists(md5File))
+                {
+                    verified++;
+                    var hash = File.ReadAllText(md5File).Trim();
+                    var date = file.LastWriteTimeUtc;
+
+                    var relPath = Path.GetRelativePath(folder.FullName, md5File);
+                    var refPath = Path.Combine(reference.FullName, relPath);
+
+                    if (File.Exists(refPath))
+                    {
+                        var refHash = File.ReadAllText(refPath).Trim();
+                        var refDate = File.GetLastWriteTimeUtc(refPath);
+
+                        var hashDiff = hash != refHash;
+                        var dateDiff = date != refDate;
+
+                        if (hashDiff && dateDiff)
+                        {
+                            diff++;
+                            Trace.WriteLine($"{file.FullName} - Date and content has changed!");
+                        }
+                        else if (hashDiff)
+                        {
+                            diff++;
+                            Trace.WriteLine($"{file.FullName} - Content has changed!");
+                        }
+                        else if (dateDiff)
+                        {
+                            diff++;
+                            Trace.WriteLine($"{file.FullName} - Date has changed!");
+                        }
+                    }
+                    else
+                        plus++;
+                }
+
+                i++;
+                Common.Progress(100 * i / fileCount);
+            }
+            Trace.Unindent();
+
+            var time = Common.GetTimeString(start);
+            Common.Msg($"{verified} of {fileCount} files in {folder} folder has been checked against {reference} folder. ({time})");
+            if (diff > 0 && plus > 0)
+                Common.Msg($"{diff} files differ, and {plus} files don't exist in {reference} folder.", ConsoleColor.Red);
+            else if (diff > 0)
+                Common.Msg($"{diff} files differ!", ConsoleColor.Red);
+            else if (plus > 0)
+                Common.Msg($"All the checked files match, but {plus} files don't exist in {reference} folder.", ConsoleColor.Yellow);
+            else
+                Common.Msg($"All the checked files match...", ConsoleColor.Green);
+        }
+
     }
 }
