@@ -33,8 +33,8 @@ namespace FDR.Tools.Library
         private static void CreateHashFile(string hashFile, string hash, DateTime fileDateUtc)
         {
             File.WriteAllText(hashFile, hash);
-            File.SetAttributes(hashFile, File.GetAttributes(hashFile) | FileAttributes.Hidden);
             File.SetLastWriteTimeUtc(hashFile, fileDateUtc);
+            File.SetAttributes(hashFile, File.GetAttributes(hashFile) | FileAttributes.Hidden);
         }
 
         public static void HashFolder(DirectoryInfo folder)
