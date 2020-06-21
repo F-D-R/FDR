@@ -58,6 +58,8 @@ namespace FDR.Tools.Library
                     CreateHashFile(md5File, ComputeHash(file), file.LastWriteTimeUtc);
                     hashCount++;
                 }
+                else
+                    File.SetAttributes(md5File, FileAttributes.Hidden);
 
                 i++;
                 Common.Progress(100 * i / fileCount);
