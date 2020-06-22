@@ -41,7 +41,7 @@ namespace FDR.Tools.Library
             return true;
         }
 
-        internal static List<FileInfo> GetFiles(DirectoryInfo folder, ImportConfig config)
+        public static List<FileInfo> GetFiles(DirectoryInfo folder, ImportConfig config)
         {
             if (config == null) throw new ArgumentNullException("config");
             config.Validate();
@@ -49,7 +49,7 @@ namespace FDR.Tools.Library
             return GetFiles(folder, config.FileFilter);
         }
 
-        internal static List<FileInfo> GetFiles(DirectoryInfo folder, string filter)
+        public static List<FileInfo> GetFiles(DirectoryInfo folder, string filter)
         {
             if (string.IsNullOrWhiteSpace(filter)) throw new ArgumentNullException("filter");
             if (folder == null) throw new ArgumentNullException("folder");

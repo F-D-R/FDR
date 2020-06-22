@@ -151,6 +151,13 @@ namespace FDR.Tools.Library
             Trace.Indent();
             foreach (var file in files)
             {
+                var dir = Path.GetDirectoryName(file.FullName);
+                //var plusDir = Path.Combine(dir, "plus");
+                //var diffDir = Path.Combine(dir, "diff");
+                var relDir = Path.GetDirectoryName(Path.GetRelativePath(folder.FullName, file.FullName));
+                var plusDir = Path.Combine(folder.FullName, "plus", relDir);
+                var diffDir = Path.Combine(folder.FullName, "diff", relDir);
+
                 var md5File = GetMd5FileName(file);
                 if (File.Exists(md5File))
                 {
@@ -159,12 +166,13 @@ namespace FDR.Tools.Library
                     var date = file.LastWriteTimeUtc;
 
                     var relPath = Path.GetRelativePath(folder.FullName, md5File);
-                    var refPath = Path.Combine(reference.FullName, relPath);
+                    var refMd5 = Path.Combine(reference.FullName, relPath);
+                    var refFile = Path.Combine(reference.FullName, Path.GetDirectoryName(relPath), file.Name);
 
-                    if (File.Exists(refPath))
+                    if (File.Exists(refMd5))
                     {
-                        var refHash = File.ReadAllText(refPath).Trim();
-                        var refDate = File.GetLastWriteTimeUtc(refPath);
+                        var refHash = File.ReadAllText(refMd5).Trim();
+                        var refDate = File.GetLastWriteTimeUtc(refMd5);
 
                         var hashDiff = hash != refHash;
                         var dateDiff = date != refDate;
@@ -173,20 +181,29 @@ namespace FDR.Tools.Library
                         {
                             diff++;
                             Trace.WriteLine($"{file.FullName} - Date and content has changed!");
+                            CopyFiles(diffDir, file.FullName, md5File);
+                            CopyFiles(diffDir, refFile, refMd5, "_ref");
                         }
                         else if (hashDiff)
                         {
                             diff++;
                             Trace.WriteLine($"{file.FullName} - Content has changed!");
+                            CopyFiles(diffDir, file.FullName, md5File);
+                            CopyFiles(diffDir, refFile, refMd5, "_ref");
                         }
                         else if (dateDiff)
                         {
                             diff++;
                             Trace.WriteLine($"{file.FullName} - Date has changed!");
+                            CopyFiles(diffDir, file.FullName, md5File);
+                            CopyFiles(diffDir, refFile, refMd5, "_ref");
                         }
                     }
                     else
+                    {
                         plus++;
+                        CopyFiles(plusDir, file.FullName, md5File);
+                    }
                 }
 
                 i++;
@@ -204,6 +221,18 @@ namespace FDR.Tools.Library
                 Common.Msg($"All the checked files match, but {plus} files don't exist in {reference} folder.", ConsoleColor.Yellow);
             else
                 Common.Msg($"All the checked files match...", ConsoleColor.Green);
+            return;
+
+
+
+            void CopyFiles(string destFolder, string refFile, string refMd5, string postFix = "")
+            {
+                if (!Directory.Exists(destFolder)) Directory.CreateDirectory(destFolder);
+                var destFile = Path.Combine(destFolder, Path.GetFileNameWithoutExtension(refFile) + postFix + Path.GetExtension(refFile));
+                var destMd5 = GetMd5FileName(new FileInfo(destFile));
+                File.Copy(refFile, destFile, true);
+                if (File.Exists(refMd5)) File.Copy(refMd5, destMd5, true);
+            }
         }
 
     }
