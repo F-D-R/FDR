@@ -25,6 +25,7 @@ namespace FDR
 
     public class Program
     {
+        private const ConsoleColor titleColor = ConsoleColor.White;
         private static Operation operation = Operation.Help;
 
         public static void Main(string[] args)
@@ -65,25 +66,25 @@ namespace FDR
                     switch (operation)
                     {
                         case Operation.Import:
-                            Common.Msg($"FDR Tools {version} - Import", ConsoleColor.Yellow);
+                            Common.Msg($"FDR Tools {version} - Import", titleColor);
                             var appConfig = LoadAppConfig();
                             Import.ImportWizard(appConfig.ImportConfigs, auto);
                             break;
 
                         case Operation.Hash:
-                            Common.Msg($"FDR Tools {version} - Hash", ConsoleColor.Yellow);
+                            Common.Msg($"FDR Tools {version} - Hash", titleColor);
                             if (!Common.IsFolderValid(folder)) return;
                             Verify.HashFolder(new DirectoryInfo(Path.GetFullPath(folder)), force);
                             break;
 
                         case Operation.Verify:
-                            Common.Msg($"FDR Tools {version} - Verify", ConsoleColor.Yellow);
+                            Common.Msg($"FDR Tools {version} - Verify", titleColor);
                             if (!Common.IsFolderValid(folder)) return;
                             Verify.VerifyFolder(new DirectoryInfo(Path.GetFullPath(folder)));
                             break;
 
                         case Operation.Diff:
-                            Common.Msg($"FDR Tools {version} - Diff", ConsoleColor.Yellow);
+                            Common.Msg($"FDR Tools {version} - Diff", titleColor);
                             if (!Common.IsFolderValid(folder)) return;
                             if (!Common.IsFolderValid(reference)) return;
                             Verify.DiffFolder(new DirectoryInfo(Path.GetFullPath(folder)), new DirectoryInfo(Path.GetFullPath(reference)));
@@ -105,7 +106,7 @@ namespace FDR
 
         private static void DisplayHelp(string version)
         {
-            Common.Msg($"FDR Tools {version} - Help", ConsoleColor.Yellow);
+            Common.Msg($"FDR Tools {version} - Help", titleColor);
             Common.Msg("Usage:");
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 Common.Msg("    fdr.exe [options]");
