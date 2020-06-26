@@ -32,6 +32,7 @@ namespace FDR
             var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             bool verbose = false;
             bool auto = false;
+            bool force = false;
             string folder = string.Empty;
             string file = string.Empty;
             string reference = string.Empty;
@@ -45,6 +46,7 @@ namespace FDR
                 {
                     case "-import": operation = Operation.Import; break;
                     case "-hash": operation = Operation.Hash; break;
+                    case "-rehash": operation = Operation.Hash; force = true; break;
                     case "-verify": operation = Operation.Verify; break;
                     case "-diff": operation = Operation.Diff; break;
                     case "-verbose": verbose = true; break;
@@ -71,7 +73,7 @@ namespace FDR
                         case Operation.Hash:
                             Common.Msg($"FDR Tools {version} - Hash", ConsoleColor.Yellow);
                             if (!Common.IsFolderValid(folder)) return;
-                            Verify.HashFolder(new DirectoryInfo(Path.GetFullPath(folder)));
+                            Verify.HashFolder(new DirectoryInfo(Path.GetFullPath(folder)), force);
                             break;
 
                         case Operation.Verify:
@@ -120,6 +122,7 @@ namespace FDR
             Common.Msg("    -verbose             More detailed output");
             Common.Msg("    -import              Import memory card content");
             Common.Msg("    -hash                Create hash of files in a folder");
+            Common.Msg("    -rehash              Recreate hashes of all files in a folder");
             Common.Msg("    -verify              Verify the files in a folder");
             Common.Msg("    -diff                Compare the files of a folder to a reference one");
             Common.Msg("    -auto                Automatic start");

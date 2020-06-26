@@ -37,7 +37,7 @@ namespace FDR.Tools.Library
             File.SetAttributes(hashFile, File.GetAttributes(hashFile) | FileAttributes.Hidden);
         }
 
-        public static void HashFolder(DirectoryInfo folder)
+        public static void HashFolder(DirectoryInfo folder, bool force)
         {
             var start = DateTime.Now.Ticks;
 
@@ -53,7 +53,7 @@ namespace FDR.Tools.Library
             foreach (var file in files)
             {
                 var md5File = GetMd5FileName(file);
-                if (!File.Exists(md5File))
+                if (force || !File.Exists(md5File))
                 {
                     CreateHashFile(md5File, ComputeHash(file), file.LastWriteTimeUtc);
                     hashCount++;
@@ -145,6 +145,7 @@ namespace FDR.Tools.Library
             var i = 0;
             var verified = 0;
             var diff = 0;
+            var diffDate = 0;
             var plus = 0;
             Common.Progress(0);
 
@@ -178,6 +179,7 @@ namespace FDR.Tools.Library
                         if (hashDiff && dateDiff)
                         {
                             diff++;
+                            diffDate++;
                             Trace.WriteLine($"{file.FullName} - Date and content has changed!");
                             CopyFiles(diffDir, file.FullName);
                             CopyFiles(diffDir, refFile, "_ref");
@@ -191,10 +193,8 @@ namespace FDR.Tools.Library
                         }
                         else if (dateDiff)
                         {
-                            diff++;
+                            diffDate++;
                             Trace.WriteLine($"{file.FullName} - Date has changed!");
-                            CopyFiles(diffDir, file.FullName);
-                            CopyFiles(diffDir, refFile, "_ref");
                         }
                     }
                     else
@@ -211,13 +211,13 @@ namespace FDR.Tools.Library
 
             var time = Common.GetTimeString(start);
             Common.Msg($"{verified} of {fileCount} files in {folder} folder has been checked against {reference} folder. ({time})");
-            if (diff > 0 && plus > 0)
-                Common.Msg($"{diff} files differ, and {plus} files don't exist in {reference} folder.", ConsoleColor.Red);
-            else if (diff > 0)
+            if (diff > 0)
                 Common.Msg($"{diff} files differ!", ConsoleColor.Red);
-            else if (plus > 0)
-                Common.Msg($"All the checked files match, but {plus} files don't exist in {reference} folder.", ConsoleColor.Yellow);
-            else
+            if (plus > 0)
+                Common.Msg($"{plus} files don't exist in {reference} folder.", ConsoleColor.Yellow);
+            if (diffDate > 0)
+                Common.Msg($"{diffDate} files differ in date.", ConsoleColor.Yellow);
+            if (diff == 0 && plus == 0 && diffDate == 0)
                 Common.Msg($"All the checked files match...", ConsoleColor.Green);
             return;
 
