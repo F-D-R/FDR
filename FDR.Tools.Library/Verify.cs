@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Advanced;
 
 namespace FDR.Tools.Library
 {
@@ -35,6 +37,24 @@ namespace FDR.Tools.Library
             File.WriteAllText(hashFile, hash);
             File.SetLastWriteTimeUtc(hashFile, fileDateUtc);
             File.SetAttributes(hashFile, File.GetAttributes(hashFile) | FileAttributes.Hidden);
+        }
+
+        private static bool IsImageFile(string file)
+        {
+            return ".CR2|.CRW|.JPG|.JPEG|.TIF|.TIFF".Contains(Path.GetExtension(file).ToUpper());
+        }
+
+        private static bool IsValidImage(string file)
+        {
+            try
+            {
+                var image = Image.Load(file);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public static void HashFolder(DirectoryInfo folder, bool force)
