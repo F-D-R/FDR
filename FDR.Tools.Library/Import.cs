@@ -164,6 +164,8 @@ namespace FDR.Tools.Library
 
             // Copy
             dates = files.Select(f => f.CreationTime.Date).Distinct().OrderBy(d => d).ToList();
+            var i = 0;
+            Common.Progress(0);
             foreach (var date in dates)
             {
                 var count = files.Where(f => f.CreationTime.Date == date).Count();
@@ -171,8 +173,6 @@ namespace FDR.Tools.Library
 
                 Common.Msg($"Copying {count} files to {folder}");
                 Trace.Indent();
-                var i = 0;
-                Common.Progress(0);
                 foreach (var file in files.Where(file => file.CreationTime.Date == date).OrderBy(file => file.CreationTime))
                 {
                     CopyFile(config.DestRoot, file, config.DestStructure, config.DateFormat, 100 * i / fileCount);
