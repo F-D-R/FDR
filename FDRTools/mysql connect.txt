@@ -1,0 +1,28 @@
+server=79.172.211.16;uid=fdr@x177.dataglobe.eu;pwd=eos10d;database=fdr
+server=79.172.211.16;database=fdr;uid=fdr;pwd=eos10d
+Server=79.172.211.16;Database=fdr;Uid=fdr;Pwd=eos10d
+Server=79.172.211.16;Database=fdr;Uid=fdr@x177.dataglobe.eu;Pwd=eos10d
+
+x177.dataglobe.eu:59790
+
+Server=x177.dataglobe.eu:59790;Database=fdr;Uid=fdr@x177.dataglobe.eu;Pwd=eos10d
+Server=x177.dataglobe.eu;Port=59790;Database=fdr;Uid=fdr@x177.dataglobe.eu;Pwd=eos10d
+Server=79.172.211.16;Port=59790;Database=fdr;Uid=fdr@x177.dataglobe.eu;Pwd=eos10d
+
+Data Source=79.172.211.16;Port=59790;Database=fdr;User Id=fdr@x177.dataglobe.eu;Password=eos10d
+
+Persist Security Info=False;Server=79.172.211.16;Port=59790;Database=fdr;Uid=fdr@x177.dataglobe.eu;Pwd=eos10d;
+
+
+
+mysql -h 79.172.211.16 -u fdr -peos10d
+mysql -h 79.172.211.16 -u fdr@x177.dataglobe.eu -peos10d
+mysql -h x177.dataglobe.eu -u fdr -peos10d
+mysql -h x177.dataglobe.eu -u fdr@x177.dataglobe.eu -peos10d
+
+mysql -h x177.dataglobe.eu -u fdr@x177.dataglobe.eu -peos10d
+
+mysql --user=fdr@x177.dataglobe.eu --password=eos10d --database=fdr --host=79.172.211.16 --port=59790 --protocol=TCP
+
+
+ERROR 2003 (HY000): Can't connect to MySQL server on '79.172.211.16' (10060)
