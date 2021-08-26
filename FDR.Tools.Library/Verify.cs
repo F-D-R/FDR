@@ -5,12 +5,13 @@ using System.Security.Cryptography;
 using System.Threading;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
+using SixLabors.ImageSharp.Formats;
 
 namespace FDR.Tools.Library
 {
     public static class Verify
     {
-        private const string DEFAULT_FILTER = "*.CR2|*.CRW|*.JPG|*.MP4|*.AVI|*.MOV";
+        private const string DEFAULT_FILTER = "*.CR2|*.CRW|*.JPG|*.TIF|*.MP4|*.AVI|*.MOV";
 
         private static string ComputeHash(FileInfo file)
         {
@@ -41,13 +42,18 @@ namespace FDR.Tools.Library
 
         private static bool IsImageFile(string file)
         {
-            return ".CR2|.CRW|.JPG|.JPEG|.TIF|.TIFF".Contains(Path.GetExtension(file).ToUpper());
+            return ".CR2|.CRW|.JPG|.JPEG|.TIF|.TIFF".Contains(Path.GetExtension(file), StringComparison.InvariantCultureIgnoreCase);
+        }
+        private static bool IsImageFile(FileInfo file)
+        {
+            return IsImageFile(file.Name);
         }
 
         private static bool IsValidImage(string file)
         {
             try
             {
+                //var imgFormat = Image.DetectFormat(file);
                 var image = Image.Load(file);
                 return true;
             }
@@ -55,6 +61,10 @@ namespace FDR.Tools.Library
             {
                 return false;
             }
+        }
+        private static bool IsValidImage(FileInfo file)
+        {
+            return IsValidImage(file.FullName);
         }
 
         public static void HashFolder(DirectoryInfo folder, bool force)
@@ -132,7 +142,16 @@ namespace FDR.Tools.Library
                     }
                 }
                 else
-                    CreateHashFile(md5File, newHash, fileDate);
+                {
+                    if (IsImageFile(file) && !IsValidImage(file))
+                    {
+                        errCount++;
+                        Trace.WriteLine($"{file.FullName} - Invalid image!");
+                        File.WriteAllText(errFile, $"{DateTime.Now}\tInvalid image!");
+                    }
+                    else
+                        CreateHashFile(md5File, newHash, fileDate);
+                }
 
                 i++;
                 Common.Progress(100 * i / fileCount);

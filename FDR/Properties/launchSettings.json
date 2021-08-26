@@ -2,7 +2,7 @@
   "profiles": {
     "FDR": {
       "commandName": "Project",
-      "commandLineArgs": "-diff -folder D:\\FDR\\2020 -reference D:\\FDR2\\2020 -verbose"
+      "commandLineArgs": "-verify -folder D:\\FDR\\2020 -verbose"
     }
   }
 }
