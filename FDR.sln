@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FDR.Tools.Library", "FDR.To
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FDR", "FDR\FDR.csproj", "{39EA2D6C-DE18-442B-BCE0-92D7BD63A148}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FDR.Tools.Library.Test", "FDR.Tools.Library.Test\FDR.Tools.Library.Test.csproj", "{BE1D780E-CD31-43E6-9833-3DE89E22EB28}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FDR.Tools.Library.Test", "FDR.Tools.Library.Test\FDR.Tools.Library.Test.csproj", "{BE1D780E-CD31-43E6-9833-3DE89E22EB28}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "FDRTools", "FDRTools\FDRTools.vbproj", "{30CF0B8D-3826-45BA-BC62-C6835A0F9EE5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{BE1D780E-CD31-43E6-9833-3DE89E22EB28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE1D780E-CD31-43E6-9833-3DE89E22EB28}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE1D780E-CD31-43E6-9833-3DE89E22EB28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30CF0B8D-3826-45BA-BC62-C6835A0F9EE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30CF0B8D-3826-45BA-BC62-C6835A0F9EE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30CF0B8D-3826-45BA-BC62-C6835A0F9EE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30CF0B8D-3826-45BA-BC62-C6835A0F9EE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
