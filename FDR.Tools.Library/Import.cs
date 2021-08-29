@@ -16,7 +16,7 @@ namespace FDR.Tools.Library
             public int SumFileCount { get; set; }
             public int IgnoredFileCount { get; set; }
             public int ImportFileCount { get; set; }
-            public string ConfigName { get { return (ImportConfig == null) ? null : ImportConfig.Name; } }
+            public string ConfigName { get { return ImportConfig?.Name; } }
             public ImportConfig ImportConfig { get; set; }
         }
 
@@ -197,9 +197,11 @@ namespace FDR.Tools.Library
         private static ImportConfig FindConfig(DirectoryInfo source, ImportConfig[] configs)
         {
             var matchingConfigs = new List<ImportConfig>();
-            var options = new EnumerationOptions();
-            options.MatchCasing = MatchCasing.CaseInsensitive;
-            options.RecurseSubdirectories = true;
+            var options = new EnumerationOptions
+            {
+                MatchCasing = MatchCasing.CaseInsensitive,
+                RecurseSubdirectories = true
+            };
 
             foreach (var config in configs)
             {
@@ -261,10 +263,12 @@ namespace FDR.Tools.Library
             var sourceInfos = new List<SourceInfo>();
             foreach (var source in sources)
             {
-                var si = new SourceInfo();
-                si.DirectoryInfo = source;
-                si.Path = source.FullName;
-                si.ImportConfig = FindConfig(source, configs);
+                var si = new SourceInfo
+                {
+                    DirectoryInfo = source,
+                    Path = source.FullName,
+                    ImportConfig = FindConfig(source, configs)
+                };
                 if (si.ImportConfig != null)
                     si.SumFileCount = Common.GetFiles(source, si.ImportConfig).Count();
                 sourceInfos.Add(si);
@@ -306,8 +310,7 @@ namespace FDR.Tools.Library
                         return;
                     }
 
-                    int selection = 0;
-                    if (int.TryParse(key.KeyChar.ToString(), out selection) && selection < i)
+                    if (int.TryParse(key.KeyChar.ToString(), out int selection) && selection < i)
                     {
                         Common.Msg($"{key.KeyChar}");
                         selectedSI = sourceInfos[selection - 1];
@@ -346,8 +349,7 @@ namespace FDR.Tools.Library
                         return;
                     }
 
-                    int selection = 0;
-                    if (int.TryParse(key.KeyChar.ToString(), out selection) && selection < i)
+                    if (int.TryParse(key.KeyChar.ToString(), out int selection) && selection < i)
                     {
                         Common.Msg($"{key.KeyChar}");
                         config = configs[selection - 1];

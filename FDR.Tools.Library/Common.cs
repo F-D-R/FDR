@@ -57,9 +57,11 @@ namespace FDR.Tools.Library
 
             var files = new List<FileInfo>();
             var filters = filter.Split('|');
-            var options = new EnumerationOptions();
-            options.MatchCasing = MatchCasing.CaseInsensitive;
-            options.RecurseSubdirectories = true;
+            var options = new EnumerationOptions
+            {
+                MatchCasing = MatchCasing.CaseInsensitive,
+                RecurseSubdirectories = true
+            };
             foreach (var tmpfilter in filters)
             {
                 files.AddRange(folder.GetFiles(tmpfilter, options));
