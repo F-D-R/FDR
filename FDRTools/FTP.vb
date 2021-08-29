@@ -46,7 +46,7 @@ Public Class FTPConnection
     Private mintActiveConnectionsCount As Integer
     Private mstrRemoteHost As String
 
-	Private mcolMessageList As New System.Collections.ArrayList()
+    Private mcolMessageList As New System.Collections.ArrayList()
     Private mlogMessages As Boolean
 
     Public Sub New()
@@ -55,11 +55,11 @@ Public Class FTPConnection
         mlogMessages = False
     End Sub
 
-	Public ReadOnly Property MessageList() As System.Collections.ArrayList
-		Get
-			Return mcolMessageList
-		End Get
-	End Property
+    Public ReadOnly Property MessageList() As System.Collections.ArrayList
+        Get
+            Return mcolMessageList
+        End Get
+    End Property
 
     Public Property LogMessages() As Boolean
         Get
@@ -84,7 +84,7 @@ Public Class FTPConnection
         Me.Open(tstrRemoteHost, tintRemotePort, tstrUser, tstrPassword, FTPMode.Active)
     End Sub
     Public Overridable Sub Open(ByVal tstrRemoteHost As String, ByVal tintRemotePort As Integer, ByVal tstrUser As String, ByVal tstrPassword As String, ByVal tintMode As FTPMode)
-		Dim lcolTempMessageList As System.Collections.ArrayList
+        Dim lcolTempMessageList As System.Collections.ArrayList
         Dim lintReturn As Integer
 
         mintFtpMode = tintMode
@@ -138,188 +138,186 @@ Public Class FTPConnection
         End If
     End Sub
 
-	Public Function Dir(ByVal tstrMask As String) As System.Collections.ArrayList
-		Dim lcolTmpList As System.Collections.ArrayList = Me.Dir()
+    Public Function Dir(ByVal tstrMask As String) As System.Collections.ArrayList
+        Dim lcolTmpList As System.Collections.ArrayList = Me.Dir()
 
-		Using lobjTable As New System.Data.DataTable()
-			lobjTable.Columns.Add("Name")
-			For I As Integer = 0 To lcolTmpList.Count - 1
-				Dim lobjRow As System.Data.DataRow = lobjTable.NewRow()
-				lobjRow("Name") = CStr(lcolTmpList(I))
-				lobjTable.Rows.Add(lobjRow)
-			Next
-			lcolTmpList.Clear()
+        Using lobjTable As New System.Data.DataTable()
+            lobjTable.Columns.Add("Name")
+            For I As Integer = 0 To lcolTmpList.Count - 1
+                Dim lobjRow As System.Data.DataRow = lobjTable.NewRow()
+                lobjRow("Name") = CStr(lcolTmpList(I))
+                lobjTable.Rows.Add(lobjRow)
+            Next
+            lcolTmpList.Clear()
 
-			Dim lobjaRowList As System.Data.DataRow() = lobjTable.Select("Name LIKE '" & tstrMask & "'", "", System.Data.DataViewRowState.CurrentRows)
-			lcolTmpList = New System.Collections.ArrayList()
-			For I As Integer = 0 To lobjaRowList.Length - 1
-				lcolTmpList.Add(CStr(lobjaRowList(I)("Name")))
-			Next
-			ReDim lobjaRowList(-1)
-		End Using
+            Dim lobjaRowList As System.Data.DataRow() = lobjTable.Select("Name LIKE '" & tstrMask & "'", "", System.Data.DataViewRowState.CurrentRows)
+            lcolTmpList = New System.Collections.ArrayList()
+            For I As Integer = 0 To lobjaRowList.Length - 1
+                lcolTmpList.Add(CStr(lobjaRowList(I)("Name")))
+            Next
+            ReDim lobjaRowList(-1)
+        End Using
 
-		Return lcolTmpList
-	End Function
+        Return lcolTmpList
+    End Function
 
-	Public Function Dir() As System.Collections.ArrayList
-		Me.LockTcpClient()
-
-        Dim lobjListener As System.Net.Sockets.TcpListener = Nothing
-        Dim lobjClient As System.Net.Sockets.TcpClient = Nothing
-        Dim lobjNetworkStream As System.Net.Sockets.NetworkStream = Nothing
-		Dim lcolTempMessageList As System.Collections.ArrayList
-		Dim lintReturn As Integer
-		Dim lstrReturnMessage As String = Nothing
-		Dim lcolFileList As System.Collections.ArrayList
-
-		Me.SetTransferType(FTPFileTransferType.ASCII)
-
-		If mintFtpMode = FTPMode.Active Then
-			lobjListener = Me.CreateDataListner()
-			lobjListener.Start()
-		Else
-			lobjClient = Me.CreateDataClient()
-		End If
-
-		lcolTempMessageList = Me.SendCommand("NLST")
-		lintReturn = Me.GetMessageReturnValue(CStr(lcolTempMessageList(0)))
-		If Not (lintReturn = 150 OrElse lintReturn = 125 OrElse lintReturn = 550) Then
-            Throw New System.Exception(CStr(lcolTempMessageList(0)))
-		End If
-
-		If lintReturn = 550 Then
-			'No files found 
-			Return New System.Collections.ArrayList()
-		End If
-
-		If Me.mintFtpMode = FTPMode.Active Then
-			lobjClient = lobjListener.AcceptTcpClient()
-		End If
-		lobjNetworkStream = lobjClient.GetStream()
-
-		lcolFileList = Me.ReadLines(lobjNetworkStream)
-
-		If lcolTempMessageList.Count = 1 Then
-			lcolTempMessageList = Me.Read()
-			lstrReturnMessage = CStr(lcolTempMessageList(0))
-			lintReturn = Me.GetMessageReturnValue(lstrReturnMessage)
-		Else
-			lstrReturnMessage = CStr(lcolTempMessageList(1))
-			lintReturn = Me.GetMessageReturnValue(lstrReturnMessage)
-		End If
-
-		If lintReturn <> 226 Then
-            Throw New System.Exception(lstrReturnMessage)
-		End If
-
-		lobjNetworkStream.Close()
-		lobjNetworkStream.Dispose()
-		lobjClient.Close()
-
-		If Me.mintFtpMode = FTPMode.Active Then
-			lobjListener.Stop()
-		End If
-		Me.UnlockTcpClient()
-		Return lcolFileList
-	End Function
-
-	Public Function XDir(ByVal tstrMask As String, ByVal tintOnColumnIndex As Integer) As System.Collections.ArrayList
-		Dim lcolNewList As New System.Collections.ArrayList()
-		Dim lcolTmpList As System.Collections.ArrayList = Me.XDir()
-
-		Using lobjTable As New System.Data.DataTable()
-			lobjTable.Columns.Add("Name")
-			For I As Integer = 0 To lcolTmpList.Count - 1
-				Dim lobjRow As System.Data.DataRow = lobjTable.NewRow()
-				lobjRow("Name") = CStr(CType(lcolTmpList(I), System.Collections.ArrayList)(tintOnColumnIndex))
-				lobjTable.Rows.Add(lobjRow)
-			Next
-
-			Dim lobjaRowList As System.Data.DataRow() = lobjTable.Select("Name LIKE '" & tstrMask & "'", "", System.Data.DataViewRowState.CurrentRows)
-			For I As Integer = 0 To lobjaRowList.Length - 1
-				For J As Integer = 0 To lcolTmpList.Count - 1
-					If CStr(lobjaRowList(I)("Name")) = CStr(CType(lcolTmpList(J), System.Collections.ArrayList)(tintOnColumnIndex)) Then
-						lcolNewList.Add(CType(lcolTmpList(J), System.Collections.ArrayList))
-					End If
-				Next
-			Next
-			ReDim lobjaRowList(-1)
-		End Using
-
-		Return lcolNewList
-	End Function
-
-	Public Function XDir() As System.Collections.ArrayList
-		Me.LockTcpClient()
+    Public Function Dir() As System.Collections.ArrayList
+        Me.LockTcpClient()
 
         Dim lobjListener As System.Net.Sockets.TcpListener = Nothing
         Dim lobjClient As System.Net.Sockets.TcpClient = Nothing
-        Dim lobjNetworkStream As System.Net.Sockets.NetworkStream = Nothing
-		Dim lcolTempMessageList As System.Collections.ArrayList
-		Dim lintReturn As Integer
-		Dim lstrReturnMessage As String = Nothing
-		Dim lcolFilesAndFolderList As New System.Collections.ArrayList()
-		Dim lcolTmpFilesAndFolderList As System.Collections.ArrayList
+        Dim lcolTempMessageList As System.Collections.ArrayList
+        Dim lintReturn As Integer
+        Dim lcolFileList As System.Collections.ArrayList
 
-		Me.SetTransferType(FTPFileTransferType.ASCII)
+        Me.SetTransferType(FTPFileTransferType.ASCII)
 
-		If mintFtpMode = FTPMode.Active Then
-			lobjListener = Me.CreateDataListner()
-			lobjListener.Start()
-		Else
-			lobjClient = Me.CreateDataClient()
-		End If
+        If mintFtpMode = FTPMode.Active Then
+            lobjListener = Me.CreateDataListner()
+            lobjListener.Start()
+        Else
+            lobjClient = Me.CreateDataClient()
+        End If
 
-		lcolTempMessageList = Me.SendCommand("LIST")
-		lintReturn = Me.GetMessageReturnValue(CStr(lcolTempMessageList(0)))
-		If Not (lintReturn = 150 OrElse lintReturn = 125) Then
+        lcolTempMessageList = Me.SendCommand("NLST")
+        lintReturn = Me.GetMessageReturnValue(CStr(lcolTempMessageList(0)))
+        If Not (lintReturn = 150 OrElse lintReturn = 125 OrElse lintReturn = 550) Then
             Throw New System.Exception(CStr(lcolTempMessageList(0)))
-		End If
+        End If
 
-		If mintFtpMode = FTPMode.Active Then
-			lobjClient = lobjListener.AcceptTcpClient()
-		End If
-		lobjNetworkStream = lobjClient.GetStream()
+        If lintReturn = 550 Then
+            'No files found 
+            Return New System.Collections.ArrayList()
+        End If
 
-		lcolTmpFilesAndFolderList = Me.ReadLines(lobjNetworkStream)
+        If Me.mintFtpMode = FTPMode.Active Then
+            lobjClient = lobjListener.AcceptTcpClient()
+        End If
 
-		If lcolTempMessageList.Count = 1 Then
-			lcolTempMessageList = Me.Read()
-			lstrReturnMessage = CStr(lcolTempMessageList(0))
-			lintReturn = Me.GetMessageReturnValue(lstrReturnMessage)
-		Else
-			lstrReturnMessage = CStr(lcolTempMessageList(1))
-			lintReturn = Me.GetMessageReturnValue(lstrReturnMessage)
-		End If
+        Using lobjNetworkStream As System.Net.Sockets.NetworkStream = lobjClient.GetStream()
 
-		If lintReturn <> 226 Then
-            Throw New System.Exception(lstrReturnMessage)
-		End If
+            lcolFileList = Me.ReadLines(lobjNetworkStream)
 
-		lobjNetworkStream.Close()
-		lobjNetworkStream.Dispose()
-		lobjClient.Close()
+            Dim lstrReturnMessage As String
+            If lcolTempMessageList.Count = 1 Then
+                lcolTempMessageList = Me.Read()
+                lstrReturnMessage = CStr(lcolTempMessageList(0))
+                lintReturn = Me.GetMessageReturnValue(lstrReturnMessage)
+            Else
+                lstrReturnMessage = CStr(lcolTempMessageList(1))
+                lintReturn = Me.GetMessageReturnValue(lstrReturnMessage)
+            End If
 
-		If mintFtpMode = FTPMode.Active Then
-			lobjListener.Stop()
-		End If
+            If lintReturn <> 226 Then
+                Throw New System.Exception(lstrReturnMessage)
+            End If
 
-		Me.UnlockTcpClient()
-		For Each lstrItem As String In lcolTmpFilesAndFolderList
-			lcolFilesAndFolderList.Add(Me.GetTokens(lstrItem, " "))
-		Next
-		Return lcolFilesAndFolderList
-	End Function
+            lobjNetworkStream.Close()
+        End Using
+        lobjClient.Close()
+
+        If Me.mintFtpMode = FTPMode.Active Then
+            lobjListener.Stop()
+        End If
+        Me.UnlockTcpClient()
+        Return lcolFileList
+    End Function
+
+    Public Function XDir(ByVal tstrMask As String, ByVal tintOnColumnIndex As Integer) As System.Collections.ArrayList
+        Dim lcolNewList As New System.Collections.ArrayList()
+        Dim lcolTmpList As System.Collections.ArrayList = Me.XDir()
+
+        Using lobjTable As New System.Data.DataTable()
+            lobjTable.Columns.Add("Name")
+            For I As Integer = 0 To lcolTmpList.Count - 1
+                Dim lobjRow As System.Data.DataRow = lobjTable.NewRow()
+                lobjRow("Name") = CStr(CType(lcolTmpList(I), System.Collections.ArrayList)(tintOnColumnIndex))
+                lobjTable.Rows.Add(lobjRow)
+            Next
+
+            Dim lobjaRowList As System.Data.DataRow() = lobjTable.Select("Name LIKE '" & tstrMask & "'", "", System.Data.DataViewRowState.CurrentRows)
+            For I As Integer = 0 To lobjaRowList.Length - 1
+                For J As Integer = 0 To lcolTmpList.Count - 1
+                    If CStr(lobjaRowList(I)("Name")) = CStr(CType(lcolTmpList(J), System.Collections.ArrayList)(tintOnColumnIndex)) Then
+                        lcolNewList.Add(CType(lcolTmpList(J), System.Collections.ArrayList))
+                    End If
+                Next
+            Next
+            ReDim lobjaRowList(-1)
+        End Using
+
+        Return lcolNewList
+    End Function
+
+    Public Function XDir() As System.Collections.ArrayList
+        Me.LockTcpClient()
+
+        Dim lobjListener As System.Net.Sockets.TcpListener = Nothing
+        Dim lobjClient As System.Net.Sockets.TcpClient = Nothing
+        Dim lcolTempMessageList As System.Collections.ArrayList
+        Dim lintReturn As Integer
+        Dim lcolFilesAndFolderList As New System.Collections.ArrayList()
+        Dim lcolTmpFilesAndFolderList As System.Collections.ArrayList
+
+        Me.SetTransferType(FTPFileTransferType.ASCII)
+
+        If mintFtpMode = FTPMode.Active Then
+            lobjListener = Me.CreateDataListner()
+            lobjListener.Start()
+        Else
+            lobjClient = Me.CreateDataClient()
+        End If
+
+        lcolTempMessageList = Me.SendCommand("LIST")
+        lintReturn = Me.GetMessageReturnValue(CStr(lcolTempMessageList(0)))
+        If Not (lintReturn = 150 OrElse lintReturn = 125) Then
+            Throw New System.Exception(CStr(lcolTempMessageList(0)))
+        End If
+
+        If mintFtpMode = FTPMode.Active Then
+            lobjClient = lobjListener.AcceptTcpClient()
+        End If
+
+        Using lobjNetworkStream As System.Net.Sockets.NetworkStream = lobjClient.GetStream()
+
+            lcolTmpFilesAndFolderList = Me.ReadLines(lobjNetworkStream)
+
+            Dim lstrReturnMessage As String
+            If lcolTempMessageList.Count = 1 Then
+                lcolTempMessageList = Me.Read()
+                lstrReturnMessage = CStr(lcolTempMessageList(0))
+                lintReturn = Me.GetMessageReturnValue(lstrReturnMessage)
+            Else
+                lstrReturnMessage = CStr(lcolTempMessageList(1))
+                lintReturn = Me.GetMessageReturnValue(lstrReturnMessage)
+            End If
+
+            If lintReturn <> 226 Then
+                Throw New System.Exception(lstrReturnMessage)
+            End If
+
+            lobjNetworkStream.Close()
+        End Using
+        lobjClient.Close()
+
+        If mintFtpMode = FTPMode.Active Then
+            lobjListener.Stop()
+        End If
+
+        Me.UnlockTcpClient()
+        For Each lstrItem As String In lcolTmpFilesAndFolderList
+            lcolFilesAndFolderList.Add(Me.GetTokens(lstrItem, " "))
+        Next
+        Return lcolFilesAndFolderList
+    End Function
 
     Public Sub SendStream(ByVal tobjStream As System.IO.Stream, ByVal tstrRemoteFileName As String, ByVal tintType As FTPFileTransferType)
         Me.LockTcpClient()
 
         Dim lobjListener As System.Net.Sockets.TcpListener = Nothing
         Dim lobjClient As System.Net.Sockets.TcpClient = Nothing
-        Dim lobjNetworkStream As System.Net.Sockets.NetworkStream = Nothing
         Dim lcolTempMessageList As New System.Collections.ArrayList()
         Dim lintReturn As Integer
-        Dim lstrReturnMessage As String = Nothing
 
         Me.SetTransferType(tintType)
 
@@ -340,25 +338,26 @@ Public Class FTPConnection
             lobjClient = lobjListener.AcceptTcpClient()
         End If
 
-        lobjNetworkStream = lobjClient.GetStream()
+        Using lobjNetworkStream As System.Net.Sockets.NetworkStream = lobjClient.GetStream()
 
-        Dim lbytaBuffer As Byte() = New Byte(mintsBlockSize - 1) {}
-        Dim lintBytes As Integer = 0
-        Dim lintTotalBytes As Integer = 0
+            Dim lbytaBuffer As Byte() = New Byte(mintsBlockSize - 1) {}
+            Dim lintTotalBytes As Integer = 0
 
-        While lintTotalBytes < tobjStream.Length
-            lintBytes = CInt(tobjStream.Read(lbytaBuffer, 0, mintsBlockSize))
-            lintTotalBytes = lintTotalBytes + lintBytes
-            lobjNetworkStream.Write(lbytaBuffer, 0, lintBytes)
-        End While
+            While lintTotalBytes < tobjStream.Length
+                Dim lintBytes As Integer = CInt(tobjStream.Read(lbytaBuffer, 0, mintsBlockSize))
+                lintTotalBytes += lintBytes
+                lobjNetworkStream.Write(lbytaBuffer, 0, lintBytes)
+            End While
 
-        lobjNetworkStream.Close()
-        lobjNetworkStream.Dispose()
+            lobjNetworkStream.Close()
+        End Using
         lobjClient.Close()
 
         If mintFtpMode = FTPMode.Active Then
             lobjListener.Stop()
         End If
+
+        Dim lstrReturnMessage As String
 
         If lcolTempMessageList.Count = 1 Then
             lcolTempMessageList = Me.Read()
@@ -389,10 +388,8 @@ Public Class FTPConnection
     Public Sub GetStream(ByVal tstrRemoteFileName As String, ByVal tobjStream As System.IO.Stream, ByVal tintType As FTPFileTransferType)
         Dim lobjListener As System.Net.Sockets.TcpListener = Nothing
         Dim lobjClient As System.Net.Sockets.TcpClient = Nothing
-        Dim lobjNetworkStream As System.Net.Sockets.NetworkStream = Nothing
         Dim lcolTempMessageList As System.Collections.ArrayList
         Dim lintReturn As Integer
-        Dim lstrReturnMessage As String = Nothing
 
         Me.LockTcpClient()
 
@@ -415,27 +412,28 @@ Public Class FTPConnection
             lobjClient = lobjListener.AcceptTcpClient()
         End If
 
-        lobjNetworkStream = lobjClient.GetStream()
+        Using lobjNetworkStream As System.Net.Sockets.NetworkStream = lobjClient.GetStream()
 
-        Dim lbytaBuffer As Byte() = New Byte(mintsBlockSize - 1) {}
-        Dim lintBytes As Integer = 0
+            Dim lbytaBuffer As Byte() = New Byte(mintsBlockSize - 1) {}
 
-        Dim llogRead As Boolean = True
-        While llogRead
-            lintBytes = CInt(lobjNetworkStream.Read(lbytaBuffer, 0, lbytaBuffer.Length))
-            tobjStream.Write(lbytaBuffer, 0, lintBytes)
-            If lintBytes = 0 Then
-                llogRead = False
-            End If
-        End While
+            Dim llogRead As Boolean = True
+            While llogRead
+                Dim lintBytes As Integer = CInt(lobjNetworkStream.Read(lbytaBuffer, 0, lbytaBuffer.Length))
+                tobjStream.Write(lbytaBuffer, 0, lintBytes)
+                If lintBytes = 0 Then
+                    llogRead = False
+                End If
+            End While
 
-        lobjNetworkStream.Close()
-        lobjNetworkStream.Dispose()
+            lobjNetworkStream.Close()
+        End Using
         lobjClient.Close()
 
         If mintFtpMode = FTPMode.Active Then
             lobjListener.Stop()
         End If
+
+        Dim lstrReturnMessage As String
 
         If lcolTempMessageList.Count = 1 Then
             lcolTempMessageList = Me.Read()
@@ -465,7 +463,7 @@ Public Class FTPConnection
 
     Public Overridable Sub DeleteFile(ByVal tstrRemoteFileName As String)
         Me.LockTcpClient()
-		Dim lcolTempMessageList As System.Collections.ArrayList
+        Dim lcolTempMessageList As System.Collections.ArrayList
         Dim lintReturn As Integer
         lcolTempMessageList = Me.SendCommand("DELE " & tstrRemoteFileName)
         lintReturn = Me.GetMessageReturnValue(CStr(lcolTempMessageList(0)))
@@ -484,7 +482,7 @@ Public Class FTPConnection
 
     Public Overridable Sub RenameFile(ByVal tstrFromRemoteFileName As String, ByVal tstrToRemoteFileName As String)
         Me.LockTcpClient()
-		Dim lcolTempMessageList As System.Collections.ArrayList
+        Dim lcolTempMessageList As System.Collections.ArrayList
         Dim lintReturn As Integer
         lcolTempMessageList = Me.SendCommand("RNFR " & tstrFromRemoteFileName)
         lintReturn = Me.GetMessageReturnValue(CStr(lcolTempMessageList(0)))
@@ -501,7 +499,7 @@ Public Class FTPConnection
 
     Public Overridable Sub SetCurrentDirectory(ByVal tstrRemotePath As String)
         Me.LockTcpClient()
-		Dim lcolTempMessageList As System.Collections.ArrayList
+        Dim lcolTempMessageList As System.Collections.ArrayList
         Dim lintReturn As Integer
         lcolTempMessageList = Me.SendCommand("CWD " & tstrRemotePath)
         lintReturn = Me.GetMessageReturnValue(CStr(lcolTempMessageList(0)))
@@ -524,7 +522,7 @@ Public Class FTPConnection
 
     Private Sub SetMode(ByVal tstrMode As String)
         Me.LockTcpClient()
-		Dim lcolTempMessageList As System.Collections.ArrayList
+        Dim lcolTempMessageList As System.Collections.ArrayList
         Dim lintReturn As Integer
         lcolTempMessageList = Me.SendCommand(tstrMode)
         lintReturn = Me.GetMessageReturnValue(CStr(lcolTempMessageList(0)))
@@ -552,7 +550,7 @@ Public Class FTPConnection
     Private Sub SetDataPort(ByVal tintPortNumber As Integer)
         Me.LockTcpClient()
 
-		Dim lcolTempMessageList As System.Collections.ArrayList
+        Dim lcolTempMessageList As System.Collections.ArrayList
         Dim lintReturn As Integer
         Dim lintPortHigh As Integer = tintPortNumber >> 8
         Dim lintPortLow As Integer = tintPortNumber And 255
@@ -568,7 +566,7 @@ Public Class FTPConnection
     Public Overridable Sub MakeDir(ByVal tstrDirectoryName As String)
         Me.LockTcpClient()
 
-		Dim lcolTempMessageList As System.Collections.ArrayList
+        Dim lcolTempMessageList As System.Collections.ArrayList
         Dim lintReturn As Integer
 
         lcolTempMessageList = Me.SendCommand("MKD " & tstrDirectoryName)
@@ -583,7 +581,7 @@ Public Class FTPConnection
     Public Overridable Sub RemoveDir(ByVal tstrDirectoryName As String)
         Me.LockTcpClient()
 
-		Dim lcolTempMessageList As System.Collections.ArrayList
+        Dim lcolTempMessageList As System.Collections.ArrayList
         Dim lintReturn As Integer
 
         lcolTempMessageList = Me.SendCommand("RMD " & tstrDirectoryName)
@@ -595,44 +593,44 @@ Public Class FTPConnection
         Me.UnlockTcpClient()
     End Sub
 
-	Public Function SendCommand(ByVal tstrCommand As String) As System.Collections.ArrayList
+    Public Function SendCommand(ByVal tstrCommand As String) As System.Collections.ArrayList
         Dim lobjStream As System.Net.Sockets.NetworkStream = mobjTcpClient.GetStream()
-		mintActiveConnectionsCount += 1
+        mintActiveConnectionsCount += 1
 
         Dim lbytaCmdBytes As Byte() = System.Text.Encoding.ASCII.GetBytes((tstrCommand & System.Environment.NewLine).ToCharArray())
-		lobjStream.Write(lbytaCmdBytes, 0, lbytaCmdBytes.Length)
+        lobjStream.Write(lbytaCmdBytes, 0, lbytaCmdBytes.Length)
 
-		mintActiveConnectionsCount -= 1
+        mintActiveConnectionsCount -= 1
 
-		If tstrCommand = "QUIT" Then Return Nothing
-		Return Me.Read()
-	End Function
+        If tstrCommand = "QUIT" Then Return Nothing
+        Return Me.Read()
+    End Function
 
-	Private Function Read() As System.Collections.ArrayList
+    Private Function Read() As System.Collections.ArrayList
         Dim lobjStream As System.Net.Sockets.NetworkStream = mobjTcpClient.GetStream()
-		Dim lcolMessageList As New System.Collections.ArrayList()
-		Dim lcolTempMessage As System.Collections.ArrayList = Me.ReadLines(lobjStream)
+        Dim lcolMessageList As New System.Collections.ArrayList()
+        Dim lcolTempMessage As System.Collections.ArrayList = Me.ReadLines(lobjStream)
 
-		Dim lintTryCount As Integer = 0
-		While lcolTempMessage.Count = 0
-			If lintTryCount = 100 Then
+        Dim lintTryCount As Integer = 0
+        While lcolTempMessage.Count = 0
+            If lintTryCount = 100 Then
                 Throw New System.Exception("Server does not return message to the message")
-			End If
+            End If
             System.Threading.Thread.Sleep(100)
-			lintTryCount += 1
-			lcolTempMessage = Me.ReadLines(lobjStream)
-		End While
+            lintTryCount += 1
+            lcolTempMessage = Me.ReadLines(lobjStream)
+        End While
 
-		While CStr(lcolTempMessage(lcolTempMessage.Count - 1)).Substring(3, 1) = "-"
-			lcolMessageList.AddRange(lcolTempMessage)
-			lcolTempMessage = Me.ReadLines(lobjStream)
-		End While
-		lcolMessageList.AddRange(lcolTempMessage)
+        While CStr(lcolTempMessage(lcolTempMessage.Count - 1)).Substring(3, 1) = "-"
+            lcolMessageList.AddRange(lcolTempMessage)
+            lcolTempMessage = Me.ReadLines(lobjStream)
+        End While
+        lcolMessageList.AddRange(lcolTempMessage)
 
-		Me.AddMessagesToMessageList(lcolMessageList)
+        Me.AddMessagesToMessageList(lcolMessageList)
 
-		Return lcolMessageList
-	End Function
+        Return lcolMessageList
+    End Function
 
     Private Function ReadLines(ByVal tobjStream As System.Net.Sockets.NetworkStream) As System.Collections.ArrayList
         Dim lcolMessageList As New System.Collections.ArrayList()
@@ -672,7 +670,7 @@ Public Class FTPConnection
                 lintPort = mintsDataPortRangeFrom + lobjRnd.Next(mintsDataPortRangeTo - mintsDataPortRangeFrom)
 
             Case FTPMode.Passive
-				Dim lcolTempMessageList As System.Collections.ArrayList
+                Dim lcolTempMessageList As System.Collections.ArrayList
                 Dim lintReturn As Integer
                 lcolTempMessageList = Me.SendCommand("PASV")
                 lintReturn = Me.GetMessageReturnValue(CStr(lcolTempMessageList(0)))
@@ -697,11 +695,11 @@ Public Class FTPConnection
         Return lintPort
     End Function
 
-	Private Sub AddMessagesToMessageList(ByVal tcolMessages As System.Collections.ArrayList)
-		If mlogMessages Then
-			mcolMessageList.AddRange(tcolMessages)
-		End If
-	End Sub
+    Private Sub AddMessagesToMessageList(ByVal tcolMessages As System.Collections.ArrayList)
+        If mlogMessages Then
+            mcolMessageList.AddRange(tcolMessages)
+        End If
+    End Sub
 
     Private Function GetLocalAddressList() As System.Net.IPAddress()
         Return System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName()).AddressList
@@ -715,26 +713,26 @@ Public Class FTPConnection
         System.Threading.Monitor.Exit(mobjTcpClient)
     End Sub
 
-	Private Function GetTokens(ByVal tstrText As String, ByVal tstrDelimiter As String) As System.Collections.ArrayList
-		Dim lintNext As Integer
-		Dim lcolTokens As New System.Collections.ArrayList()
+    Private Function GetTokens(ByVal tstrText As String, ByVal tstrDelimiter As String) As System.Collections.ArrayList
+        Dim lintNext As Integer
+        Dim lcolTokens As New System.Collections.ArrayList()
 
-		lintNext = tstrText.IndexOf(tstrDelimiter)
-		While lintNext <> -1
-			Dim lstrItem As String = tstrText.Substring(0, lintNext)
-			If lstrItem.Length > 0 Then
-				lcolTokens.Add(lstrItem)
-			End If
+        lintNext = tstrText.IndexOf(tstrDelimiter)
+        While lintNext <> -1
+            Dim lstrItem As String = tstrText.Substring(0, lintNext)
+            If lstrItem.Length > 0 Then
+                lcolTokens.Add(lstrItem)
+            End If
 
-			tstrText = tstrText.Substring(lintNext + 1)
-			lintNext = tstrText.IndexOf(tstrDelimiter)
-		End While
+            tstrText = tstrText.Substring(lintNext + 1)
+            lintNext = tstrText.IndexOf(tstrDelimiter)
+        End While
 
-		If tstrText.Length > 0 Then
-			lcolTokens.Add(tstrText)
-		End If
+        If tstrText.Length > 0 Then
+            lcolTokens.Add(tstrText)
+        End If
 
-		Return lcolTokens
-	End Function
+        Return lcolTokens
+    End Function
 
 End Class

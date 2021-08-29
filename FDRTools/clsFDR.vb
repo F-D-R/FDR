@@ -5,7 +5,7 @@ Friend Class App
 
     Private Shared mstrConn As String
     Private Shared mobjConn As MySql.Data.MySqlClient.MySqlConnection
-    Private Shared mxmlConfig As System.Xml.XmlDocument
+    Private Shared ReadOnly mxmlConfig As System.Xml.XmlDocument
 
     Public Sub New()
     End Sub
@@ -312,8 +312,8 @@ End Module
 
 
 Friend Class ListItem
-    Private mobjValue As Object
-    Private mstrCaption As String
+    Private ReadOnly mobjValue As Object
+    Private ReadOnly mstrCaption As String
 
     Public Sub New(ByVal tobjValue As Object, ByVal tstrCaption As String)
         mobjValue = tobjValue

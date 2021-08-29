@@ -7,8 +7,8 @@ Friend Class PS
 
     Public Class ProgressEventArgs
         Inherits System.EventArgs
-        Private mintMax As Integer
-        Private mintValue As Integer
+        Private ReadOnly mintMax As Integer
+        Private ReadOnly mintValue As Integer
 
         Friend Sub New(ByVal tintMax As Integer, Optional ByVal tintValue As Integer = 0)
             If tintValue > tintMax Then tintValue = tintMax

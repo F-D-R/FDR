@@ -145,8 +145,9 @@ Friend Class frmList
 
             mobjDA = New MySql.Data.MySqlClient.MySqlDataAdapter(lstrSQL, App.Connection)
             mobjCB = New MySql.Data.MySqlClient.MySqlCommandBuilder(mobjDA)
-            mobjTable = New System.Data.DataTable()
-            mobjTable.Locale = System.Globalization.CultureInfo.InvariantCulture
+            mobjTable = New System.Data.DataTable With {
+                .Locale = System.Globalization.CultureInfo.InvariantCulture
+            }
             mobjDA.Fill(mobjTable)
             grdList.DataSource = mobjTable
 
