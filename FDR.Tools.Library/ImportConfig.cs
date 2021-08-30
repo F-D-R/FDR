@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System.IO;
 
 namespace FDR.Tools.Library
 {
@@ -46,7 +45,7 @@ namespace FDR.Tools.Library
 
         public FolderStructure DestStructure { get; set; } = FolderStructure.year_date;
 
-        public string DateFormat { get; set; } = "yyyyMMdd";
+        public string DateFormat { get; set; } = "yyMMdd";
 
         private string filter;
         public string FileFilter
