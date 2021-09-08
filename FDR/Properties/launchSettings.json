@@ -2,7 +2,7 @@
   "profiles": {
     "FDR": {
       "commandName": "Project",
-      "commandLineArgs": "-verify -folder D:\\FDR\\2020 -verbose"
+      "commandLineArgs": "-cleanup D:\\FDR\\2020\\200527 -verbose"
     }
   }
 }

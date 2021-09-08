@@ -76,5 +76,14 @@ namespace FDR.Tools.Library
             return (ms < 1000) ? $"{ms}ms" : $"{ms / 1000}s";
         }
 
+        public static bool IsImageFile(string file)
+        {
+            return ".CR2|.CRW|.JPG|.JPEG|.TIF|.TIFF".Contains(Path.GetExtension(file), StringComparison.InvariantCultureIgnoreCase);
+        }
+        public static bool IsImageFile(FileInfo file)
+        {
+            return IsImageFile(file.Name);
+        }
+
     }
 }

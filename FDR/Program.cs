@@ -20,7 +20,8 @@ namespace FDR
         Import,
         Hash,
         Verify,
-        Diff
+        Diff,
+        Cleanup
     }
 
     public class Program
@@ -46,10 +47,11 @@ namespace FDR
                 switch (args[i].ToLower())
                 {
                     case "-import": operation = Operation.Import; break;
-                    case "-hash": operation = Operation.Hash; break;
-                    case "-rehash": operation = Operation.Hash; force = true; break;
-                    case "-verify": operation = Operation.Verify; break;
-                    case "-diff": operation = Operation.Diff; break;
+                    case "-hash": operation = Operation.Hash; folder = args[i + 1]; break;
+                    case "-rehash": operation = Operation.Hash; folder = args[i + 1]; force = true; break;
+                    case "-verify": operation = Operation.Verify; folder = args[i + 1]; break;
+                    case "-diff": operation = Operation.Diff; folder = args[i + 1]; break;
+                    case "-cleanup": operation = Operation.Cleanup; folder = args[i + 1]; break;
                     case "-verbose": verbose = true; break;
                     case "-auto": auto = true; break;
                     case "-folder": folder = args[i + 1]; break;
@@ -90,6 +92,12 @@ namespace FDR
                             Verify.DiffFolder(new DirectoryInfo(Path.GetFullPath(folder)), new DirectoryInfo(Path.GetFullPath(reference)));
                             break;
 
+                        case Operation.Cleanup:
+                            Common.Msg($"FDR Tools {version} - Cleanup", titleColor);
+                            if (!Common.IsFolderValid(folder)) return;
+                            Raw.CleanupFolder(new DirectoryInfo(Path.GetFullPath(folder)));
+                            break;
+
                         default:
                             DisplayHelp(version);
                             break;
@@ -122,14 +130,13 @@ namespace FDR
             Common.Msg("    -help                Help (this screen)");
             Common.Msg("    -verbose             More detailed output");
             Common.Msg("    -import              Import memory card content");
-            Common.Msg("    -hash                Create hash of files in a folder");
-            Common.Msg("    -rehash              Recreate hashes of all files in a folder");
-            Common.Msg("    -verify              Verify the files in a folder");
-            Common.Msg("    -diff                Compare the files of a folder to a reference one");
-            Common.Msg("    -auto                Automatic start");
-            Common.Msg("    -folder <folder>     Subject folder");
-            //Core.Msg("    -file <file>         Subject file");
+            Common.Msg("    -hash <folder>       Create hash of files in a folder");
+            Common.Msg("    -rehash <folder>     Recreate hashes of all files in a folder");
+            Common.Msg("    -verify <folder>     Verify the files in a folder");
+            Common.Msg("    -diff <folder>       Compare the files of a folder to a reference one");
+            Common.Msg("    -cleanup <folder>    Delete unnecessary raw and hash files");
             Common.Msg("    -reference <folder>  Reference folder");
+            Common.Msg("    -auto                Automatic start");
         }
 
         private static AppConfig LoadAppConfig()

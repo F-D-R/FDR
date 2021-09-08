@@ -23,9 +23,14 @@ namespace FDR.Tools.Library
             }
         }
 
-        private static string GetMd5FileName(FileInfo file)
+        internal static string GetMd5FileName(FileInfo file)
         {
             return Path.Combine(file.DirectoryName, "." + file.Name + ".md5");
+        }
+
+        internal static string GetFileNameFromMD5(FileInfo file)
+        {
+            return Path.Combine(file.DirectoryName, Path.GetFileNameWithoutExtension(file.Name.TrimStart('.')));
         }
 
         private static string GetErrorFileName(FileInfo file)
@@ -38,15 +43,6 @@ namespace FDR.Tools.Library
             File.WriteAllText(hashFile, hash);
             File.SetLastWriteTimeUtc(hashFile, fileDateUtc);
             File.SetAttributes(hashFile, File.GetAttributes(hashFile) | FileAttributes.Hidden);
-        }
-
-        private static bool IsImageFile(string file)
-        {
-            return ".CR2|.CRW|.JPG|.JPEG|.TIF|.TIFF".Contains(Path.GetExtension(file), StringComparison.InvariantCultureIgnoreCase);
-        }
-        private static bool IsImageFile(FileInfo file)
-        {
-            return IsImageFile(file.Name);
         }
 
         private static bool IsValidImage(string file)
@@ -143,7 +139,7 @@ namespace FDR.Tools.Library
                 }
                 else
                 {
-                    if (IsImageFile(file) && !IsValidImage(file))
+                    if (Common.IsImageFile(file) && !IsValidImage(file))
                     {
                         errCount++;
                         Trace.WriteLine($"{file.FullName} - Invalid image!");
