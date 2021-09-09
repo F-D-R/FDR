@@ -16,6 +16,7 @@ namespace FDR.Tools.Library
 
             int rawCount = 0;
             int hashCount = 0;
+            int errCount = 0;
 
             var rawFolder = new DirectoryInfo(Path.Combine(folder.FullName, DEFAULT_RAW_FOLDER));
             if (rawFolder.Exists)
@@ -23,12 +24,14 @@ namespace FDR.Tools.Library
 
             CleanupHashFiles(folder, ref hashCount);
 
+            CleanupErrorFiles(folder, ref errCount);
+
             if (rawFolder.Exists && rawFolder.GetFiles().Length == 0)
                 rawFolder.Delete();
 
             var time = Common.GetTimeString(start);
             Common.Msg($"Cleanup of {folder} folder succeeded.", ConsoleColor.Green);
-            Common.Msg($"{rawCount} raw and {hashCount} hash files were deleted. ({time})", ConsoleColor.White);
+            Common.Msg($"{rawCount} raw, {hashCount} hash and {errCount} error files were deleted. ({time})", ConsoleColor.White);
         }
 
         private static void CleanupRawFiles(DirectoryInfo folder, ref int rawCount)
@@ -89,6 +92,39 @@ namespace FDR.Tools.Library
                 {
                     Trace.WriteLine($"Deleting hash file: {file.FullName}");
                     hashCount++;
+                    file.Delete();
+                }
+
+                i++;
+                Common.Progress(100 * i / fileCount);
+            }
+            Trace.Unindent();
+        }
+
+        private static void CleanupErrorFiles(DirectoryInfo folder, ref int errCount)
+        {
+            Common.Msg($"Cleaning up error files in {folder}");
+
+            var options = new EnumerationOptions
+            {
+                MatchCasing = MatchCasing.CaseInsensitive,
+                RecurseSubdirectories = true,
+                AttributesToSkip = FileAttributes.System
+            };
+            var files = folder.GetFiles("*.error", options);
+            int fileCount = files.Length;
+
+            var i = 0;
+            Common.Progress(0);
+
+            Trace.Indent();
+            foreach (var file in files)
+            {
+                var imageFile = Verify.GetFileNameFromError(file);
+                if (!File.Exists(imageFile))
+                {
+                    Trace.WriteLine($"Deleting error file: {file.FullName}");
+                    errCount++;
                     file.Delete();
                 }
 

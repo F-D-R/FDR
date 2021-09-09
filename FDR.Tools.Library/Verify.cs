@@ -38,6 +38,11 @@ namespace FDR.Tools.Library
             return file.FullName + ".error";
         }
 
+        internal static string GetFileNameFromError(FileInfo file)
+        {
+            return Path.Combine(file.DirectoryName, Path.GetFileNameWithoutExtension(file.Name));
+        }
+
         private static void CreateHashFile(string hashFile, string hash, DateTime fileDateUtc)
         {
             File.WriteAllText(hashFile, hash);
