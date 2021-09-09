@@ -30,8 +30,7 @@ namespace FDR.Tools.Library
                 rawFolder.Delete();
 
             var time = Common.GetTimeString(start);
-            Common.Msg($"Cleanup of {folder} folder succeeded.", ConsoleColor.Green);
-            Common.Msg($"{rawCount} raw, {hashCount} hash and {errCount} error files were deleted. ({time})", ConsoleColor.White);
+            Common.Msg($"Cleanup of {folder} folder succeeded: {rawCount} raw, {hashCount} hash and {errCount} error files were deleted. ({time})", ConsoleColor.Green);
         }
 
         private static void CleanupRawFiles(DirectoryInfo folder, ref int rawCount)
