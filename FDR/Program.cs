@@ -128,15 +128,15 @@ namespace FDR
             Common.Msg("");
             Common.Msg("Where options can be:");
             Common.Msg("    -help                Help (this screen)");
-            Common.Msg("    -verbose             More detailed output");
             Common.Msg("    -import              Import memory card content");
             Common.Msg("    -hash <folder>       Create hash of files in a folder");
             Common.Msg("    -rehash <folder>     Recreate hashes of all files in a folder");
-            Common.Msg("    -verify <folder>     Verify the files in a folder");
+            Common.Msg("    -verify <folder>     Verify the files in a folder against their saved hash");
             Common.Msg("    -diff <folder>       Compare the files of a folder to a reference one");
             Common.Msg("    -cleanup <folder>    Delete unnecessary raw and hash files");
-            Common.Msg("    -reference <folder>  Reference folder");
-            Common.Msg("    -auto                Automatic start");
+            Common.Msg("    -reference <folder>  Reference folder for the diff function");
+            Common.Msg("    -auto                Start the import automatically");
+            Common.Msg("    -verbose             More detailed output");
         }
 
         private static AppConfig LoadAppConfig()
