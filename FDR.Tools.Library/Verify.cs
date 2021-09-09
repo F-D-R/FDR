@@ -258,7 +258,7 @@ namespace FDR.Tools.Library
 
 
 
-            void CopyFiles(string destFolder, string refFile, string postFix = "")
+            static void CopyFiles(string destFolder, string refFile, string postFix = "")
             {
                 if (!Directory.Exists(destFolder)) Directory.CreateDirectory(destFolder);
                 var destFile = Path.Combine(destFolder, Path.GetFileNameWithoutExtension(refFile) + postFix + Path.GetExtension(refFile));

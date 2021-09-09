@@ -14,36 +14,24 @@ namespace FDR.Tools.Library
 
             Common.Msg($"Cleaning up folder {folder}");
 
-            int errCount = 0;
-            int warnCount = 0;
             int rawCount = 0;
             int hashCount = 0;
 
             var rawFolder = new DirectoryInfo(Path.Combine(folder.FullName, DEFAULT_RAW_FOLDER));
             if (rawFolder.Exists)
-                CleanupRawFiles(rawFolder, ref errCount, ref warnCount, ref rawCount);
+                CleanupRawFiles(rawFolder, ref rawCount);
 
-            CleanupHashFiles(folder, ref errCount, ref warnCount, ref hashCount);
+            CleanupHashFiles(folder, ref hashCount);
 
             if (rawFolder.Exists && rawFolder.GetFiles().Length == 0)
                 rawFolder.Delete();
 
             var time = Common.GetTimeString(start);
-            if (errCount > 0)
-            {
-                if (warnCount > 0)
-                    Common.Msg($"Cleanup of {folder} folder resulted in {errCount} errors and {warnCount} warnings!", ConsoleColor.Red);
-                else
-                    Common.Msg($"Cleanup of {folder} folder resulted in {errCount} errors!", ConsoleColor.Red);
-            }
-            else if (warnCount > 0)
-                Common.Msg($"Cleanup of {folder} folder succeeded with {warnCount} warnings.", ConsoleColor.Yellow);
-            else
-                Common.Msg($"Cleanup of {folder} folder succeeded.", ConsoleColor.Green);
+            Common.Msg($"Cleanup of {folder} folder succeeded.", ConsoleColor.Green);
             Common.Msg($"{rawCount} raw and {hashCount} hash files were deleted. ({time})", ConsoleColor.White);
         }
 
-        private static void CleanupRawFiles(DirectoryInfo folder, ref int errCount, ref int warnCount, ref int rawCount)
+        private static void CleanupRawFiles(DirectoryInfo folder, ref int rawCount)
         {
             Common.Msg($"Cleaning up raw files in {folder}");
 
@@ -77,7 +65,7 @@ namespace FDR.Tools.Library
             Trace.Unindent();
         }
 
-        private static void CleanupHashFiles(DirectoryInfo folder, ref int errCount, ref int warnCount, ref int hashCount)
+        private static void CleanupHashFiles(DirectoryInfo folder, ref int hashCount)
         {
             Common.Msg($"Cleaning up hash files in {folder}");
 
