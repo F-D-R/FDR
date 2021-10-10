@@ -53,8 +53,9 @@ namespace FDR.Tools.Library
             Trace.Indent();
             foreach (var file in files)
             {
-                var imageFile = Path.Combine(parent.FullName, Path.GetFileNameWithoutExtension(file.Name) + ".jpg");
-                if (!File.Exists(imageFile))
+                //var imageFile = Path.Combine(parent.FullName, Path.GetFileNameWithoutExtension(file.Name) + ".jpg");
+                //if (!File.Exists(imageFile))
+                if (Directory.GetFiles(parent.FullName, Path.GetFileNameWithoutExtension(file.Name) + "*.jpg").Length == 0)
                 {
                     Trace.WriteLine($"Deleting raw file: {file.FullName}");
                     rawCount++;
