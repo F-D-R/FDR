@@ -14,7 +14,7 @@ namespace FDR.Tools.Library
 
     public class RenameConfig
     {
-        private const string DEFAULT_FILTER = "*.CR2|*.MP4|*.AVI|*.MOV";
+        private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.MP4|*.AVI|*.MOV";
 
         private string filter;
         public string Filter

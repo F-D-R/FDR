@@ -4,7 +4,7 @@ namespace FDR.Tools.Library
 {
     public class MoveConfig
     {
-        public string Filter { get; set; } = "*.CR2";
+        public string Filter { get; set; } = "*.CR3|*.CR2";
 
         public string RelativeFolder { get; set; } = "RAW";
 
