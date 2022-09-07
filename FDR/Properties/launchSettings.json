@@ -2,7 +2,7 @@
   "profiles": {
     "FDR": {
       "commandName": "Project",
-      "commandLineArgs": "-cleanup D:\\FDR\\2020\\200527 -verbose"
+      "commandLineArgs": "-cleanup C:\\Temp\\TEST\\cleanup -verbose"
     }
   }
 }

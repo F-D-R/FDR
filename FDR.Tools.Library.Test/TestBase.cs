@@ -8,14 +8,14 @@ namespace FDR.Tools.Library.Test
     /// in the test flow.
     /// </summary>
     [TestFixture]
-    public abstract class TestBase
+    public abstract class TestFixtureBase
     {
         /// <summary>
         /// This method is called first, before any test gets executed.
         /// Can be extended in derived classes via method override.
         /// </summary>
         [OneTimeSetUp]
-        public virtual void FixtureSetUp()
+        public virtual void OneTimeSetUp()
         {
 
         }
@@ -35,7 +35,7 @@ namespace FDR.Tools.Library.Test
         /// Override to extend with additional test cleanup logic.
         /// </summary>
         [TearDown]
-        public virtual void Destroy()
+        public virtual void TearDown()
         {
 
         }
@@ -45,7 +45,7 @@ namespace FDR.Tools.Library.Test
         /// Override to extend with additional fixture cleanup logic.
         /// </summary>
         [OneTimeTearDown]
-        public virtual void FixtureDestroy()
+        public virtual void OneTimeTearDown()
         {
         }
     }

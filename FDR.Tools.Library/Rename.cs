@@ -1,24 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 
 namespace FDR.Tools.Library
 {
     public static class Rename
     {
         private const string REGEX = "{([^:}]*):?([^}]*)}";
-        private const string NOW = "now";
-        private const string NAME = "name";
-        private const string PFOLDER = "pfolder";
-        private const string CDATE = "cdate";
-        private const string MDATE = "mdate";
-        private const string EDATE = "edate";
-        private const string SDATE = "sdate";
-        private const string COUNTER = "counter";
+        private const string NOW = "now";                   // Current date time
+        private const string NAME = "name";                 // Name without extension
+        private const string PFOLDER = "pfolder";           // Parent folder
+        private const string CDATE = "cdate";               // Creation date
+        private const string MDATE = "mdate";               // Modify date
+        private const string EDATE = "edate";               // EXIF date (=SDATE)
+        private const string SDATE = "sdate";               // Shooting date (=EDATE)
+        private const string COUNTER = "counter";           // File counter starting with 1
 
-        public static string EvaluateNamePattern(string pattern, FileSystemInfo fsi)
+        public static string EvaluateNamePattern(string pattern, FileSystemInfo? fsi)
         {
             string result = pattern;
 
@@ -34,9 +37,9 @@ namespace FDR.Tools.Library
                         {
                             var args = arg.Split(",");
                             if (args.Length >= 2)
-                                result = result.Replace(match.Value, fsi.Name.Substring(int.Parse(args[0]), int.Parse(args[1])), StringComparison.InvariantCultureIgnoreCase);
+                                result = result.Replace(match.Value, Path.GetFileNameWithoutExtension(fsi.Name).Substring(int.Parse(args[0]), int.Parse(args[1])), StringComparison.InvariantCultureIgnoreCase);
                             else
-                                result = result.Replace(match.Value, fsi.Name, StringComparison.InvariantCultureIgnoreCase);
+                                result = result.Replace(match.Value, Path.GetFileNameWithoutExtension(fsi.Name), StringComparison.InvariantCultureIgnoreCase);
                         }
                         break;
 
@@ -50,15 +53,6 @@ namespace FDR.Tools.Library
                             result = result.Replace(match.Value, fsi.LastWriteTime.ToString(arg), StringComparison.InvariantCultureIgnoreCase);
                         break;
 
-                    case EDATE:
-                    case SDATE:
-                        throw new NotImplementedException("EDATE/SDATE");
-                    //if (fsi != null)
-                    //{
-                    //    result = result.Replace(match.Value, fsi.LastWriteTime.ToString(arg), StringComparison.InvariantCultureIgnoreCase);
-                    //}
-                    //break;
-
                     case NOW:
                         result = result.Replace(match.Value, DateTime.Now.ToString(arg), StringComparison.InvariantCultureIgnoreCase);
                         break;
@@ -68,7 +62,7 @@ namespace FDR.Tools.Library
             return result;
         }
 
-        public static string EvaluateFolderNamePattern(string pattern, DirectoryInfo folder)
+        public static string EvaluateFolderNamePattern(string pattern, DirectoryInfo? folder)
         {
             string result = EvaluateNamePattern(pattern, folder);
 
@@ -84,9 +78,9 @@ namespace FDR.Tools.Library
                         {
                             var args = arg.Split(",");
                             if (args.Length >= 2)
-                                result = result.Replace(match.Value, folder.Parent.Name.Substring(int.Parse(args[0]), int.Parse(args[1])), StringComparison.InvariantCultureIgnoreCase);
+                                result = result.Replace(match.Value, folder.Parent?.Name.Substring(int.Parse(args[0]), int.Parse(args[1])), StringComparison.InvariantCultureIgnoreCase);
                             else
-                                result = result.Replace(match.Value, folder.Parent.Name, StringComparison.InvariantCultureIgnoreCase);
+                                result = result.Replace(match.Value, folder.Parent?.Name, StringComparison.InvariantCultureIgnoreCase);
                         }
                         break;
                 }
@@ -95,10 +89,8 @@ namespace FDR.Tools.Library
             return result;
         }
 
-        public static string EvaluateFileNamePattern(string pattern, FileInfo file, int counter)
+        public static string EvaluateFileNamePattern(string pattern, FileInfo? file, int counter = 1)
         {
-            //TODO: EXIF date
-
             string result = EvaluateNamePattern(pattern, file);
 
             var regex = new Regex(REGEX, RegexOptions.IgnoreCase | RegexOptions.Singleline);
@@ -113,9 +105,20 @@ namespace FDR.Tools.Library
                         {
                             var args = arg.Split(",");
                             if (args.Length >= 2)
-                                result = result.Replace(match.Value, file.Directory.Name.Substring(int.Parse(args[0]), int.Parse(args[1])), StringComparison.InvariantCultureIgnoreCase);
+                                result = result.Replace(match.Value, file.Directory?.Name.Substring(int.Parse(args[0]), int.Parse(args[1])), StringComparison.InvariantCultureIgnoreCase);
                             else
-                                result = result.Replace(match.Value, file.Directory.Name, StringComparison.InvariantCultureIgnoreCase);
+                                result = result.Replace(match.Value, file.Directory?.Name, StringComparison.InvariantCultureIgnoreCase);
+                        }
+                        break;
+
+                    case EDATE:
+                    case SDATE:
+                        if (file != null)
+                        {
+                            IImageInfo imageInfo = Image.Identify(file.FullName);
+                            var dateString = imageInfo.Metadata?.ExifProfile?.GetValue<string>(ExifTag.DateTimeOriginal);
+                            var date = DateTime.ParseExact(dateString?.ToString()??"", "yyyy:MM:dd HH:mm:ss", null);
+                            result = result.Replace(match.Value, date.ToString(arg), StringComparison.InvariantCultureIgnoreCase);
                         }
                         break;
 
@@ -130,22 +133,33 @@ namespace FDR.Tools.Library
             return result;
         }
 
-        //public static void RenameFolder(string pattern, DirectoryInfo folder)
-        //{
-        //    var name = EvaluateFolderNamePattern(pattern, folder);
-        //    folder.MoveTo(name);
-        //}
+        public static void RenameFolder(DirectoryInfo folder, string? pattern)
+        {
+            if (string.IsNullOrWhiteSpace(pattern)) throw new ArgumentNullException("pattern");
+            if (folder == null) throw new ArgumentNullException("folder");
+            if (!folder.Exists) throw new DirectoryNotFoundException("Folder doesn't exist! " + folder.FullName);
 
-        public static void RenameFile(FileInfo file, int counter, RenameConfig config, int progressPercent)
+            var path = folder.Parent?.FullName;
+
+            var name = EvaluateFolderNamePattern(pattern, folder);
+            folder.MoveTo(Path.Combine(path??"", name));
+        }
+
+        public static void RenameFolder(DirectoryInfo folder, RenameConfig config)
+        {
+            if (config == null) throw new ArgumentNullException("config");
+            RenameFolder(folder, config.FilenamePattern);
+        }
+
+        public static string CalculateFileName(FileInfo file, RenameConfig config, int counter = 1)
         {
             if (config == null) throw new ArgumentNullException("config");
             if (file == null) throw new ArgumentNullException("file");
             if (!file.Exists) throw new FileNotFoundException("File doesn't exist!", file.FullName);
 
-            var path = Path.GetDirectoryName(file.FullName);
+            var path = Path.GetDirectoryName(file.FullName)??"";
 
-            var origName = Path.GetFileNameWithoutExtension(file.Name);
-            var newName = EvaluateFileNamePattern(config.FilenamePattern, file, counter);
+            var newName = EvaluateFileNamePattern(config.FilenamePattern??"{name}", file, counter);
             if (config.FilenameCase == CharacterCasing.lower)
                 newName = newName.ToLower();
             else if (config.FilenameCase == CharacterCasing.upper)
@@ -157,32 +171,51 @@ namespace FDR.Tools.Library
             else if (config.ExtensionCase == CharacterCasing.upper)
                 extension = extension.ToUpper();
 
-            Trace.WriteLine($"Renaming file {file.Name} to {newName + extension}");
+            return Path.Combine(path, newName + extension);
+        }
+
+        public static void RenameFile(FileInfo file, RenameConfig config, int counter = 1, int progressPercent = 0)
+        {
+            if (config == null) throw new ArgumentNullException("config");
+            if (file == null) throw new ArgumentNullException("file");
+            if (!file.Exists) throw new FileNotFoundException("File doesn't exist!", file.FullName);
+
+            var path = Path.GetDirectoryName(file.FullName)??"";
+            var origNameWithoutExtension = Path.GetFileNameWithoutExtension(file.Name);
+            var newFullName = CalculateFileName(file, config, counter);
+
+            Trace.WriteLine($"Renaming file {file.Name} to {Path.GetFileName(newFullName)}");
             Common.Progress(progressPercent);
-            file.MoveTo(Path.Combine(path, newName + extension));
+            file.MoveTo(newFullName);
 
-            if (config.AdditionalFileTypes != null)
+            if (config is BatchRenameConfig)
             {
-                foreach (var type in config.AdditionalFileTypes)
+                var additionalFileTypes = ((BatchRenameConfig)config).AdditionalFileTypes;
+                if (additionalFileTypes != null)
                 {
-                    extension = type;
-                    if (config.ExtensionCase == CharacterCasing.lower)
-                        extension = extension.ToLower();
-                    else if (config.ExtensionCase == CharacterCasing.upper)
-                        extension = extension.ToUpper();
-
-                    var origPath = Path.Combine(path, origName + type);
-                    if (File.Exists(origPath))
+                    foreach (var type in additionalFileTypes)
                     {
-                        var newPath = Path.Combine(path, newName + extension);
-                        Trace.WriteLine($"Renaming file {origName + type} to {newName + extension}");
-                        File.Move(origPath, newPath);
+                        var origName = origNameWithoutExtension + type;
+                        var origPath = Path.Combine(path, origName);
+                        if (File.Exists(origPath))
+                        {
+                            var extension = type;
+                            if (config.ExtensionCase == CharacterCasing.lower)
+                                extension = extension.ToLower();
+                            else if (config.ExtensionCase == CharacterCasing.upper)
+                                extension = extension.ToUpper();
+
+                            var newName = Path.GetFileNameWithoutExtension(newFullName) + extension;
+                            var newPath = Path.Combine(path, newName);
+                            Trace.WriteLine($"Renaming file {origName} to {newName}");
+                            File.Move(origPath, newPath);
+                        }
                     }
                 }
             }
         }
 
-        public static void RenameFilesInFolder(DirectoryInfo folder, RenameConfig config)
+        public static void RenameFilesInFolder(DirectoryInfo folder, BatchRenameConfig config)
         {
             if (config == null) throw new ArgumentNullException("config");
             config.Validate();
@@ -195,16 +228,16 @@ namespace FDR.Tools.Library
 
             if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
 
-            var files = Common.GetFiles(folder, filter);
-
+            var files = Common.GetFiles(folder, filter, false).OrderBy(f => f.CreationTimeUtc).ToList();
             int fileCount = files.Count;
+
             int counter = 1;
             Common.Progress(0);
-            foreach (var file in files.OrderBy(f => f.CreationTimeUtc).ToList())
+            foreach (var file in files)
             {
                 try
                 {
-                    RenameFile(file, counter, config, 100 * counter / fileCount);
+                    RenameFile(file, config, counter, 100 * counter / fileCount);
                 }
                 catch (IOException)
                 {

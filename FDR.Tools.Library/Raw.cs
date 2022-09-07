@@ -1,136 +1,185 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace FDR.Tools.Library
 {
     public static class Raw
     {
-        private const string DEFAULT_RAW_FOLDER = "RAW";
-
         public static void CleanupFolder(DirectoryInfo folder)
         {
-            var start = DateTime.Now.Ticks;
+            Stopwatch stopwatch = Stopwatch.StartNew();
 
             Common.Msg($"Cleaning up folder {folder}");
 
-            int rawCount = 0;
-            int hashCount = 0;
-            int errCount = 0;
+            var worker = new CleanupWorker(folder);
+            worker.CleanupErrorFiles();
+            worker.CleanupHashFiles();
+            worker.CleanupRawFiles();
 
-            var rawFolder = new DirectoryInfo(Path.Combine(folder.FullName, DEFAULT_RAW_FOLDER));
-            if (rawFolder.Exists)
-                CleanupRawFiles(rawFolder, ref rawCount);
-
-            CleanupHashFiles(folder, ref hashCount);
-
-            CleanupErrorFiles(folder, ref errCount);
-
-            if (rawFolder.Exists && rawFolder.GetFiles().Length == 0)
-                rawFolder.Delete();
-
-            var time = Common.GetTimeString(start);
-            Common.Msg($"Cleanup of {folder} folder succeeded: {rawCount} raw, {hashCount} hash and {errCount} error files were deleted. ({time})", ConsoleColor.Green);
+            var time = Common.GetTimeString(stopwatch);
+            Common.Msg($"Cleanup of {folder} folder succeeded: {worker.RawCount} raw, {worker.HashCount} hash and {worker.ErrCount} error files were deleted. ({time})", ConsoleColor.Green);
         }
 
-        private static void CleanupRawFiles(DirectoryInfo folder, ref int rawCount)
+        private class CleanupWorker
         {
-            Common.Msg($"Cleaning up raw files in {folder}");
+            internal CleanupWorker(DirectoryInfo folder) => Folder = folder;
 
-            var parent = folder.Parent;
+            private const string DEFAULT_RAW_FOLDER = "RAW";
 
-            var options = new EnumerationOptions
+            private DirectoryInfo Folder { get; }
+
+            public int RawCount { get; private set; } = 0;
+
+            public int HashCount { get; private set; } = 0;
+
+            public int ErrCount { get; private set; } = 0;
+
+            public void CleanupRawFiles()
             {
-                MatchCasing = MatchCasing.CaseInsensitive,
-                RecurseSubdirectories = false
-            };
-            var files = folder.GetFiles("*.cr?", options);
-            int fileCount = files.Length;
-
-            var i = 0;
-            Common.Progress(0);
-
-            Trace.Indent();
-            foreach (var file in files)
-            {
-                if (Directory.GetFiles(parent.FullName, Path.GetFileNameWithoutExtension(file.Name) + "*.jpg", options).Length == 0)
+                var rawOptions = new EnumerationOptions
                 {
-                    Trace.WriteLine($"Deleting raw file: {file.FullName}");
-                    rawCount++;
-                    file.Delete();
-                }
+                    MatchCasing = MatchCasing.CaseInsensitive,
+                    RecurseSubdirectories = true
+                };
+                var files = Folder.EnumerateFiles("*.CR?", rawOptions);
 
-                i++;
-                Common.Progress(100 * i / fileCount);
-            }
-            Trace.Unindent();
-        }
-
-        private static void CleanupHashFiles(DirectoryInfo folder, ref int hashCount)
-        {
-            Common.Msg($"Cleaning up hash files in {folder}");
-
-            var options = new EnumerationOptions
-            {
-                MatchCasing = MatchCasing.CaseInsensitive,
-                RecurseSubdirectories = true,
-                AttributesToSkip = FileAttributes.System
-            };
-            var files = folder.GetFiles("*.md5", options);
-            int fileCount = files.Length;
-
-            var i = 0;
-            Common.Progress(0);
-
-            Trace.Indent();
-            foreach (var file in files)
-            {
-                var imageFile = Verify.GetFileNameFromMD5(file);
-                if (!File.Exists(imageFile))
+                var jpgOptions = new EnumerationOptions
                 {
-                    Trace.WriteLine($"Deleting hash file: {file.FullName}");
-                    hashCount++;
-                    file.Delete();
-                }
+                    MatchCasing = MatchCasing.CaseInsensitive,
+                    RecurseSubdirectories = false
+                };
 
-                i++;
-                Common.Progress(100 * i / fileCount);
-            }
-            Trace.Unindent();
-        }
-
-        private static void CleanupErrorFiles(DirectoryInfo folder, ref int errCount)
-        {
-            Common.Msg($"Cleaning up error files in {folder}");
-
-            var options = new EnumerationOptions
-            {
-                MatchCasing = MatchCasing.CaseInsensitive,
-                RecurseSubdirectories = true,
-                AttributesToSkip = FileAttributes.System
-            };
-            var files = folder.GetFiles("*.error", options);
-            int fileCount = files.Length;
-
-            var i = 0;
-            Common.Progress(0);
-
-            Trace.Indent();
-            foreach (var file in files)
-            {
-                var imageFile = Verify.GetFileNameFromError(file);
-                if (!File.Exists(imageFile))
+                var i = 0;
+                Trace.Indent();
+                files.AsParallel().ForAll(file =>
                 {
-                    Trace.WriteLine($"Deleting error file: {file.FullName}");
-                    errCount++;
-                    file.Delete();
+                    i++;
+
+                    if (string.Compare(file.Directory?.Name, DEFAULT_RAW_FOLDER, true) == 0)
+                    {
+                        var rawFolder = file.Directory;
+                        var jpgFolder = rawFolder?.Parent;
+
+                        if (jpgFolder != null)
+                        {
+                            if (jpgFolder.EnumerateFiles().Any() && !Directory.EnumerateFiles(jpgFolder.FullName, Path.GetFileNameWithoutExtension(file.Name) + "*.jpg", jpgOptions).Any())
+                            {
+                                Trace.WriteLine($"Deleting raw file: {file.FullName}");
+                                RawCount++;
+                                file.Delete();
+
+                                var hashFile = Verify.GetMd5FileName(file);
+                                if (File.Exists(hashFile))
+                                {
+                                    Trace.WriteLine($"Deleting raw hash file: {hashFile}");
+                                    HashCount++;
+                                    File.Delete(hashFile);
+                                }
+
+                                var errFile = Verify.GetErrorFileName(file);
+                                if (File.Exists(errFile))
+                                {
+                                    Trace.WriteLine($"Deleting raw error file: {errFile}");
+                                    ErrCount++;
+                                    File.Delete(errFile);
+                                }
+
+                                if (rawFolder != null && rawFolder.Exists && !rawFolder.EnumerateFiles().Any())
+                                {
+                                    Trace.WriteLine($"Deleting raw folder: {rawFolder}");
+                                    rawFolder.Delete();
+                                }
+                            }
+                        }
+                    }
+
+                    if (i % 10 == 0)
+                        Progress(i);
+
+                });
+                Progress(i, true);
+                Trace.Unindent();
+
+                void Progress(int done, bool newline = false)
+                {
+                    Common.Msg($"    Raw files processed: {done}                  \r", ConsoleColor.Gray, newline);
                 }
-
-                i++;
-                Common.Progress(100 * i / fileCount);
             }
-            Trace.Unindent();
-        }
 
+            public void CleanupHashFiles()
+            {
+                var options = new EnumerationOptions
+                {
+                    MatchCasing = MatchCasing.CaseInsensitive,
+                    RecurseSubdirectories = true,
+                    AttributesToSkip = FileAttributes.System
+                };
+                var files = Folder.EnumerateFiles("*.md5", options);
+
+                var i = 0;
+                Trace.Indent();
+                files.AsParallel().ForAll(file =>
+                {
+                    i++;
+
+                    var imageFile = Verify.GetFileNameFromMD5(file);
+                    if (!File.Exists(imageFile))
+                    {
+                        Trace.WriteLine($"Deleting hash file: {file.FullName}");
+                        HashCount++;
+                        file.Delete();
+                    }
+
+                    if (i % 10 == 0)
+                        Progress(i);
+                });
+                Progress(i, true);
+                Trace.Unindent();
+
+                void Progress(int done, bool newline = false)
+                {
+                    Common.Msg($"    Hash files processed: {done}                  \r", ConsoleColor.Gray, newline);
+                }
+            }
+
+            public void CleanupErrorFiles()
+            {
+                var options = new EnumerationOptions
+                {
+                    MatchCasing = MatchCasing.CaseInsensitive,
+                    RecurseSubdirectories = true,
+                    AttributesToSkip = FileAttributes.System
+                };
+                var files = Folder.EnumerateFiles("*.error", options);
+
+                var i = 0;
+                Trace.Indent();
+                files.AsParallel().ForAll(file =>
+                {
+                    i++;
+
+                    var imageFile = Verify.GetFileNameFromError(file);
+                    if (!File.Exists(imageFile))
+                    {
+                        Trace.WriteLine($"Deleting error file: {file.FullName}");
+                        ErrCount++;
+                        file.Delete();
+                    }
+
+                    if (i % 10 == 0)
+                        Progress(i);
+                });
+                Progress(i, true);
+                Trace.Unindent();
+
+                void Progress(int done, bool newline = false)
+                {
+                    Common.Msg($"    Error files processed: {done}                  \r", ConsoleColor.Gray, newline);
+                }
+            }
+
+        }
     }
 }

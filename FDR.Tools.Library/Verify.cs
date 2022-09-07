@@ -2,10 +2,11 @@
 using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
-using System.Threading;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Advanced;
-using SixLabors.ImageSharp.Formats;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Linq;
+using System.Collections;
 
 namespace FDR.Tools.Library
 {
@@ -15,32 +16,42 @@ namespace FDR.Tools.Library
 
         private static string ComputeHash(FileInfo file)
         {
-            using (var fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
             using (var md5 = MD5.Create())
+            using (var fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
             {
                 var hash = md5.ComputeHash(fileStream);
                 return Convert.ToBase64String(hash);
             }
         }
 
+        private static async Task<string> ComputeHashAsync(FileInfo file)
+        {
+            using (var md5 = MD5.Create())
+            using (var fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
+            {
+                var hash = await md5.ComputeHashAsync(fileStream);
+                return Convert.ToBase64String(hash);
+            }
+        }
+
         internal static string GetMd5FileName(FileInfo file)
         {
-            return Path.Combine(file.DirectoryName, "." + file.Name + ".md5");
+            return Path.Combine(file.DirectoryName??"", "." + file.Name + ".md5");
         }
 
         internal static string GetFileNameFromMD5(FileInfo file)
         {
-            return Path.Combine(file.DirectoryName, Path.GetFileNameWithoutExtension(file.Name.TrimStart('.')));
+            return Path.Combine(file.DirectoryName??"", Path.GetFileNameWithoutExtension(file.Name.TrimStart('.')));
         }
 
-        private static string GetErrorFileName(FileInfo file)
+        internal static string GetErrorFileName(FileInfo file)
         {
             return file.FullName + ".error";
         }
 
         internal static string GetFileNameFromError(FileInfo file)
         {
-            return Path.Combine(file.DirectoryName, Path.GetFileNameWithoutExtension(file.Name));
+            return Path.Combine(file.DirectoryName??"", Path.GetFileNameWithoutExtension(file.Name));
         }
 
         private static void CreateHashFile(string hashFile, string hash, DateTime fileDateUtc)
@@ -50,11 +61,17 @@ namespace FDR.Tools.Library
             File.SetAttributes(hashFile, File.GetAttributes(hashFile) | FileAttributes.Hidden);
         }
 
+        private static async Task CreateHashFileAsync(string hashFile, string hash, DateTime fileDateUtc)
+        {
+            await File.WriteAllTextAsync(hashFile, hash);
+            File.SetLastWriteTimeUtc(hashFile, fileDateUtc);
+            File.SetAttributes(hashFile, File.GetAttributes(hashFile) | FileAttributes.Hidden);
+        }
+
         private static bool IsValidImage(string file)
         {
             try
             {
-                //var imgFormat = Image.DetectFormat(file);
                 var image = Image.Load(file);
                 return true;
             }
@@ -68,69 +85,95 @@ namespace FDR.Tools.Library
             return IsValidImage(file.FullName);
         }
 
-        public static void HashFolder(DirectoryInfo folder, bool force)
+        private static async Task<bool> IsValidImageAsync(string file)
         {
-            var start = DateTime.Now.Ticks;
+            try
+            {
+                var image = await Image.LoadAsync(file);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        private static async Task<bool> IsValidImageAsync(FileInfo file)
+        {
+            return await IsValidImageAsync(file.FullName);
+        }
+
+        public static void HashFolder(DirectoryInfo folder, bool force = false)
+        {
+            Stopwatch stopwatch = Stopwatch.StartNew();
 
             Common.Msg($"Creating hash files for folder {folder}");
 
-            var files = Common.GetFiles(folder, DEFAULT_FILTER);
+            var files = Common.GetFiles(folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
 
             var i = 0;
             var hashCount = 0;
             Common.Progress(0);
 
-            foreach (var file in files)
+            files.AsParallel().WithDegreeOfParallelism(4).ForAll(async file =>
             {
+                i++;
+
                 var md5File = GetMd5FileName(file);
                 if (force || !File.Exists(md5File))
                 {
-                    CreateHashFile(md5File, ComputeHash(file), file.LastWriteTimeUtc);
+                    await CreateHashFileAsync(md5File, await ComputeHashAsync(file), file.LastWriteTimeUtc);
                     hashCount++;
                 }
                 else
                     File.SetAttributes(md5File, FileAttributes.Hidden);
 
-                i++;
                 Common.Progress(100 * i / fileCount);
-            }
+            });
 
-            var time = Common.GetTimeString(start);
+            var time = Common.GetTimeString(stopwatch);
             Common.Msg($"{hashCount} new hash files were created for {fileCount} files in {folder} folder... ({time})", ConsoleColor.Green);
         }
 
         public static void VerifyFolder(DirectoryInfo folder)
         {
-            var start = DateTime.Now.Ticks;
+            Stopwatch stopwatch = Stopwatch.StartNew();
 
             Common.Msg($"Verifying folder {folder}");
 
-            var files = Common.GetFiles(folder, DEFAULT_FILTER);
+            var files = Common.GetFiles(folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
             int errCount = 0;
             int warnCount = 0;
 
             var i = 0;
             Common.Progress(0);
-
             Trace.Indent();
-            foreach (var file in files)
+
+            ParallelOptions parallelOptions = new()
             {
+                MaxDegreeOfParallelism = 4
+            };
+
+            var task = Parallel.ForEachAsync(files, parallelOptions, async (file, token) =>
+            {
+                i++;
+
                 var md5File = GetMd5FileName(file);
                 var errFile = GetErrorFileName(file);
                 var fileDate = file.LastWriteTimeUtc;
 
-                var newHash = ComputeHash(file);
+                var newHash = await ComputeHashAsync(file);
 
                 if (File.Exists(md5File))
                 {
-                    var oldHash = File.ReadAllText(md5File).Trim();
+                    var oldHash = await File.ReadAllTextAsync(md5File);
+                    oldHash = oldHash.Trim();
                     if (string.Compare(oldHash, newHash, true) != 0)
                     {
                         errCount++;
                         Trace.WriteLine($"{file.FullName} - Invalid hash!");
-                        File.WriteAllText(errFile, $"{DateTime.Now}\tInvalid hash! It has changed from {oldHash} to {newHash}");
+                        await File.WriteAllTextAsync(errFile, $"{DateTime.Now}\tInvalid hash! It has changed from {oldHash} to {newHash}");
                     }
                     else
                     {
@@ -144,22 +187,22 @@ namespace FDR.Tools.Library
                 }
                 else
                 {
-                    if (Common.IsImageFile(file) && !IsValidImage(file))
+                    if (Common.IsImageFile(file) && !(await IsValidImageAsync(file)))
                     {
                         errCount++;
                         Trace.WriteLine($"{file.FullName} - Invalid image!");
-                        File.WriteAllText(errFile, $"{DateTime.Now}\tInvalid image!");
+                        await File.WriteAllTextAsync(errFile, $"{DateTime.Now}\tInvalid image!");
                     }
                     else
-                        CreateHashFile(md5File, newHash, fileDate);
+                        await CreateHashFileAsync(md5File, newHash, fileDate);
                 }
 
-                i++;
                 Common.Progress(100 * i / fileCount);
-            }
+            });
+            task.Wait();
             Trace.Unindent();
 
-            var time = Common.GetTimeString(start);
+            var time = Common.GetTimeString(stopwatch);
             if (errCount > 0)
             {
                 if (warnCount > 0)
@@ -175,11 +218,11 @@ namespace FDR.Tools.Library
 
         public static void DiffFolder(DirectoryInfo folder, DirectoryInfo reference)
         {
-            var start = DateTime.Now.Ticks;
+            Stopwatch stopwatch = Stopwatch.StartNew();
 
             Common.Msg($"Comparing hashes of files in {folder} folder to {reference} folder");
 
-            var files = Common.GetFiles(folder, DEFAULT_FILTER);
+            var files = Common.GetFiles(folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
 
             var i = 0;
@@ -188,32 +231,39 @@ namespace FDR.Tools.Library
             var diffDate = 0;
             var plus = 0;
             Common.Progress(0);
-
             Trace.Indent();
-            foreach (var file in files)
+
+            ParallelOptions parallelOptions = new()
             {
+                MaxDegreeOfParallelism = 4
+            };
+
+            var task = Parallel.ForEachAsync(files, parallelOptions, async (file, token) =>
+            {
+                i++;
+
                 var dir = Path.GetDirectoryName(file.FullName);
                 var relDir = Path.GetDirectoryName(Path.GetRelativePath(folder.FullName, file.FullName));
-                var plusDir = Path.Combine(folder.FullName, "plus", relDir);
-                var diffDir = Path.Combine(folder.FullName, "diff", relDir);
+                var plusDir = Path.Combine(folder.FullName, "plus", relDir??"");
+                var diffDir = Path.Combine(folder.FullName, "diff", relDir??"");
 
                 var md5File = GetMd5FileName(file);
                 if (File.Exists(md5File))
                 {
                     verified++;
-                    var hash = File.ReadAllText(md5File).Trim();
+                    var hash = await File.ReadAllTextAsync(md5File);
                     var date = file.LastWriteTimeUtc;
 
                     var relPath = Path.GetRelativePath(folder.FullName, md5File);
                     var refMd5 = Path.Combine(reference.FullName, relPath);
-                    var refFile = Path.Combine(reference.FullName, Path.GetDirectoryName(relPath), file.Name);
+                    var refFile = Path.Combine(reference.FullName, Path.GetDirectoryName(relPath)??"", file.Name);
 
                     if (File.Exists(refMd5))
                     {
-                        var refHash = File.ReadAllText(refMd5).Trim();
+                        var refHash = await File.ReadAllTextAsync(refMd5);
                         var refDate = File.GetLastWriteTimeUtc(refMd5);
 
-                        var hashDiff = hash != refHash;
+                        var hashDiff = hash.Trim() != refHash.Trim();
                         var dateDiff = date != refDate;
 
                         if (hashDiff && dateDiff)
@@ -221,15 +271,17 @@ namespace FDR.Tools.Library
                             diff++;
                             diffDate++;
                             Trace.WriteLine($"{file.FullName} - Date and content has changed!");
-                            CopyFiles(diffDir, file.FullName);
-                            CopyFiles(diffDir, refFile, "_ref");
+                            var task1 = CopyFileToFolderAsync(diffDir, file.FullName);
+                            var task2 = CopyFileToFolderAsync(diffDir, refFile, "_ref");
+                            Task.WaitAll(task1, task2);
                         }
                         else if (hashDiff)
                         {
                             diff++;
                             Trace.WriteLine($"{file.FullName} - Content has changed!");
-                            CopyFiles(diffDir, file.FullName);
-                            CopyFiles(diffDir, refFile, "_ref");
+                            var task1 = CopyFileToFolderAsync(diffDir, file.FullName);
+                            var task2 = CopyFileToFolderAsync(diffDir, refFile, "_ref");
+                            Task.WaitAll(task1, task2);
                         }
                         else if (dateDiff)
                         {
@@ -240,16 +292,17 @@ namespace FDR.Tools.Library
                     else
                     {
                         plus++;
-                        CopyFiles(plusDir, file.FullName);
+                        await CopyFileToFolderAsync(plusDir, file.FullName);
                     }
                 }
 
-                i++;
                 Common.Progress(100 * i / fileCount);
-            }
+            });
+            task.Wait();
+
             Trace.Unindent();
 
-            var time = Common.GetTimeString(start);
+            var time = Common.GetTimeString(stopwatch);
             Common.Msg($"{verified} of {fileCount} files in {folder} folder has been checked against {reference} folder. ({time})");
             if (diff > 0)
                 Common.Msg($"{diff} files differ!", ConsoleColor.Red);
@@ -261,16 +314,14 @@ namespace FDR.Tools.Library
                 Common.Msg($"All the checked files match...", ConsoleColor.Green);
             return;
 
-
-
-            static void CopyFiles(string destFolder, string refFile, string postFix = "")
+            static async Task CopyFileToFolderAsync(string destFolder, string sourceFile, string postFix = "")
             {
                 if (!Directory.Exists(destFolder)) Directory.CreateDirectory(destFolder);
-                var destFile = Path.Combine(destFolder, Path.GetFileNameWithoutExtension(refFile) + postFix + Path.GetExtension(refFile));
+                var destFile = Path.Combine(destFolder, Path.GetFileNameWithoutExtension(sourceFile) + postFix + Path.GetExtension(sourceFile));
                 var destMd5 = GetMd5FileName(new FileInfo(destFile));
-                File.Copy(refFile, destFile, true);
+
+                await Common.CopyFileAsync(sourceFile, destFile);
             }
         }
-
     }
 }

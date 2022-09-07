@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30011.22
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32519.379
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FDR.Tools.Library", "FDR.Tools.Library\FDR.Tools.Library.csproj", "{970B943D-AFC5-4171-A667-B1A910F32FC7}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FDR.Tools.Library.Test", "FDR.Tools.Library.Test\FDR.Tools.Library.Test.csproj", "{BE1D780E-CD31-43E6-9833-3DE89E22EB28}"
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "FDRTools", "FDRTools\FDRTools.vbproj", "{30CF0B8D-3826-45BA-BC62-C6835A0F9EE5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FDR.UI", "FDR.UI\FDR.UI.csproj", "{CF241FB6-2272-4379-84B2-36598C6F0996}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{30CF0B8D-3826-45BA-BC62-C6835A0F9EE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30CF0B8D-3826-45BA-BC62-C6835A0F9EE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30CF0B8D-3826-45BA-BC62-C6835A0F9EE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF241FB6-2272-4379-84B2-36598C6F0996}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF241FB6-2272-4379-84B2-36598C6F0996}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF241FB6-2272-4379-84B2-36598C6F0996}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF241FB6-2272-4379-84B2-36598C6F0996}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

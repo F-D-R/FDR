@@ -11,13 +11,13 @@ namespace FDR.Tools.Library
     {
         private class SourceInfo
         {
-            public DirectoryInfo DirectoryInfo { get; set; }
-            public string Path { get; set; }
+            public DirectoryInfo? DirectoryInfo { get; set; }
+            public string? Path { get; set; }
             public int SumFileCount { get; set; }
             public int IgnoredFileCount { get; set; }
             public int ImportFileCount { get; set; }
-            public string ConfigName { get { return ImportConfig?.Name; } }
-            public ImportConfig ImportConfig { get; set; }
+            public string? ConfigName { get { return ImportConfig?.Name; } }
+            public ImportConfig? ImportConfig { get; set; }
         }
 
         public static List<DirectoryInfo> DetectSources()
@@ -95,7 +95,7 @@ namespace FDR.Tools.Library
             Common.Msg($"Moving {filter} files in {folder.FullName} to {config.RelativeFolder}");
             Trace.Indent();
 
-            var files = Common.GetFiles(folder, filter);
+            var files = Common.GetFiles(folder, filter, false);
             var filecount = files.Count();
 
             var destfolder = Path.Combine(folder.FullName, config.RelativeFolder);
@@ -131,7 +131,7 @@ namespace FDR.Tools.Library
             if (string.IsNullOrWhiteSpace(config.DestRoot)) throw new ArgumentNullException("DestRoot");
             if (!Directory.Exists(config.DestRoot)) throw new DirectoryNotFoundException($"Destination root folder doesn't exist! ({config.DestRoot})");
 
-            var files = Common.GetFiles(source, config.FileFilter);
+            var files = Common.GetFiles(source, config.FileFilter, true);
             var fileCount = files.Count();
 
             var folderNames = new List<string>();
@@ -182,9 +182,9 @@ namespace FDR.Tools.Library
             }
 
             // Rename
-            if (config.RenameConfigs != null)
+            if (config.BatchRenameConfigs != null)
                 foreach (var fn in folderNames)
-                    foreach (var rc in config.RenameConfigs)
+                    foreach (var rc in config.BatchRenameConfigs)
                         Rename.RenameFilesInFolder(new DirectoryInfo(fn), rc);
 
             // Move
@@ -194,44 +194,44 @@ namespace FDR.Tools.Library
                         MoveFilesInFolder(new DirectoryInfo(fn), mc);
         }
 
-        private static ImportConfig FindConfig(DirectoryInfo source, ImportConfig[] configs)
+        private static ImportConfig? FindConfig(DirectoryInfo source, Dictionary<string, ImportConfig> configs)
         {
             var matchingConfigs = new List<ImportConfig>();
-            var options = new EnumerationOptions
-            {
-                MatchCasing = MatchCasing.CaseInsensitive,
-                RecurseSubdirectories = true
-            };
+            //var options = new EnumerationOptions
+            //{
+            //    MatchCasing = MatchCasing.CaseInsensitive,
+            //    RecurseSubdirectories = true
+            //};
 
             foreach (var config in configs)
             {
-                if (config.Rules != null && config.Rules.Length > 0)
+                if (config.Value.Rules != null && config.Value.Rules.Count > 0)
                 {
-                    ImportConfig tmpconfig = null;
+                    ImportConfig? tmpconfig = null;
                     bool ok = true;
 
-                    foreach (var rule in config.Rules)
+                    foreach (var rule in config.Value.Rules)
                     {
                         switch (rule.Type)
                         {
-                            case RuleType.volume_label:
+                            case ImportRuleType.volume_label:
                                 if (string.Compare(GetVolumeLabel(source.FullName), rule.Param, true) == 0)
-                                    tmpconfig = config;
+                                    tmpconfig = config.Value;
                                 else
                                     ok = false;
                                 break;
 
-                            case RuleType.contains_file:
-                                if (Common.GetFiles(source, rule.Param).Any())
-                                    tmpconfig = config;
+                            case ImportRuleType.contains_file:
+                                if (Common.GetFiles(source, rule.Param??"*", true).Any())
+                                    tmpconfig = config.Value;
                                 else
                                     ok = false;
                                 break;
 
-                            case RuleType.contains_folder:
+                            case ImportRuleType.contains_folder:
                                 //TODO: Common.GetDirectories
-                                if (Directory.GetDirectories(source.FullName, rule.Param, SearchOption.AllDirectories).Any())
-                                    tmpconfig = config;
+                                if (Directory.GetDirectories(source.FullName, rule.Param??"*", SearchOption.AllDirectories).Any())
+                                    tmpconfig = config.Value;
                                 else
                                     ok = false;
                                 break;
@@ -250,11 +250,11 @@ namespace FDR.Tools.Library
             return null;
         }
 
-        public static void ImportWizard(ImportConfig[] configs, bool auto = false)
+        public static void ImportWizard(Dictionary<string, ImportConfig> configs, bool auto = false)
         {
             if (configs == null) throw new ArgumentNullException("configs");
-            if (configs.Length == 0) throw new ArgumentNullException("Import configurations cannot be empty!");
-            foreach (var c in configs) c.Validate();
+            if (configs.Count == 0) throw new ArgumentNullException("Import configurations cannot be empty!");
+            foreach (var c in configs) c.Value.Validate();
 
             Common.Msg("Import");
 
@@ -274,7 +274,7 @@ namespace FDR.Tools.Library
                 sourceInfos.Add(si);
             }
 
-            SourceInfo selectedSI = null;
+            SourceInfo? selectedSI = null;
             if (sourceInfos.Count == 0)
             {
                 Common.Msg("No source has been found!", ConsoleColor.Red);
@@ -291,9 +291,9 @@ namespace FDR.Tools.Library
                 foreach (var si in sourceInfos)
                 {
                     if (si.ImportConfig == null)
-                        Common.Msg($"    {i}. {si.Path}\tNo configuration for drive {GetVolumeLabel(si.Path)}");
+                        Common.Msg($"    {i}. {si.Path}\tNo configuration for drive {GetVolumeLabel(si.Path!)}");
                     else
-                        Common.Msg($"    {i}. {si.Path}\tConfig: {si.ConfigName} ({si.SumFileCount} files on drive {GetVolumeLabel(si.Path)})");
+                        Common.Msg($"    {i}. {si.Path}\tConfig: {si.ConfigName} ({si.SumFileCount} files on drive {GetVolumeLabel(si.Path!)})");
                     i++;
                 }
                 Common.Msg($"Enter the number or the source (1..{i - 1}) or ESC to abort: ", ConsoleColor.White, false);
@@ -320,9 +320,9 @@ namespace FDR.Tools.Library
             if (selectedSI == null) return;
 
             if (selectedSI.ImportConfig == null)
-                Common.Msg($"Selected source: {selectedSI.Path}\tNo configuration for drive {GetVolumeLabel(selectedSI.Path)}");
+                Common.Msg($"Selected source: {selectedSI.Path}\tNo configuration for drive {GetVolumeLabel(selectedSI.Path!)}");
             else
-                Common.Msg($"Selected source: {selectedSI.Path}\tConfig: {selectedSI.ConfigName} ({selectedSI.SumFileCount} files on drive {GetVolumeLabel(selectedSI.Path)})");
+                Common.Msg($"Selected source: {selectedSI.Path}\tConfig: {selectedSI.ConfigName} ({selectedSI.SumFileCount} files on drive {GetVolumeLabel(selectedSI.Path!)})");
 
             var config = selectedSI.ImportConfig;
 
@@ -332,7 +332,7 @@ namespace FDR.Tools.Library
                 int i = 1;
                 foreach (var c in configs)
                 {
-                    Common.Msg($"    {i}. {c.Name} ({c.DestRoot})");
+                    Common.Msg($"    {i}. {c.Value.Name} ({c.Value.DestRoot})");
                     i++;
                 }
                 Common.Msg($"Enter the number or the configuration (1..{i - 1}) or ESC to abort: ", ConsoleColor.White, false);
@@ -352,15 +352,15 @@ namespace FDR.Tools.Library
                     if (int.TryParse(key.KeyChar.ToString(), out int selection) && selection < i)
                     {
                         Common.Msg($"{key.KeyChar}");
-                        config = configs[selection - 1];
+                        config = configs.ToArray().ElementAt(selection - 1).Value;
                         selectedSI.ImportConfig = config;
                     }
                 }
 
                 if (config != null)
                 {
-                    selectedSI.SumFileCount = Common.GetFiles(selectedSI.DirectoryInfo, config).Count();
-                    Common.Msg($"Selected source: {selectedSI.Path}\tConfig: {selectedSI.ConfigName} ({selectedSI.SumFileCount} files on drive {GetVolumeLabel(selectedSI.Path)})");
+                    selectedSI.SumFileCount = Common.GetFiles(selectedSI.DirectoryInfo!, config).Count();
+                    Common.Msg($"Selected source: {selectedSI.Path}\tConfig: {selectedSI.ConfigName} ({selectedSI.SumFileCount} files on drive {GetVolumeLabel(selectedSI.Path!)})");
                 }
             }
             if (config == null) return;
@@ -370,8 +370,8 @@ namespace FDR.Tools.Library
             Trace.WriteLine($"DestStructure: {config.DestStructure}");
             Trace.WriteLine($"DateFormat: {config.DateFormat}");
             Trace.WriteLine($"FileFilter: {config.FileFilter}");
-            if (config.RenameConfigs != null)
-                foreach (var rc in config.RenameConfigs)
+            if (config.BatchRenameConfigs != null)
+                foreach (var rc in config.BatchRenameConfigs)
                     Trace.WriteLine($"Rename: {rc.Filter} to {rc.FilenamePattern} ({rc.FilenameCase}.{rc.ExtensionCase})");
             if (config.MoveConfigs != null)
                 foreach (var mc in config.MoveConfigs)
@@ -379,7 +379,7 @@ namespace FDR.Tools.Library
             Trace.WriteLine("");
             Trace.Unindent();
 
-            Import.ImportFiles(selectedSI.DirectoryInfo, config);
+            Import.ImportFiles(selectedSI.DirectoryInfo!, config);
 
             Common.Msg("                        ");
             Common.Msg("Successfully finished...", ConsoleColor.Green);

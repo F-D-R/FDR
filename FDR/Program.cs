@@ -1,16 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 using System.Text;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using FDR.Tools.Library;
-using System.Threading;
 
 namespace FDR
 {
@@ -21,7 +16,9 @@ namespace FDR
         Hash,
         Verify,
         Diff,
-        Cleanup
+        Cleanup,
+        Rename,
+        Resize
     }
 
     public class Program
@@ -31,16 +28,14 @@ namespace FDR
 
         public static void Main(string[] args)
         {
-            var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            var version = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
             bool verbose = false;
             bool auto = false;
             bool force = false;
-            string folder = string.Empty;
-            string file = string.Empty;
-            string reference = string.Empty;
-
-            //var services = ConfigureServices();
-            //var serviceProvider = services.BuildServiceProvider();
+            string folder = "";
+            string file = "";
+            string reference = "";
+            string config = "";
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -54,14 +49,17 @@ namespace FDR
                     case "-cleanup": operation = Operation.Cleanup; folder = args[i + 1]; break;
                     case "-verbose": verbose = true; break;
                     case "-auto": auto = true; break;
-                    case "-folder": folder = args[i + 1]; break;
                     case "-file": file = args[i + 1]; break;
                     case "-reference": reference = args[i + 1]; break;
+                    case "-rename": operation = Operation.Rename; folder = args[i + 1]; break;
+                    case "-resize": operation = Operation.Resize; folder = args[i + 1]; break;
+                    case "-config": config = args[i + 1]; break;
                 }
             }
 
             using (ConsoleTraceListener consoleTracer = new ConsoleTraceListener())
             {
+                AppConfig appConfig;
                 if (verbose) Trace.Listeners.Add(consoleTracer);
                 try
                 {
@@ -69,7 +67,12 @@ namespace FDR
                     {
                         case Operation.Import:
                             Common.Msg($"FDR Tools {version} - Import", titleColor);
-                            var appConfig = LoadAppConfig();
+                            appConfig = LoadAppConfig();
+                            if (appConfig.ImportConfigs == null)
+                            {
+                                Common.Msg("There are no import configurations!", ConsoleColor.Red);
+                                return;
+                            }
                             Import.ImportWizard(appConfig.ImportConfigs, auto);
                             break;
 
@@ -96,6 +99,42 @@ namespace FDR
                             Common.Msg($"FDR Tools {version} - Cleanup", titleColor);
                             if (!Common.IsFolderValid(folder)) return;
                             Raw.CleanupFolder(new DirectoryInfo(Path.GetFullPath(folder)));
+                            break;
+
+                        case Operation.Rename:
+                            Common.Msg($"FDR Tools {version} - Rename", titleColor);
+                            if (!Common.IsFolderValid(folder)) return;
+                            if (string.IsNullOrWhiteSpace(config))
+                            {
+                                Common.Msg("Rename configuration is not defined!", ConsoleColor.Red);
+                                return;
+                            }
+                            appConfig = LoadAppConfig();
+                            BatchRenameConfig? renameConfig;
+                            if (!appConfig.BatchRenameConfigs.TryGetValue(config, out renameConfig))
+                            {
+                                Common.Msg("Given rename configuration does not exist!", ConsoleColor.Red);
+                                return;
+                            }
+                            Rename.RenameFilesInFolder(new DirectoryInfo(Path.GetFullPath(folder)), renameConfig);
+                            break;
+
+                        case Operation.Resize:
+                            Common.Msg($"FDR Tools {version} - Resize", titleColor);
+                            if (!Common.IsFolderValid(folder)) return;
+                            if (string.IsNullOrWhiteSpace(config))
+                            {
+                                Common.Msg("Resize configuration is not defined!", ConsoleColor.Red);
+                                return;
+                            }
+                            appConfig = LoadAppConfig();
+                            BatchResizeConfig? resizeConfig;
+                            if (!appConfig.BatchResizeConfigs.TryGetValue(config, out resizeConfig))
+                            {
+                                Common.Msg("Given resize configuration does not exist!", ConsoleColor.Red);
+                                return;
+                            }
+                            Resize.ResizeFilesInFolder(new DirectoryInfo(Path.GetFullPath(folder)), resizeConfig);
                             break;
 
                         default:
@@ -133,8 +172,11 @@ namespace FDR
             Common.Msg("    -rehash <folder>     Recreate hashes of all files in a folder");
             Common.Msg("    -verify <folder>     Verify the files in a folder against their saved hash");
             Common.Msg("    -diff <folder>       Compare the files of a folder to a reference one");
-            Common.Msg("    -cleanup <folder>    Delete unnecessary raw and hash files");
             Common.Msg("    -reference <folder>  Reference folder for the diff function");
+            Common.Msg("    -cleanup <folder>    Delete unnecessary raw, hash and err files");
+            Common.Msg("    -rename <folder>     Rename image files based on a given configuration");
+            Common.Msg("    -resize <folder>     Resize image files based on a given configuration");
+            Common.Msg("    -config <config>     Named configuration for some functions like renaming and resizing");
             Common.Msg("    -auto                Start the import automatically");
             Common.Msg("    -verbose             More detailed output");
         }
@@ -142,48 +184,11 @@ namespace FDR
         private static AppConfig LoadAppConfig()
         {
             var appPath = Assembly.GetExecutingAssembly().Location;
-            var configPath = Path.Combine(Path.GetDirectoryName(appPath), "appsettings.json");
-            return JsonConvert.DeserializeObject<AppConfig>(File.ReadAllText(configPath, Encoding.UTF8));
+            var configPath = Path.Combine(Path.GetDirectoryName(appPath)!, "appsettings.json");
+            var appConfig = JsonConvert.DeserializeObject<AppConfig>(File.ReadAllText(configPath, Encoding.UTF8));
+            if (appConfig == null) appConfig = new AppConfig();
+            appConfig.Validate();
+            return appConfig;
         }
-
-        //private static IServiceCollection ConfigureServices()
-        //{
-        //    IServiceCollection services = new ServiceCollection();
-
-        //    //var config = LoadConfiguration();
-        //    //services.AddSingleton(config);
-
-        //    // required to run the application
-        //    //services.AddTransient<App>();
-
-        //    var myLogger = new App();
-        //    services.AddSingleton(myLogger);
-
-        //    return services;
-        //}
     }
-
-
-    //public interface IApp
-    //{
-    //    void Msg(string msg, ConsoleColor color = ConsoleColor.White);
-    //}
-
-    //public class App : IApp
-    //{
-    //    //private readonly ILogger<MyLogger> _logger;
-
-    //    //public MyLogger(ILogger<MyLogger> logger)
-    //    //{
-    //    //    _logger = logger;
-    //    //}
-
-    //    public void Msg(string msg, ConsoleColor color = ConsoleColor.White)
-    //    {
-    //        Console.BackgroundColor = ConsoleColor.Black;
-    //        Console.ForegroundColor = color;
-    //        Console.WriteLine(msg);
-    //        Console.ResetColor();
-    //    }
-    //}
 }
