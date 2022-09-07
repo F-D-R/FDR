@@ -115,7 +115,12 @@ namespace FDR.Tools.Library
             var hashCount = 0;
             Common.Progress(0);
 
-            files.AsParallel().WithDegreeOfParallelism(4).ForAll(async file =>
+            ParallelOptions parallelOptions = new()
+            {
+                MaxDegreeOfParallelism = 4
+            };
+
+            var task = Parallel.ForEachAsync(files, parallelOptions, async (file, token) =>
             {
                 i++;
 
@@ -130,6 +135,7 @@ namespace FDR.Tools.Library
 
                 Common.Progress(100 * i / fileCount);
             });
+            task.Wait();
 
             var time = Common.GetTimeString(stopwatch);
             Common.Msg($"{hashCount} new hash files were created for {fileCount} files in {folder} folder... ({time})", ConsoleColor.Green);
