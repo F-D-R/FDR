@@ -2,7 +2,7 @@
   "profiles": {
     "FDR": {
       "commandName": "Project",
-      "commandLineArgs": "-cleanup C:\\Temp\\TEST\\cleanup -verbose"
+      "commandLineArgs": "-rename C:\\Temp\\TEST -config test"
     }
   }
 }

@@ -15,10 +15,10 @@ namespace FDR.Tools.Library.Test
 
             validate.Should().NotThrow();
 
-            config.Filter = null;
+            config.FileFilter = null;
             validate.Should().Throw<InvalidDataException>();
 
-            config.Filter = "*.CR3";
+            config.FileFilter = "*.CR3";
             validate.Should().NotThrow();
 
             config.RelativeFolder = null;

@@ -11,7 +11,7 @@ namespace FDR.Tools.Library
         fit_in,
         max_width,
         max_height,
-        exact
+        stretch
     }
 
     public class ResizeConfig : RenameConfig

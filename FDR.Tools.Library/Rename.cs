@@ -133,6 +133,21 @@ namespace FDR.Tools.Library
             return result;
         }
 
+        public static DateTime GetExifDate(this FileInfo file)
+        {
+            try
+            {
+                IImageInfo imageInfo = Image.Identify(file.FullName);
+                var dateString = imageInfo.Metadata?.ExifProfile?.GetValue<string>(ExifTag.DateTimeOriginal)?.ToString();
+                if (string.IsNullOrWhiteSpace(dateString)) return file.CreationTimeUtc;
+                return DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", null);
+            }
+            catch (Exception)
+            {
+                return file.CreationTimeUtc;
+            }
+        }
+
         public static void RenameFolder(DirectoryInfo folder, string? pattern)
         {
             if (string.IsNullOrWhiteSpace(pattern)) throw new ArgumentNullException("pattern");
@@ -222,13 +237,15 @@ namespace FDR.Tools.Library
             if (folder == null) throw new ArgumentNullException("folder");
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
-            var filter = config.Filter;
+            var filter = config.FileFilter;
             Common.Msg($"Renaming {filter} files in {folder.FullName}");
             Trace.Indent();
 
             if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
 
-            var files = Common.GetFiles(folder, filter, false).OrderBy(f => f.CreationTimeUtc).ToList();
+            //var files = Common.GetFiles(folder, filter, false).OrderBy(f => f.CreationTimeUtc).ToList();
+            //var files = Common.GetFiles(folder, filter, false).OrderBy(f => f.LastWriteTimeUtc).ToList();
+            var files = Common.GetFiles(folder, filter, false).OrderBy(f => f.GetExifDate()).ToList();
             int fileCount = files.Count;
 
             int counter = 1;

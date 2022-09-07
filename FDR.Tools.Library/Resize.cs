@@ -19,6 +19,8 @@ namespace FDR.Tools.Library
 
             var path = Path.GetDirectoryName(file.FullName)??"";
             var newFullName = Rename.CalculateFileName(file, config, counter);
+            if (string.Compare(Path.GetExtension(newFullName), ".jpg", true) != 0)
+                newFullName = Path.Combine(path, Path.GetFileNameWithoutExtension(newFullName) + ".jpg");
 
             Trace.WriteLine($"Resizing file {file.Name} to {Path.GetFileName(newFullName)}");
             Common.Progress(progressPercent);
@@ -37,8 +39,8 @@ namespace FDR.Tools.Library
                     maxWidth = int.MaxValue;
                     resizeMode = ResizeMode.Min;
                     break;
-                case ResizeMethod.exact:
-                    resizeMode = ResizeMode.Manual;
+                case ResizeMethod.stretch:
+                    resizeMode = ResizeMode.Stretch;
                     break;
             }
 

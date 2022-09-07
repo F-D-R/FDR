@@ -71,10 +71,10 @@ namespace FDR.Tools.Library.Test
             config.MoveConfigs.Add(mc);
             validate.Should().NotThrow();
 
-            mc.Filter = "";
+            mc.FileFilter = "";
             validate.Should().Throw<InvalidDataException>();
 
-            mc.Filter = "*.CR3";
+            mc.FileFilter = "*.CR3";
             validate.Should().NotThrow();
 
             mc.RelativeFolder = "";

@@ -38,11 +38,11 @@ namespace FDR.Tools.Library.Test
             config.FilenamePattern = "{name}";
             validate.Should().NotThrow();
 
-            config.Filter = null;
-            config.Filter.Should().NotBeNullOrWhiteSpace();
+            config.FileFilter = null;
+            config.FileFilter.Should().NotBeNullOrWhiteSpace();
 
-            config.Filter = "*.CR3";
-            config.Filter.Should().Be("*.CR3");
+            config.FileFilter = "*.CR3";
+            config.FileFilter.Should().Be("*.CR3");
 
             config.FilenamePattern = null;
             validate.Should().Throw<InvalidDataException>();

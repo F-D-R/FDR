@@ -32,7 +32,7 @@ namespace FDR.Tools.Library
         private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.MP4|*.AVI|*.MOV";
 
         private string? filter;
-        public string Filter
+        public string FileFilter
         {
             get { return !string.IsNullOrWhiteSpace(filter) ? filter : DEFAULT_FILTER; }
             set { filter = value; }

@@ -89,7 +89,7 @@ namespace FDR.Tools.Library
             if (folder == null) throw new ArgumentNullException("folder");
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
-            var filter = config.Filter;
+            var filter = config.FileFilter;
             if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
 
             Common.Msg($"Moving {filter} files in {folder.FullName} to {config.RelativeFolder}");
@@ -372,10 +372,10 @@ namespace FDR.Tools.Library
             Trace.WriteLine($"FileFilter: {config.FileFilter}");
             if (config.BatchRenameConfigs != null)
                 foreach (var rc in config.BatchRenameConfigs)
-                    Trace.WriteLine($"Rename: {rc.Filter} to {rc.FilenamePattern} ({rc.FilenameCase}.{rc.ExtensionCase})");
+                    Trace.WriteLine($"Rename: {rc.FileFilter} to {rc.FilenamePattern} ({rc.FilenameCase}.{rc.ExtensionCase})");
             if (config.MoveConfigs != null)
                 foreach (var mc in config.MoveConfigs)
-                    Trace.WriteLine($"Move: {mc.Filter} to {mc.RelativeFolder}");
+                    Trace.WriteLine($"Move: {mc.FileFilter} to {mc.RelativeFolder}");
             Trace.WriteLine("");
             Trace.Unindent();
 
