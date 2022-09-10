@@ -27,10 +27,8 @@ namespace FDR.Tools.Library
             {
                 if (drive.IsReady)
                 {
-                    var root = drive.RootDirectory;
-                    var dirs = root.GetDirectories("DCIM", SearchOption.TopDirectoryOnly);
-                    if (dirs != null && dirs.Length > 0)
-                        result.Add(dirs[0]);
+                    var dir = drive.RootDirectory.GetDirectories("DCIM", SearchOption.TopDirectoryOnly).FirstOrDefault();
+                    if (dir != null) result.Add(dir);
                 }
             }
             return result;
@@ -250,15 +248,24 @@ namespace FDR.Tools.Library
             return null;
         }
 
-        public static void ImportWizard(Dictionary<string, ImportConfig> configs, bool auto = false)
+        public static void ImportWizard(Dictionary<string, ImportConfig> configs, DirectoryInfo? folder = null, bool auto = false)
         {
             if (configs == null) throw new ArgumentNullException("configs");
             if (configs.Count == 0) throw new ArgumentNullException("Import configurations cannot be empty!");
             foreach (var c in configs) c.Value.Validate();
 
-            Common.Msg("Import");
-
-            var sources = DetectSources();
+            List<DirectoryInfo> sources;
+            if (folder == null)
+            {
+                Common.Msg("Import");
+                sources = DetectSources();
+            }
+            else
+            {
+                Common.Msg($"Import ({folder.FullName})");
+                if (folder.Name != "DCIM") throw new ArgumentException("The given import folder is not a DCIM folder!");
+                sources = new List<DirectoryInfo>() { folder };
+            }
 
             var sourceInfos = new List<SourceInfo>();
             foreach (var source in sources)

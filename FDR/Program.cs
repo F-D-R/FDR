@@ -41,7 +41,11 @@ namespace FDR
             {
                 switch (args[i].ToLower())
                 {
-                    case "-import": operation = Operation.Import; break;
+                    case "-import":
+                        operation = Operation.Import;
+                        if (args.Length > i + 1 && !args[i + 1].StartsWith("-"))
+                            folder = args[i + 1];
+                        break;
                     case "-hash": operation = Operation.Hash; folder = args[i + 1]; break;
                     case "-rehash": operation = Operation.Hash; folder = args[i + 1]; force = true; break;
                     case "-verify": operation = Operation.Verify; folder = args[i + 1]; break;
@@ -73,7 +77,7 @@ namespace FDR
                                 Common.Msg("There are no import configurations!", ConsoleColor.Red);
                                 return;
                             }
-                            Import.ImportWizard(appConfig.ImportConfigs, auto);
+                            Import.ImportWizard(appConfig.ImportConfigs, string.IsNullOrWhiteSpace(folder) ? null : new DirectoryInfo(Path.GetFullPath(folder)), auto);
                             break;
 
                         case Operation.Hash:
@@ -167,7 +171,7 @@ namespace FDR
             Common.Msg("");
             Common.Msg("Where options can be:");
             Common.Msg("    -help                Help (this screen)");
-            Common.Msg("    -import              Import memory card content");
+            Common.Msg("    -import [<folder>]   Import memory card content");
             Common.Msg("    -hash <folder>       Create hash of files in a folder");
             Common.Msg("    -rehash <folder>     Recreate hashes of all files in a folder");
             Common.Msg("    -verify <folder>     Verify the files in a folder against their saved hash");

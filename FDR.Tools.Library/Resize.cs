@@ -46,7 +46,11 @@ namespace FDR.Tools.Library
 
             using (Image image = Image.Load(file.FullName))
             {
-                image.Mutate(x => x.Resize(new ResizeOptions() { Size = new Size(config.MaxWidth, config.MaxHeight), Mode = resizeMode }));
+                if (!((config.ResizeMethod == ResizeMethod.stretch && image.Width == maxWidth && image.Height == maxHeight)
+                    || (config.ResizeMethod == ResizeMethod.max_width && image.Width == maxWidth)
+                    || (config.ResizeMethod == ResizeMethod.max_height && image.Height == maxHeight)))
+                    image.Mutate(x => x.Resize(new ResizeOptions() { Size = new Size(config.MaxWidth, config.MaxHeight), Mode = resizeMode }));
+
                 if (config.ClearMetadata) ClearMetadata(image);
 
                 var encoder = new JpegEncoder() { Quality = config.JpgQuality };
