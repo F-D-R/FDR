@@ -10,10 +10,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <WarningLevel>0</WarningLevel>
-    <Optimize>true</Optimize>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+  <PropertyGroup>
+    <Optimize>False</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
