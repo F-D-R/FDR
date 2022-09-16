@@ -13,7 +13,7 @@ namespace FDR.Tools.Library
         unchanged
     }
 
-    public class RenameConfig
+    public class RenameConfig : ConfigPartBase
     {
         public string? FilenamePattern { get; set; } = "{name}";
 
@@ -21,10 +21,15 @@ namespace FDR.Tools.Library
 
         public CharacterCasing ExtensionCase { get; set; } = CharacterCasing.lower;
 
-        public virtual void Validate()
+        public override void Validate()
         {
             if (string.IsNullOrWhiteSpace(FilenamePattern)) throw new InvalidDataException("Renaming filename pattern cannot be empty!");
         }
+    }
+
+    public class RenameConfigs : ConfigDictionaryBase<RenameConfig>
+    {
+        public RenameConfigs(AppConfig appConfig) : base(appConfig) { }
     }
 
     public sealed class BatchRenameConfig : RenameConfig
@@ -52,5 +57,10 @@ namespace FDR.Tools.Library
                 if (!type.StartsWith(".")) throw new InvalidDataException("Additional file type must start with a dot!");
             }
         }
+    }
+
+    public class BatchRenameConfigs : ConfigDictionaryBase<BatchRenameConfig>
+    {
+        public BatchRenameConfigs(AppConfig appConfig) : base(appConfig) { }
     }
 }

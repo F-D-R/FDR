@@ -42,6 +42,11 @@ namespace FDR.Tools.Library
         }
     }
 
+    public class ResizeConfigs : ConfigDictionaryBase<ResizeConfig>
+    {
+        public ResizeConfigs(AppConfig appConfig) : base(appConfig) { }
+    }
+
     public sealed class BatchResizeConfig : ResizeConfig
     {
         private const string DEFAULT_FILTER = "*.JPG";
@@ -59,5 +64,10 @@ namespace FDR.Tools.Library
         {
             base.Validate();
         }
+    }
+
+    public class BatchResizeConfigs : ConfigDictionaryBase<BatchResizeConfig>
+    {
+        public BatchResizeConfigs(AppConfig appConfig) : base(appConfig) { }
     }
 }

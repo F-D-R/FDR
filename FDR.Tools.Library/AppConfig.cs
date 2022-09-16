@@ -6,23 +6,71 @@ namespace FDR
 {
     public sealed class AppConfig
     {
-        public Dictionary<string, ImportConfig> ImportConfigs { get; } = new Dictionary<string, ImportConfig>();
+        public AppConfig()
+        {
+            RenameConfigs = new RenameConfigs(this);
+            BatchRenameConfigs = new BatchRenameConfigs(this);
+            ResizeConfigs = new ResizeConfigs(this);
+            BatchResizeConfigs = new BatchResizeConfigs(this);
+            ImportConfigs = new ImportConfigs(this);
+        }
 
-        public Dictionary<string, RenameConfig> RenameConfigs { get; } = new Dictionary<string, RenameConfig>();
+        public RenameConfigs RenameConfigs { get; }
 
-        public Dictionary<string, ResizeConfig> ResizeConfigs { get; } = new Dictionary<string, ResizeConfig>();
+        public ResizeConfigs ResizeConfigs { get; }
 
-        public Dictionary<string, BatchRenameConfig> BatchRenameConfigs { get; } = new Dictionary<string, BatchRenameConfig>();
+        public BatchRenameConfigs BatchRenameConfigs { get; }
 
-        public Dictionary<string, BatchResizeConfig> BatchResizeConfigs { get; } = new Dictionary<string, BatchResizeConfig>();
+        public BatchResizeConfigs BatchResizeConfigs { get; }
+
+        public ImportConfigs ImportConfigs { get; }
 
         public void Validate()
         {
-            ImportConfigs?.ToList().ForEach(ic => ic.Value.Validate());
             RenameConfigs?.ToList().ForEach(rnc => rnc.Value.Validate());
             ResizeConfigs?.ToList().ForEach(rsc => rsc.Value.Validate());
             BatchRenameConfigs?.ToList().ForEach(brnc => brnc.Value.Validate());
             BatchResizeConfigs?.ToList().ForEach(brsc => brsc.Value.Validate());
+            ImportConfigs?.ToList().ForEach(ic => ic.Value.Validate());
+        }
+    }
+
+    public abstract class ConfigPartBase
+    {
+        public virtual AppConfig? AppConfig { get; internal set; }
+
+        public virtual void Validate()
+        {
+        }
+    }
+
+    public abstract class ConfigDictionaryBase<T> : Dictionary<string, T>
+        where T : ConfigPartBase
+    {
+        private AppConfig appConfig;
+
+        public ConfigDictionaryBase(AppConfig appConfig) => this.appConfig = appConfig;
+
+        public new void Add(string key, T value)
+        {
+            value.AppConfig = appConfig;
+            base.Add(key, value);
+        }
+    }
+
+    public abstract class ConfigListBase<T> : List<T>
+        where T : ConfigPartBase
+    {
+        private AppConfig? appConfig;
+
+        public ConfigListBase(AppConfig? appConfig) => this.appConfig = appConfig;
+
+        internal virtual AppConfig? AppConfig { get; set; }
+
+        public new void Add(T value)
+        {
+            value.AppConfig = appConfig;
+            base.Add(value);
         }
     }
 }

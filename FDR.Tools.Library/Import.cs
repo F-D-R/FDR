@@ -190,6 +190,12 @@ namespace FDR.Tools.Library
                 foreach (var fn in folderNames)
                     foreach (var mc in config.MoveConfigs)
                         MoveFilesInFolder(new DirectoryInfo(fn), mc);
+
+            //// Actions
+            //if (config.Actions != null)
+            //    foreach (var fn in folderNames)
+            //        foreach (var a in config.Actions)
+            //            a.Do(new DirectoryInfo(fn));
         }
 
         private static ImportConfig? FindConfig(DirectoryInfo source, Dictionary<string, ImportConfig> configs)

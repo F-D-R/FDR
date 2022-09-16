@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
 
 namespace FDR.Tools.Library
 {
@@ -35,7 +36,7 @@ namespace FDR.Tools.Library
         }
     }
 
-    public sealed class ImportConfig
+    public sealed class ImportConfig : ConfigPartBase
     {
         private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.CRW|*.JPG|*.MP4|*.AVI|*.MOV";
 
@@ -60,14 +61,31 @@ namespace FDR.Tools.Library
 
         public List<MoveConfig> MoveConfigs { get; } = new List<MoveConfig>();
 
-        public void Validate()
+        public Actions Actions => new Actions(null);
+
+        public override AppConfig? AppConfig
+        {
+            get => base.AppConfig;
+            internal set
+            {
+                base.AppConfig = value;
+                Actions.AppConfig = value;
+            }
+        }
+
+        public override void Validate()
         {
             if (string.IsNullOrWhiteSpace(DestRoot)) throw new InvalidDataException("Destination root cannot be empty!");
             if (string.IsNullOrWhiteSpace(DateFormat)) throw new InvalidDataException("Date format cannot be empty!");
             Rules.ForEach(r => r.Validate());
             BatchRenameConfigs.ForEach(rc => rc.Validate());
             MoveConfigs.ForEach(mc => mc.Validate());
+            Actions.ForEach(a => a.Validate());
         }
+    }
 
+    public class ImportConfigs : ConfigDictionaryBase<ImportConfig>
+    {
+        public ImportConfigs(AppConfig appConfig) : base(appConfig) { }
     }
 }
