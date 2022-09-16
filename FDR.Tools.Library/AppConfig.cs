@@ -12,6 +12,7 @@ namespace FDR
             BatchRenameConfigs = new BatchRenameConfigs(this);
             ResizeConfigs = new ResizeConfigs(this);
             BatchResizeConfigs = new BatchResizeConfigs(this);
+            MoveConfigs = new MoveConfigs(this);
             ImportConfigs = new ImportConfigs(this);
         }
 
@@ -23,6 +24,8 @@ namespace FDR
 
         public BatchResizeConfigs BatchResizeConfigs { get; }
 
+        public MoveConfigs MoveConfigs { get; }
+
         public ImportConfigs ImportConfigs { get; }
 
         public void Validate()
@@ -31,6 +34,7 @@ namespace FDR
             ResizeConfigs?.ToList().ForEach(rsc => rsc.Value.Validate());
             BatchRenameConfigs?.ToList().ForEach(brnc => brnc.Value.Validate());
             BatchResizeConfigs?.ToList().ForEach(brsc => brsc.Value.Validate());
+            MoveConfigs?.ToList().ForEach(mc => mc.Value.Validate());
             ImportConfigs?.ToList().ForEach(ic => ic.Value.Validate());
         }
     }
