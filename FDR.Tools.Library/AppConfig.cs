@@ -12,7 +12,7 @@ namespace FDR
             BatchRenameConfigs = new BatchRenameConfigs(this);
             ResizeConfigs = new ResizeConfigs(this);
             BatchResizeConfigs = new BatchResizeConfigs(this);
-            MoveConfigs = new MoveConfigs(this);
+            MoveConfigs = new Dictionary<string, MoveConfig>();
             ImportConfigs = new ImportConfigs(this);
         }
 
@@ -24,7 +24,7 @@ namespace FDR
 
         public BatchResizeConfigs BatchResizeConfigs { get; }
 
-        public MoveConfigs MoveConfigs { get; }
+        public Dictionary<string, MoveConfig> MoveConfigs { get; }
 
         public ImportConfigs ImportConfigs { get; }
 

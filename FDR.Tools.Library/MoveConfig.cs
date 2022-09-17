@@ -2,7 +2,7 @@
 
 namespace FDR.Tools.Library
 {
-    public class MoveConfig : ConfigPartBase
+    public class MoveConfig
     {
         public string FileFilter { get; set; } = "*.CR3|*.CR2|*.CRW";  // *.NEF|*.ARW|*.PEF ???
 
@@ -10,15 +10,10 @@ namespace FDR.Tools.Library
 
         public bool StopOnError { get; set; } = true;
 
-        public override void Validate()
+        public void Validate()
         {
             if (string.IsNullOrWhiteSpace(FileFilter)) throw new InvalidDataException("Filename filter cannot be empty!");
             if (string.IsNullOrWhiteSpace(RelativeFolder)) throw new InvalidDataException("Relative folder path cannot be empty!");
         }
-    }
-
-    public class MoveConfigs : ConfigDictionaryBase<MoveConfig>
-    {
-        public MoveConfigs(AppConfig appConfig) : base(appConfig) { }
     }
 }
