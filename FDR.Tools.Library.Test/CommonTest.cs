@@ -11,6 +11,7 @@ namespace FDR.Tools.Library.Test
         public void IsFolderValidTests()
         {
             string tempFolderPath = Path.GetTempPath();
+            tempFolderPath.Should().NotBeNullOrWhiteSpace();
             Common.IsFolderValid(tempFolderPath).Should().BeTrue();
             Common.IsFolderValid(Path.Combine(tempFolderPath, Guid.NewGuid().ToString())).Should().BeFalse();
             Common.IsFolderValid("").Should().BeFalse();

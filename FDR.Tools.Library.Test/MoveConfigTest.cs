@@ -11,6 +11,7 @@ namespace FDR.Tools.Library.Test
         public void MoveConfigTests()
         {
             var config = new MoveConfig();
+            config.Should().NotBeNull();
             Action validate = () => config.Validate();
 
             validate.Should().NotThrow();

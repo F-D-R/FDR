@@ -11,6 +11,7 @@ namespace FDR.Tools.Library.Test
         public void ResizeConfigTests()
         {
             var config = new ResizeConfig();
+            config.Should().NotBeNull();
             Action validate = () => config.Validate();
 
             config.FilenamePattern.Should().NotBeNullOrWhiteSpace();
@@ -39,6 +40,7 @@ namespace FDR.Tools.Library.Test
         public void BatchResizeConfigTests()
         {
             var config = new BatchResizeConfig();
+            config.Should().NotBeNull();
             Action validate = () => config.Validate();
 
             config.FilenamePattern.Should().NotBeNullOrWhiteSpace();

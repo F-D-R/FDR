@@ -57,6 +57,8 @@ namespace FDR.Tools.Library.Test
         public void RenameFilesInFolderTests()
         {
             var config = new BatchRenameConfig() { FilenamePattern = "{mdate:yyMMdd}_{counter:2}" };
+            config.Should().NotBeNull();
+            folder.Should().NotBeNull();
             Rename.RenameFilesInFolder(folder, config);
 
             File.Exists(file1Path).Should().BeFalse();
@@ -72,7 +74,11 @@ namespace FDR.Tools.Library.Test
         public void RenameFolderTests()
         {
             var config = new RenameConfig() { FilenamePattern = "{pfolder}" };
+            config.Should().NotBeNull();
+            folder.Should().NotBeNull();
+            folder.Parent.Should().NotBeNull();
             var parentPath = folder.Parent.FullName;
+            parentPath.Should().NotBeNullOrWhiteSpace();
             Rename.RenameFolder(folder, config);
 
             Directory.Exists(folderPath).Should().BeFalse();

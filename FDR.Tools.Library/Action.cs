@@ -17,6 +17,10 @@ namespace FDR.Tools.Library
 
     public class ActionClass : ConfigPartBase
     {
+        public ActionClass() { }
+
+        public ActionClass(AppConfig? appConfig) : base(appConfig) { }
+
         public ActionType ActionType { get; set; }
 
         public string? ActionConfig { get; set; }

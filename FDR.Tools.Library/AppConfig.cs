@@ -41,6 +41,10 @@ namespace FDR
 
     public abstract class ConfigPartBase
     {
+        public ConfigPartBase() { }
+
+        public ConfigPartBase(AppConfig? appConfig) => AppConfig = appConfig;
+
         public virtual AppConfig? AppConfig { get; internal set; }
 
         public virtual void Validate()
@@ -73,6 +77,7 @@ namespace FDR
 
         public new void Add(T value)
         {
+            //if (value != null) value.AppConfig = appConfig;
             value.AppConfig = appConfig;
             base.Add(value);
         }

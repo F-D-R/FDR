@@ -11,6 +11,7 @@ namespace FDR.Tools.Library.Test
         public void RenameConfigTests()
         {
             var config = new RenameConfig();
+            config.Should().NotBeNull();
             Action validate = () => config.Validate();
 
             config.FilenamePattern.Should().NotBeNullOrWhiteSpace();
@@ -27,6 +28,7 @@ namespace FDR.Tools.Library.Test
         public void BatchRenameConfigTests()
         {
             var config = new BatchRenameConfig();
+            config.Should().NotBeNull();
             Action validate = () => config.Validate();
 
             config.FilenamePattern.Should().NotBeNullOrWhiteSpace();
