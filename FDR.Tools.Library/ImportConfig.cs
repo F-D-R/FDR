@@ -40,6 +40,15 @@ namespace FDR.Tools.Library
     {
         private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.CRW|*.JPG|*.MP4|*.AVI|*.MOV";
 
+        public ImportConfig()
+        {
+            Actions = new Actions(null);
+        }
+        public ImportConfig(AppConfig appConfig) : base(appConfig)
+        {
+            Actions = new Actions(appConfig);
+        }
+
         public string? Name { get; set; }
 
         public List<ImportRule> Rules { get; } = new List<ImportRule>();
@@ -61,7 +70,7 @@ namespace FDR.Tools.Library
 
         public List<MoveConfig> MoveConfigs { get; } = new List<MoveConfig>();
 
-        public Actions Actions => new Actions(null);
+        public Actions Actions { get; }
 
         public override AppConfig? AppConfig
         {

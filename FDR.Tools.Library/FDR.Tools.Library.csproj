@@ -8,10 +8,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <Optimize>true</Optimize>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="ExifLib.Standard" Version="1.7.0" />
     <PackageReference Include="ExifLibNet" Version="2.1.4" />

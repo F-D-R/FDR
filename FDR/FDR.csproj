@@ -10,10 +10,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <Optimize>False</Optimize>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="ExifLib.Standard" Version="1.7.0" />
     <PackageReference Include="ExiftoolWrapper" Version="4.0.0" />
