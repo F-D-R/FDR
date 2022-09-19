@@ -15,7 +15,7 @@ namespace FDR.Tools.Library.Test
             Action validate = () => rule.Validate();
 
             rule.Param = null;
-            validate.Should().Throw<InvalidDataException>();
+            validate.Should().Throw<InvalidDataException>("Invalid Param");
             rule.Param = "dummy";
             validate.Should().NotThrow();
         }
@@ -30,12 +30,12 @@ namespace FDR.Tools.Library.Test
             Action validate = () => config.Validate();
 
             config.DestRoot = null;
-            validate.Should().Throw<InvalidDataException>();
+            validate.Should().Throw<InvalidDataException>("Invalid DestRoot");
             config.DestRoot = "dummy";
             validate.Should().NotThrow();
 
             config.DateFormat = null;
-            validate.Should().Throw<InvalidDataException>();
+            validate.Should().Throw<InvalidDataException>("Invalid DateFormat");
             config.DateFormat = "yyMMdd";
             validate.Should().NotThrow();
 
@@ -45,12 +45,12 @@ namespace FDR.Tools.Library.Test
             config.Rules.Should().HaveCount(0);
             config.Rules.Add(null);
             config.Rules.Should().HaveCount(1);
-            validate.Should().Throw<NullReferenceException>();
+            validate.Should().Throw<NullReferenceException>("Rules with null item");
             config.Rules.Clear();
             config.Rules.Should().HaveCount(0);
             config.Rules.Add(new ImportRule() { Param = null });
             config.Rules.Should().HaveCount(1);
-            validate.Should().Throw<InvalidDataException>();
+            validate.Should().Throw<InvalidDataException>("Invalid Rule");
             config.Rules.Clear();
             config.Rules.Should().HaveCount(0);
             config.Rules.Add(new ImportRule() { Param = "dummy" });
@@ -60,7 +60,7 @@ namespace FDR.Tools.Library.Test
             config.BatchRenameConfigs.Should().HaveCount(0);
             config.BatchRenameConfigs.Add(null);
             config.BatchRenameConfigs.Should().HaveCount(1);
-            validate.Should().Throw<NullReferenceException>();
+            validate.Should().Throw<NullReferenceException>("BatchRenameConfigs with null item");
             config.BatchRenameConfigs.Clear();
             config.BatchRenameConfigs.Should().HaveCount(0);
             var brc = new BatchRenameConfig();
@@ -69,7 +69,7 @@ namespace FDR.Tools.Library.Test
             config.BatchRenameConfigs.Should().HaveCount(1);
             validate.Should().NotThrow();
             brc.AdditionalFileTypes.Add("");
-            validate.Should().Throw<InvalidDataException>();
+            validate.Should().Throw<InvalidDataException>("BatchRenameConfig with invalid AdditionalFileTypes");
             config.BatchRenameConfigs.Clear();
             config.BatchRenameConfigs.Should().HaveCount(0);
             validate.Should().NotThrow();
@@ -81,11 +81,11 @@ namespace FDR.Tools.Library.Test
             config.MoveConfigs.Should().HaveCount(1);
             validate.Should().NotThrow();
             mc.FileFilter = "";
-            validate.Should().Throw<InvalidDataException>();
+            validate.Should().Throw<InvalidDataException>("MoveConfig without FileFilter");
             mc.FileFilter = "*.CR3";
             validate.Should().NotThrow();
             mc.RelativeFolder = "";
-            validate.Should().Throw<InvalidDataException>();
+            validate.Should().Throw<InvalidDataException>("MoveConfig without RelativeFolder");
             mc.RelativeFolder = "RAW";
             validate.Should().NotThrow();
             config.MoveConfigs.Clear();
@@ -94,16 +94,39 @@ namespace FDR.Tools.Library.Test
 
             appConfig.ImportConfigs.Add("test", config);
             config.Actions.Should().HaveCount(0);
-            var a = new ActionClass() { ActionType = ActionType.hash };
-            //var a = new ActionClass(appConfig) { ActionType = ActionType.hash };
+            var a = new ActionClass(appConfig) { ActionType = ActionType.hash };
             a.Should().NotBeNull();
             config.Actions.Add(a);
             config.Actions.Should().HaveCount(1);
             validate.Should().NotThrow();
-            //a.ActionType = ActionType.rename;
-            //a.ActionConfig = null;
-            //validate.Should().Throw<InvalidDataException>();
-            a.ActionConfig = "dummy";
+            a.ActionType = ActionType.rehash;
+            validate.Should().NotThrow();
+            a.ActionType = ActionType.rename;
+            a.ActionConfig = null;
+            validate.Should().Throw<InvalidDataException>("Rename action without ActionConfig");
+            a.ActionType = ActionType.rename;
+            a.ActionConfig = "rename";
+            validate.Should().Throw<ArgumentOutOfRangeException>("Rename action with invalid ActionConfig");
+            appConfig.BatchRenameConfigs.Add("rename", new BatchRenameConfig());
+            appConfig.BatchRenameConfigs.Should().HaveCount(1);
+            validate.Should().NotThrow();
+            a.ActionType = ActionType.resize;
+            a.ActionConfig = null;
+            validate.Should().Throw<InvalidDataException>("Resize action without ActionConfig");
+            a.ActionType = ActionType.resize;
+            a.ActionConfig = "resize";
+            validate.Should().Throw<ArgumentOutOfRangeException>("Resize action with invalid ActionConfig");
+            appConfig.BatchResizeConfigs.Add("resize", new BatchResizeConfig());
+            appConfig.BatchResizeConfigs.Should().HaveCount(1);
+            validate.Should().NotThrow();
+            a.ActionType = ActionType.move;
+            a.ActionConfig = null;
+            validate.Should().Throw<InvalidDataException>("Move action without ActionConfig");
+            a.ActionType = ActionType.move;
+            a.ActionConfig = "move";
+            validate.Should().Throw<ArgumentOutOfRangeException>("Move action with invalid ActionConfig");
+            appConfig.MoveConfigs.Add("move", new MoveConfig());
+            appConfig.MoveConfigs.Should().HaveCount(1);
             validate.Should().NotThrow();
             config.Actions.Clear();
             config.Actions.Should().HaveCount(0);

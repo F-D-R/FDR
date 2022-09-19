@@ -52,7 +52,7 @@ namespace FDR
         }
     }
 
-    public abstract class ConfigDictionaryBase<T> : Dictionary<string, T>
+    public class ConfigDictionaryBase<T> : Dictionary<string, T>
         where T : ConfigPartBase
     {
         private AppConfig appConfig;
@@ -66,7 +66,7 @@ namespace FDR
         }
     }
 
-    public abstract class ConfigListBase<T> : List<T>
+    public class ConfigListBase<T> : List<T>
         where T : ConfigPartBase
     {
         private AppConfig? appConfig;
@@ -78,7 +78,8 @@ namespace FDR
         public new void Add(T value)
         {
             //if (value != null) value.AppConfig = appConfig;
-            value.AppConfig = appConfig;
+            //value.AppConfig = appConfig;
+            if (appConfig != null) value.AppConfig = appConfig;
             base.Add(value);
         }
     }
