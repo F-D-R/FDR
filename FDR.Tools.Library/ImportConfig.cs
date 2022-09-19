@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System;
 
 namespace FDR.Tools.Library
 {
@@ -40,15 +39,6 @@ namespace FDR.Tools.Library
     {
         private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.CRW|*.JPG|*.MP4|*.AVI|*.MOV";
 
-        public ImportConfig()
-        {
-            Actions = new Actions(null);
-        }
-        public ImportConfig(AppConfig appConfig) : base(appConfig)
-        {
-            Actions = new Actions(appConfig);
-        }
-
         public string? Name { get; set; }
 
         public List<ImportRule> Rules { get; } = new List<ImportRule>();
@@ -70,7 +60,7 @@ namespace FDR.Tools.Library
 
         public List<MoveConfig> MoveConfigs { get; } = new List<MoveConfig>();
 
-        public Actions Actions { get; }
+        public Actions Actions { get; } = new Actions(null);
 
         public override AppConfig? AppConfig
         {

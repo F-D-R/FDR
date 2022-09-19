@@ -93,7 +93,7 @@ namespace FDR.Tools.Library
 
                 case ActionType.hash:
                 case ActionType.rehash:
-                    //No 
+                    //Nothing to validate
                     break;
 
                 default:

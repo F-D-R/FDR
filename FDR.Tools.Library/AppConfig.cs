@@ -77,8 +77,6 @@ namespace FDR
 
         public new void Add(T value)
         {
-            //if (value != null) value.AppConfig = appConfig;
-            //value.AppConfig = appConfig;
             if (appConfig != null) value.AppConfig = appConfig;
             base.Add(value);
         }

@@ -250,8 +250,7 @@ namespace FDR.Tools.Library
                 }
             }
 
-            if (matchingConfigs.Count == 1) return matchingConfigs[0];
-            return null;
+            return matchingConfigs.FirstOrDefault();
         }
 
         public static void ImportWizard(Dictionary<string, ImportConfig> configs, DirectoryInfo? folder = null, bool auto = false)
