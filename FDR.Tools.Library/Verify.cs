@@ -3,10 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using SixLabors.ImageSharp;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
-using System.Collections;
 
 namespace FDR.Tools.Library
 {

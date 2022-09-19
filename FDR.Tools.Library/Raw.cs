@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace FDR.Tools.Library
 {
@@ -53,7 +54,13 @@ namespace FDR.Tools.Library
 
                 var i = 0;
                 Trace.Indent();
-                files.AsParallel().ForAll(file =>
+
+                ParallelOptions parallelOptions = new()
+                {
+                    MaxDegreeOfParallelism = 4
+                };
+
+                Parallel.ForEach(files, parallelOptions, (file, token) =>
                 {
                     i++;
 
@@ -97,8 +104,8 @@ namespace FDR.Tools.Library
 
                     if (i % 10 == 0)
                         Progress(i);
-
                 });
+
                 Progress(i, true);
                 Trace.Unindent();
 
@@ -120,7 +127,13 @@ namespace FDR.Tools.Library
 
                 var i = 0;
                 Trace.Indent();
-                files.AsParallel().ForAll(file =>
+
+                ParallelOptions parallelOptions = new()
+                {
+                    MaxDegreeOfParallelism = 4
+                };
+
+                Parallel.ForEach(files, parallelOptions, (file, token) =>
                 {
                     i++;
 
@@ -135,6 +148,7 @@ namespace FDR.Tools.Library
                     if (i % 10 == 0)
                         Progress(i);
                 });
+
                 Progress(i, true);
                 Trace.Unindent();
 
@@ -156,7 +170,13 @@ namespace FDR.Tools.Library
 
                 var i = 0;
                 Trace.Indent();
-                files.AsParallel().ForAll(file =>
+
+                ParallelOptions parallelOptions = new()
+                {
+                    MaxDegreeOfParallelism = 4
+                };
+
+                Parallel.ForEach(files, parallelOptions, (file, token) =>
                 {
                     i++;
 
@@ -171,6 +191,7 @@ namespace FDR.Tools.Library
                     if (i % 10 == 0)
                         Progress(i);
                 });
+
                 Progress(i, true);
                 Trace.Unindent();
 
