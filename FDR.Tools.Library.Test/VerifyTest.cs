@@ -8,7 +8,8 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace FDR.Tools.Library.Test
 {
-    public class VerifyTest : TestFixtureBase
+    [TestFixture]
+    public class VerifyTest
     {
         private string tempFolderPath;
         private DirectoryInfo folder;
@@ -19,10 +20,9 @@ namespace FDR.Tools.Library.Test
         private const string fileContent = "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
         private const string hash = "Scs2COKzP61rZd+MuPSWaA==";
 
-        public override void OneTimeSetUp()
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
         {
-            base.OneTimeSetUp();
-
             tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(tempFolderPath);
             folder = new DirectoryInfo(tempFolderPath);
@@ -33,17 +33,15 @@ namespace FDR.Tools.Library.Test
             missingPath = Path.Combine(tempFolderPath, "missing.jpg");
         }
 
-        public override void OneTimeTearDown()
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
         {
             if (Directory.Exists(tempFolderPath)) Directory.Delete(tempFolderPath, true);
-
-            base.OneTimeTearDown();
         }
 
-        public override void SetUp()
+        [SetUp]
+        public void SetUp()
         {
-            base.SetUp();
-
             File.WriteAllText(filePath, fileContent);
             File.SetLastWriteTime(filePath, new DateTime(2000, 12, 31));
 
@@ -51,13 +49,12 @@ namespace FDR.Tools.Library.Test
             File.SetLastWriteTime(md5Path, new DateTime(2000, 12, 31));
         }
 
-        public override void TearDown()
+        [TearDown]
+        public void TearDown()
         {
             if (File.Exists(filePath)) File.Delete(filePath);
             if (File.Exists(md5Path)) File.Delete(md5Path);
             if (File.Exists(errPath)) File.Delete(errPath);
-
-            base.TearDown();
         }
 
         [Test]

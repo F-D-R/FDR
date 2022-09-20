@@ -7,7 +7,8 @@ using System.Linq;
 
 namespace FDR.Tools.Library.Test
 {
-    public class ActionsTest : TestFixtureBase
+    [TestFixture]
+    public class ActionsTest
     {
         private string tempFolderPath;
         private DirectoryInfo folder;
@@ -56,10 +57,9 @@ namespace FDR.Tools.Library.Test
             }
         }
 
-        public override void OneTimeSetUp()
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
         {
-            base.OneTimeSetUp();
-
             tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(tempFolderPath);
             folder = new DirectoryInfo(tempFolderPath);
@@ -68,27 +68,24 @@ namespace FDR.Tools.Library.Test
             Directory.CreateDirectory(rawFolderPath);
         }
 
-        public override void OneTimeTearDown()
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
         {
             if (Directory.Exists(tempFolderPath)) Directory.Delete(tempFolderPath, true);
-
-            base.OneTimeTearDown();
         }
 
-        public override void SetUp()
+        [SetUp]
+        public void SetUp()
         {
-            base.SetUp();
-
             Directory.GetFiles(tempFolderPath, "*", SearchOption.AllDirectories).ToList().ForEach(f => File.Delete(f));
             files.Clear();
         }
 
-        public override void TearDown()
+        [TearDown]
+        public void TearDown()
         {
             Directory.GetFiles(tempFolderPath, "*", SearchOption.AllDirectories).ToList().ForEach(f => File.Delete(f));
             files.Clear();
-
-            base.TearDown();
         }
 
         [Test]

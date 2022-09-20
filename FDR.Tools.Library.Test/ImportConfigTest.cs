@@ -5,7 +5,8 @@ using FluentAssertions;
 
 namespace FDR.Tools.Library.Test
 {
-    public class ImportConfigTest : TestFixtureBase
+    [TestFixture]
+    public class ImportConfigTest
     {
         [Test]
         public void ImportRuleTests()

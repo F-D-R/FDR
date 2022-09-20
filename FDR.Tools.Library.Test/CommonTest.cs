@@ -5,7 +5,8 @@ using FluentAssertions;
 
 namespace FDR.Tools.Library.Test
 {
-    public class CommonTest : TestFixtureBase
+    [TestFixture]
+    public class CommonTest
     {
         [Test]
         public void IsFolderValidTests()

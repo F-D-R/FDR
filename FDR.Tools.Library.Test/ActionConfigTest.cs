@@ -5,7 +5,8 @@ using FluentAssertions;
 
 namespace FDR.Tools.Library.Test
 {
-    public class ActionConfigTest : TestFixtureBase
+    [TestFixture]
+    public class ActionConfigTest
     {
         [Test]
         public void ActionClassTests()

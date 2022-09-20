@@ -4,7 +4,8 @@ using FluentAssertions;
 
 namespace FDR.Tools.Library.Test
 {
-    public class RenameConfigTest : TestFixtureBase
+    [TestFixture]
+    public class RenameConfigTest
     {
         [Test]
         public void RenameConfigTests()

@@ -5,7 +5,8 @@ using FluentAssertions;
 
 namespace FDR.Tools.Library.Test
 {
-    public class RenameTest : TestFixtureBase
+    [TestFixture]
+    public class RenameTest
     {
         private string tempFolderPath;
         private string folderPath;
@@ -15,10 +16,9 @@ namespace FDR.Tools.Library.Test
         private string otherFilePath;
         private DirectoryInfo folder;
 
-        public override void OneTimeSetUp()
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
         {
-            base.OneTimeSetUp();
-
             tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(tempFolderPath);
 
@@ -46,11 +46,10 @@ namespace FDR.Tools.Library.Test
             folder = new DirectoryInfo(folderPath);
         }
 
-        public override void OneTimeTearDown()
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
         {
             if (Directory.Exists(tempFolderPath)) Directory.Delete(tempFolderPath, true);
-
-            base.OneTimeTearDown();
         }
 
         [Test]
