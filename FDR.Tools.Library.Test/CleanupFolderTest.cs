@@ -13,7 +13,7 @@ namespace FDR.Tools.Library.Test
         private DirectoryInfo tempFolder;
         private string rawFolderPath;
         private string panoramaFolderPath;
-        private TestFiles files = new TestFiles();
+        private readonly TestFiles files = new();
 
         private class TestFile
         {

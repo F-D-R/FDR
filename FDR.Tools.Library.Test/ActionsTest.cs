@@ -12,7 +12,7 @@ namespace FDR.Tools.Library.Test
         private string tempFolderPath;
         private DirectoryInfo folder;
         private string rawFolderPath;
-        private TestFiles files = new TestFiles();
+        private readonly TestFiles files = new();
 
         private class TestFile
         {
@@ -102,11 +102,11 @@ namespace FDR.Tools.Library.Test
             appConfig.BatchRenameConfigs.Should().HaveCount(1);
             var actions = new Actions(appConfig);
             actions.Should().NotBeNull();
-            actions.Add(new ActionClass() { Type = ActionType.hash });
-            actions.Add(new ActionClass() { Type = ActionType.rename, Config = "rename" });
-            actions.Add(new ActionClass() { Type = ActionType.move, Config = "move" });
-            actions.Add(new ActionClass() { Type = ActionType.hash });
-            actions.Add(new ActionClass() { Type = ActionType.cleanup });
+            actions.Add(new Action() { Type = ActionType.hash });
+            actions.Add(new Action() { Type = ActionType.rename, Config = "rename" });
+            actions.Add(new Action() { Type = ActionType.move, Config = "move" });
+            actions.Add(new Action() { Type = ActionType.hash });
+            actions.Add(new Action() { Type = ActionType.cleanup });
             //actions.Add(new ActionClass() { Type = ActionType.rehash });
             actions.Should().HaveCount(5);
 

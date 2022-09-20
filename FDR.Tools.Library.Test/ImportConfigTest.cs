@@ -12,7 +12,7 @@ namespace FDR.Tools.Library.Test
         {
             var rule = new ImportRule();
             rule.Should().NotBeNull();
-            Action validate = () => rule.Validate();
+            System.Action validate = () => rule.Validate();
 
             rule.Param = null;
             validate.Should().Throw<InvalidDataException>("Invalid Param");
@@ -27,7 +27,7 @@ namespace FDR.Tools.Library.Test
             appConfig.Should().NotBeNull();
             var config = new ImportConfig();
             config.Should().NotBeNull();
-            Action validate = () => config.Validate();
+            System.Action validate = () => config.Validate();
 
             config.DestRoot = null;
             validate.Should().Throw<InvalidDataException>("Invalid DestRoot");
@@ -94,7 +94,7 @@ namespace FDR.Tools.Library.Test
 
             appConfig.ImportConfigs.Add("test", config);
             config.Actions.Should().HaveCount(0);
-            var a = new ActionClass(appConfig) { Type = ActionType.hash };
+            var a = new Action(appConfig) { Type = ActionType.hash };
             a.Should().NotBeNull();
             config.Actions.Add(a);
             config.Actions.Should().HaveCount(1);

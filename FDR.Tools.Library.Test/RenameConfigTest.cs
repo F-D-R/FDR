@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using NUnit.Framework;
 using FluentAssertions;
 
@@ -12,7 +11,7 @@ namespace FDR.Tools.Library.Test
         {
             var config = new RenameConfig();
             config.Should().NotBeNull();
-            Action validate = () => config.Validate();
+            System.Action validate = () => config.Validate();
 
             config.FilenamePattern.Should().NotBeNullOrWhiteSpace();
             validate.Should().NotThrow();
@@ -29,7 +28,7 @@ namespace FDR.Tools.Library.Test
         {
             var config = new BatchRenameConfig();
             config.Should().NotBeNull();
-            Action validate = () => config.Validate();
+            System.Action validate = () => config.Validate();
 
             config.FilenamePattern.Should().NotBeNullOrWhiteSpace();
             validate.Should().NotThrow();

@@ -12,7 +12,7 @@ namespace FDR.Tools.Library.Test
         {
             var config = new AppConfig();
             config.Should().NotBeNull();
-            Action validate = () => config.Validate();
+            System.Action validate = () => config.Validate();
             validate.Should().NotThrow();
 
             config.RenameConfigs.Should().HaveCount(0);

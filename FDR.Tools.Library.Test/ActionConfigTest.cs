@@ -12,9 +12,9 @@ namespace FDR.Tools.Library.Test
         {
             var appConfig = new AppConfig();
             appConfig.Should().NotBeNull();
-            var config = new ActionClass(appConfig);
+            var config = new Action(appConfig);
             config.Should().NotBeNull();
-            Action validate = () => config.Validate();
+            System.Action validate = () => config.Validate();
 
             config.Type = ActionType.hash;
             config.Config = null;
@@ -58,7 +58,7 @@ namespace FDR.Tools.Library.Test
             appConfig.MoveConfigs.Should().HaveCount(1);
             validate.Should().NotThrow();
 
-            config = new ActionClass();     // without AppConfig
+            config = new Action();     // without AppConfig
             config.Should().NotBeNull();
             validate = () => config.Validate();
 
@@ -86,14 +86,14 @@ namespace FDR.Tools.Library.Test
         {
             var appConfig = new AppConfig();
             appConfig.Should().NotBeNull();
-            Action validate = () => appConfig.Validate();
+            System.Action validate = () => appConfig.Validate();
             validate.Should().NotThrow();
 
             var actions = new Actions(appConfig);
             actions.Should().NotBeNull();
             actions.Should().HaveCount(0);
 
-            var a = new ActionClass() { Type = ActionType.hash };
+            var a = new Action() { Type = ActionType.hash };
             a.Should().NotBeNull();
             actions.Add(a);
             actions.Should().HaveCount(1);

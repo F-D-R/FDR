@@ -16,11 +16,11 @@ namespace FDR.Tools.Library
         cleanup
     }
 
-    public sealed class ActionClass : ConfigPartBase
+    public sealed class Action : ConfigPartBase
     {
-        public ActionClass() { }
+        public Action() { }
 
-        public ActionClass(AppConfig? appConfig) : base(appConfig) { }
+        public Action(AppConfig? appConfig) : base(appConfig) { }
 
         public ActionType Type { get; set; }
 
@@ -106,7 +106,7 @@ namespace FDR.Tools.Library
         }
     }
 
-    public sealed class Actions : ConfigListBase<ActionClass>
+    public sealed class Actions : ConfigListBase<Action>
     {
         public Actions(AppConfig? appConfig) : base(appConfig) { }
 
