@@ -2,7 +2,7 @@
 
 namespace FDR.Tools.Library
 {
-    public class MoveConfig
+    public sealed class MoveConfig
     {
         public string FileFilter { get; set; } = "*.CR3|*.CR2|*.CRW";  // *.NEF|*.ARW|*.PEF ???
 

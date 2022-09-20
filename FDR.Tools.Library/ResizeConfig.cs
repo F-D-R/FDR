@@ -42,7 +42,7 @@ namespace FDR.Tools.Library
         }
     }
 
-    public class ResizeConfigs : ConfigDictionaryBase<ResizeConfig>
+    public sealed class ResizeConfigs : ConfigDictionaryBase<ResizeConfig>
     {
         public ResizeConfigs(AppConfig appConfig) : base(appConfig) { }
     }
@@ -66,7 +66,7 @@ namespace FDR.Tools.Library
         }
     }
 
-    public class BatchResizeConfigs : ConfigDictionaryBase<BatchResizeConfig>
+    public sealed class BatchResizeConfigs : ConfigDictionaryBase<BatchResizeConfig>
     {
         public BatchResizeConfigs(AppConfig appConfig) : base(appConfig) { }
     }

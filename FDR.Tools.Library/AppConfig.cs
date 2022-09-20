@@ -52,7 +52,7 @@ namespace FDR
         }
     }
 
-    public class ConfigDictionaryBase<T> : Dictionary<string, T>
+    public abstract class ConfigDictionaryBase<T> : Dictionary<string, T>
         where T : ConfigPartBase
     {
         private AppConfig appConfig;
@@ -66,7 +66,7 @@ namespace FDR
         }
     }
 
-    public class ConfigListBase<T> : List<T>
+    public abstract class ConfigListBase<T> : List<T>
         where T : ConfigPartBase
     {
         private AppConfig? appConfig;

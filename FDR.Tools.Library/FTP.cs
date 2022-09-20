@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -26,7 +25,7 @@ namespace FDR.Tools.Library.FTP
         public string? Name { get; set; }
     }
 
-    public class FTPConnection
+    public sealed class FTPConnection
     {
         private TcpClient? mobjTcpClient;
         private static int mintsBlockSize = 512;
@@ -62,19 +61,19 @@ namespace FDR.Tools.Library.FTP
             }
         }
 
-        public virtual void Open(string tstrRemoteHost, string tstrUser, string tstrPassword)
+        public void Open(string tstrRemoteHost, string tstrUser, string tstrPassword)
         {
             Open(tstrRemoteHost, mintsDefaultRemotePort, tstrUser, tstrPassword, FTPMode.Active);
         }
-        public virtual void Open(string tstrRemoteHost, string tstrUser, string tstrPassword, FTPMode tintMode)
+        public void Open(string tstrRemoteHost, string tstrUser, string tstrPassword, FTPMode tintMode)
         {
             Open(tstrRemoteHost, mintsDefaultRemotePort, tstrUser, tstrPassword, tintMode);
         }
-        public virtual void Open(string tstrRemoteHost, int tintRemotePort, string tstrUser, string tstrPassword)
+        public void Open(string tstrRemoteHost, int tintRemotePort, string tstrUser, string tstrPassword)
         {
             Open(tstrRemoteHost, tintRemotePort, tstrUser, tstrPassword, FTPMode.Active);
         }
-        public virtual void Open(string tstrRemoteHost, int tintRemotePort, string tstrUser, string tstrPassword, FTPMode tintMode)
+        public void Open(string tstrRemoteHost, int tintRemotePort, string tstrUser, string tstrPassword, FTPMode tintMode)
         {
             List<string> lcolTempMessageList;
             int lintReturn;
@@ -128,7 +127,7 @@ namespace FDR.Tools.Library.FTP
             }
         }
 
-        public virtual void Close()
+        public void Close()
         {
             if (mobjTcpClient != null)
             {
@@ -288,12 +287,12 @@ namespace FDR.Tools.Library.FTP
             UnlockTcpClient();
         }
 
-        public virtual void SendFile(string tstrLocalFileName, FTPFileTransferType tintType)
+        public void SendFile(string tstrLocalFileName, FTPFileTransferType tintType)
         {
             SendFile(tstrLocalFileName, Path.GetFileName(tstrLocalFileName), tintType);
         }
 
-        public virtual void SendFile(string tstrLocalFileName, string tstrRemoteFileName, FTPFileTransferType tintType)
+        public void SendFile(string tstrLocalFileName, string tstrRemoteFileName, FTPFileTransferType tintType)
         {
             using (FileStream lobjFS = new FileStream(tstrLocalFileName, FileMode.Open))
             {
@@ -368,11 +367,11 @@ namespace FDR.Tools.Library.FTP
             UnlockTcpClient();
         }
 
-        public virtual void GetFile(string tstrRemoteFileName, FTPFileTransferType tintType)
+        public void GetFile(string tstrRemoteFileName, FTPFileTransferType tintType)
         {
             GetFile(tstrRemoteFileName, Path.GetFileName(tstrRemoteFileName), tintType);
         }
-        public virtual void GetFile(string tstrRemoteFileName, string tstrLocalFileName, FTPFileTransferType tintType)
+        public void GetFile(string tstrRemoteFileName, string tstrLocalFileName, FTPFileTransferType tintType)
         {
             using (FileStream lobjFS = new FileStream(tstrLocalFileName, FileMode.Create))
             {
@@ -381,7 +380,7 @@ namespace FDR.Tools.Library.FTP
             }
         }
 
-        public virtual void DeleteFile(string tstrRemoteFileName)
+        public void DeleteFile(string tstrRemoteFileName)
         {
             LockTcpClient();
             List<string> lcolTempMessageList;
@@ -393,14 +392,14 @@ namespace FDR.Tools.Library.FTP
             UnlockTcpClient();
         }
 
-        public virtual void MoveFile(string tstrRemoteFileName, string tstrToRemotePath)
+        public void MoveFile(string tstrRemoteFileName, string tstrToRemotePath)
         {
             if (tstrToRemotePath.Length > 0 && !tstrToRemotePath.EndsWith("/"))
                 tstrToRemotePath += "/";
             RenameFile(tstrRemoteFileName, tstrToRemotePath + tstrRemoteFileName);
         }
 
-        public virtual void RenameFile(string tstrFromRemoteFileName, string tstrToRemoteFileName)
+        public void RenameFile(string tstrFromRemoteFileName, string tstrToRemoteFileName)
         {
             LockTcpClient();
             List<string> lcolTempMessageList;
@@ -416,7 +415,7 @@ namespace FDR.Tools.Library.FTP
             UnlockTcpClient();
         }
 
-        public virtual void SetCurrentDirectory(string tstrRemotePath)
+        public void SetCurrentDirectory(string tstrRemotePath)
         {
             LockTcpClient();
             List<string> lcolTempMessageList;
@@ -492,7 +491,7 @@ namespace FDR.Tools.Library.FTP
             UnlockTcpClient();
         }
 
-        public virtual void MakeDir(string tstrDirectoryName)
+        public void MakeDir(string tstrDirectoryName)
         {
             LockTcpClient();
 
@@ -507,7 +506,7 @@ namespace FDR.Tools.Library.FTP
             UnlockTcpClient();
         }
 
-        public virtual void RemoveDir(string tstrDirectoryName)
+        public void RemoveDir(string tstrDirectoryName)
         {
             LockTcpClient();
 

@@ -15,7 +15,7 @@ namespace FDR.Tools.Library
         rehash
     }
 
-    public class ActionClass : ConfigPartBase
+    public sealed class ActionClass : ConfigPartBase
     {
         public ActionClass() { }
 
@@ -102,7 +102,7 @@ namespace FDR.Tools.Library
         }
     }
 
-    public class Actions : ConfigListBase<ActionClass>
+    public sealed class Actions : ConfigListBase<ActionClass>
     {
         public Actions(AppConfig? appConfig) : base(appConfig) { }
 

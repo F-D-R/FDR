@@ -23,7 +23,7 @@ namespace FDR.Tools.Library
             Common.Msg($"Cleanup of {folder} folder succeeded: {worker.RawCount} raw, {worker.HashCount} hash and {worker.ErrCount} error files were deleted. ({time})", ConsoleColor.Green);
         }
 
-        private class CleanupWorker
+        private sealed class CleanupWorker
         {
             internal CleanupWorker(DirectoryInfo folder) => Folder = folder;
 

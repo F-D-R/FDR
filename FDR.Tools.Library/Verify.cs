@@ -11,7 +11,7 @@ namespace FDR.Tools.Library
     {
         private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.CRW|*.JPG|*.TIF|*.MP4|*.AVI|*.MOV";
 
-        private static string ComputeHash(FileInfo file)
+        internal static string ComputeHash(FileInfo file)
         {
             using (var md5 = MD5.Create())
             using (var fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
@@ -21,7 +21,7 @@ namespace FDR.Tools.Library
             }
         }
 
-        private static async Task<string> ComputeHashAsync(FileInfo file)
+        internal static async Task<string> ComputeHashAsync(FileInfo file)
         {
             using (var md5 = MD5.Create())
             using (var fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
@@ -51,21 +51,21 @@ namespace FDR.Tools.Library
             return Path.Combine(file.DirectoryName??"", Path.GetFileNameWithoutExtension(file.Name));
         }
 
-        private static void CreateHashFile(string hashFile, string hash, DateTime fileDateUtc)
+        internal static void CreateHashFile(string hashFile, string hash, DateTime fileDateUtc)
         {
             File.WriteAllText(hashFile, hash);
             File.SetLastWriteTimeUtc(hashFile, fileDateUtc);
             File.SetAttributes(hashFile, File.GetAttributes(hashFile) | FileAttributes.Hidden);
         }
 
-        private static async Task CreateHashFileAsync(string hashFile, string hash, DateTime fileDateUtc)
+        internal static async Task CreateHashFileAsync(string hashFile, string hash, DateTime fileDateUtc)
         {
             await File.WriteAllTextAsync(hashFile, hash);
             File.SetLastWriteTimeUtc(hashFile, fileDateUtc);
             File.SetAttributes(hashFile, File.GetAttributes(hashFile) | FileAttributes.Hidden);
         }
 
-        private static bool IsValidImage(string file)
+        internal static bool IsValidImage(string file)
         {
             try
             {
@@ -77,12 +77,12 @@ namespace FDR.Tools.Library
                 return false;
             }
         }
-        private static bool IsValidImage(FileInfo file)
+        internal static bool IsValidImage(FileInfo file)
         {
             return IsValidImage(file.FullName);
         }
 
-        private static async Task<bool> IsValidImageAsync(string file)
+        internal static async Task<bool> IsValidImageAsync(string file)
         {
             try
             {
@@ -94,7 +94,7 @@ namespace FDR.Tools.Library
                 return false;
             }
         }
-        private static async Task<bool> IsValidImageAsync(FileInfo file)
+        internal static async Task<bool> IsValidImageAsync(FileInfo file)
         {
             return await IsValidImageAsync(file.FullName);
         }

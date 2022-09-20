@@ -27,7 +27,7 @@ namespace FDR.Tools.Library
         }
     }
 
-    public class RenameConfigs : ConfigDictionaryBase<RenameConfig>
+    public sealed class RenameConfigs : ConfigDictionaryBase<RenameConfig>
     {
         public RenameConfigs(AppConfig appConfig) : base(appConfig) { }
     }
@@ -59,7 +59,7 @@ namespace FDR.Tools.Library
         }
     }
 
-    public class BatchRenameConfigs : ConfigDictionaryBase<BatchRenameConfig>
+    public sealed class BatchRenameConfigs : ConfigDictionaryBase<BatchRenameConfig>
     {
         public BatchRenameConfigs(AppConfig appConfig) : base(appConfig) { }
     }

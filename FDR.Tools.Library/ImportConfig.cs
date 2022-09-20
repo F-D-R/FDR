@@ -83,7 +83,7 @@ namespace FDR.Tools.Library
         }
     }
 
-    public class ImportConfigs : ConfigDictionaryBase<ImportConfig>
+    public sealed class ImportConfigs : ConfigDictionaryBase<ImportConfig>
     {
         public ImportConfigs(AppConfig appConfig) : base(appConfig) { }
     }

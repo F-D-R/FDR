@@ -68,15 +68,11 @@ namespace FDR.Tools.Library.Test
         public void VerifyTests()
         {
             Verify.VerifyFolder(folder);
-            File.Exists(errPath).Should().BeFalse("Error file shouldn't exist");
-        }
+            File.Exists(errPath).Should().BeFalse();
 
-        [Test]
-        public void VerifyInvalidTests()
-        {
             File.WriteAllText(md5Path, "dummy");
             Verify.VerifyFolder(folder);
-            File.Exists(errPath).Should().BeTrue("Error file should exist");
+            File.Exists(errPath).Should().BeTrue();
         }
 
         [Test]
