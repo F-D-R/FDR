@@ -20,7 +20,7 @@ namespace FDR.Tools.Library.FTP
         Binary = 2
     }
 
-    public class FTPFile
+    public sealed class FTPFile
     {
         public string? Name { get; set; }
     }

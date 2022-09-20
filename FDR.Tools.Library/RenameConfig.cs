@@ -34,7 +34,7 @@ namespace FDR.Tools.Library
 
     public sealed class BatchRenameConfig : RenameConfig
     {
-        private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.MP4|*.AVI|*.MOV";
+        private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.CRW|*.MP4|*.AVI|*.MOV";
 
         private string? filter;
         public string FileFilter

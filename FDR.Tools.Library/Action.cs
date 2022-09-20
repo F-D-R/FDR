@@ -12,7 +12,8 @@ namespace FDR.Tools.Library
         move,
         resize,
         hash,
-        rehash
+        rehash,
+        cleanup
     }
 
     public sealed class ActionClass : ConfigPartBase
@@ -29,25 +30,23 @@ namespace FDR.Tools.Library
         {
             Validate();
 
-            if (AppConfig == null || string.IsNullOrWhiteSpace(Config)) return;
-
             switch (Type)
             {
                 case ActionType.rename:
                     BatchRenameConfig? batchRenameConfig;
-                    if (!AppConfig.BatchRenameConfigs.TryGetValue(Config, out batchRenameConfig)) throw new ArgumentOutOfRangeException();
+                    if (AppConfig == null || !AppConfig.BatchRenameConfigs.TryGetValue(Config??"", out batchRenameConfig)) throw new ArgumentOutOfRangeException();
                     Rename.RenameFilesInFolder(folder, batchRenameConfig);
                     break;
 
                 case ActionType.move:
                     MoveConfig? moveConfig;
-                    if (!AppConfig.MoveConfigs.TryGetValue(Config, out moveConfig)) throw new ArgumentOutOfRangeException();
+                    if (AppConfig == null || !AppConfig.MoveConfigs.TryGetValue(Config??"", out moveConfig)) throw new ArgumentOutOfRangeException();
                     Import.MoveFilesInFolder(folder, moveConfig);
-                    throw new NotImplementedException();
+                    break;
 
                 case ActionType.resize:
                     BatchResizeConfig? batchResizeConfig;
-                    if (!AppConfig.BatchResizeConfigs.TryGetValue(Config, out batchResizeConfig)) throw new ArgumentOutOfRangeException();
+                    if (AppConfig == null || !AppConfig.BatchResizeConfigs.TryGetValue(Config??"", out batchResizeConfig)) throw new ArgumentOutOfRangeException();
                     Resize.ResizeFilesInFolder(folder, batchResizeConfig);
                     break;
 
@@ -57,6 +56,10 @@ namespace FDR.Tools.Library
 
                 case ActionType.rehash:
                     Verify.HashFolder(folder, true);
+                    break;
+
+                case ActionType.cleanup:
+                    Raw.CleanupFolder(folder);
                     break;
 
                 default:
@@ -93,6 +96,7 @@ namespace FDR.Tools.Library
 
                 case ActionType.hash:
                 case ActionType.rehash:
+                case ActionType.cleanup:
                     //Nothing to validate
                     break;
 

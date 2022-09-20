@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FDR.Tools.Library
@@ -31,11 +32,20 @@ namespace FDR.Tools.Library
 
             private DirectoryInfo Folder { get; }
 
-            public int RawCount { get; private set; } = 0;
+            private int rawCount = 0;
+            public int RawCount => rawCount;
 
-            public int HashCount { get; private set; } = 0;
+            public void IncrementRawCount() { lock (this) rawCount++; }
 
-            public int ErrCount { get; private set; } = 0;
+            private int hashCount = 0;
+            public int HashCount => hashCount;
+
+            public void IncrementHashCount() { lock (this) hashCount++; }
+
+            private int errCount = 0;
+            public int ErrCount => errCount;
+
+            public void IncrementErrCount() { lock (this) errCount++; }
 
             public void CleanupRawFiles()
             {
@@ -74,14 +84,14 @@ namespace FDR.Tools.Library
                             if (jpgFolder.EnumerateFiles().Any() && !Directory.EnumerateFiles(jpgFolder.FullName, Path.GetFileNameWithoutExtension(file.Name) + "*.jpg", jpgOptions).Any())
                             {
                                 Trace.WriteLine($"Deleting raw file: {file.FullName}");
-                                RawCount++;
+                                IncrementRawCount();
                                 file.Delete();
 
                                 var hashFile = Verify.GetMd5FileName(file);
                                 if (File.Exists(hashFile))
                                 {
                                     Trace.WriteLine($"Deleting raw hash file: {hashFile}");
-                                    HashCount++;
+                                    IncrementHashCount();
                                     File.Delete(hashFile);
                                 }
 
@@ -89,7 +99,7 @@ namespace FDR.Tools.Library
                                 if (File.Exists(errFile))
                                 {
                                     Trace.WriteLine($"Deleting raw error file: {errFile}");
-                                    ErrCount++;
+                                    IncrementErrCount();
                                     File.Delete(errFile);
                                 }
 
@@ -137,11 +147,10 @@ namespace FDR.Tools.Library
                 {
                     i++;
 
-                    var imageFile = Verify.GetFileNameFromMD5(file);
-                    if (!File.Exists(imageFile))
+                    if (!File.Exists(Verify.GetFileNameFromMD5(file)))
                     {
                         Trace.WriteLine($"Deleting hash file: {file.FullName}");
-                        HashCount++;
+                        IncrementHashCount();
                         file.Delete();
                     }
 
@@ -180,11 +189,10 @@ namespace FDR.Tools.Library
                 {
                     i++;
 
-                    var imageFile = Verify.GetFileNameFromError(file);
-                    if (!File.Exists(imageFile))
+                    if (!File.Exists(Verify.GetFileNameFromError(file)))
                     {
                         Trace.WriteLine($"Deleting error file: {file.FullName}");
-                        ErrCount++;
+                        IncrementErrCount();
                         file.Delete();
                     }
 
