@@ -77,8 +77,10 @@ namespace FDR.Tools.Library
                 return false;
             }
         }
+
         internal static bool IsValidImage(FileInfo file)
         {
+            if (file == null) return false;
             return IsValidImage(file.FullName);
         }
 
@@ -94,8 +96,10 @@ namespace FDR.Tools.Library
                 return false;
             }
         }
+
         internal static async Task<bool> IsValidImageAsync(FileInfo file)
         {
+            if (file == null) return false;
             return await IsValidImageAsync(file.FullName);
         }
 
