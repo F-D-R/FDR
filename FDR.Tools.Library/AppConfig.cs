@@ -1,10 +1,14 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
-using FDR.Tools.Library;
 
-namespace FDR
+namespace FDR.Tools.Library
 {
-    public sealed class AppConfig
+    public interface IValidatable
+    {
+        public void Validate();
+    }
+
+    public sealed class AppConfig : IValidatable
     {
         public AppConfig()
         {
@@ -39,7 +43,7 @@ namespace FDR
         }
     }
 
-    public abstract class ConfigPartBase
+    public abstract class ConfigPartBase : IValidatable
     {
         public ConfigPartBase() { }
 

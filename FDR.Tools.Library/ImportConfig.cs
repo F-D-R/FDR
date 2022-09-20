@@ -23,7 +23,7 @@ namespace FDR.Tools.Library
         volume_label
     }
 
-    public sealed class ImportRule
+    public sealed class ImportRule : IValidatable
     {
         public ImportRuleType Type { get; set; } = ImportRuleType.contains_folder;
 

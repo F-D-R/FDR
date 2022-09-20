@@ -201,11 +201,6 @@ namespace FDR.Tools.Library
         private static ImportConfig? FindConfig(DirectoryInfo source, Dictionary<string, ImportConfig> configs)
         {
             var matchingConfigs = new List<ImportConfig>();
-            //var options = new EnumerationOptions
-            //{
-            //    MatchCasing = MatchCasing.CaseInsensitive,
-            //    RecurseSubdirectories = true
-            //};
 
             foreach (var config in configs)
             {
