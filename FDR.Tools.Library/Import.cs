@@ -34,7 +34,7 @@ namespace FDR.Tools.Library
             return result;
         }
 
-        private static string GetVolumeLabel(string path)
+        internal static string GetVolumeLabel(string path)
         {
             if (Path.IsPathRooted(path))
             {
@@ -48,7 +48,7 @@ namespace FDR.Tools.Library
             return "<unknown>";
         }
 
-        private static string GetRelativeDestFolder(FolderStructure destStruct, DateTime date, string dateFormat)
+        internal static string GetRelativeDestFolder(FolderStructure destStruct, DateTime date, string dateFormat)
         {
             var sep = Path.DirectorySeparatorChar;
             var dateString = date.ToString(dateFormat);
@@ -64,12 +64,12 @@ namespace FDR.Tools.Library
             }
         }
 
-        private static string GetAbsoluteDestFolder(string destRoot, FolderStructure destStruct, DateTime date, string dateFormat)
+        internal static string GetAbsoluteDestFolder(string destRoot, FolderStructure destStruct, DateTime date, string dateFormat)
         {
             return Path.Combine(destRoot, GetRelativeDestFolder(destStruct, date, dateFormat));
         }
 
-        private static void CopyFile(string destRoot, FileInfo file, FolderStructure destStruct, string dateFormat, int progressPercent)
+        internal static void CopyFile(string destRoot, FileInfo file, FolderStructure destStruct, string dateFormat, int progressPercent)
         {
             var destfolder = GetAbsoluteDestFolder(destRoot, destStruct, file.CreationTime, dateFormat);
             if (!Directory.Exists(destfolder)) Directory.CreateDirectory(destfolder);
@@ -198,7 +198,7 @@ namespace FDR.Tools.Library
             //            a.Do(new DirectoryInfo(fn));
         }
 
-        private static ImportConfig? FindConfig(DirectoryInfo source, Dictionary<string, ImportConfig> configs)
+        internal static ImportConfig? FindConfig(DirectoryInfo source, Dictionary<string, ImportConfig> configs)
         {
             var matchingConfigs = new List<ImportConfig>();
 

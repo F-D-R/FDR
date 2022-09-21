@@ -2,7 +2,6 @@
 using System.IO;
 using NUnit.Framework;
 using FluentAssertions;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace FDR.Tools.Library.Test
@@ -14,48 +13,6 @@ namespace FDR.Tools.Library.Test
         private DirectoryInfo folder;
         private string rawFolderPath;
         private readonly TestFiles files = new();
-
-        private class TestFile
-        {
-            public TestFile(DateTime created, string sourceFolder, string sourceName, string destFolder, string destName)
-            {
-                Keep = true;
-                Create = true;
-                Created = created;
-                SourceFolder = sourceFolder;
-                SourceName = sourceName;
-                DestFolder = destFolder;
-                DestName = destName;
-            }
-            public TestFile(string destFolder, string destName, bool keep)
-            {
-                Keep = keep;
-                Create = false;
-                DestFolder = destFolder;
-                DestName = destName;
-            }
-            public bool Keep;
-            public bool Create;
-            public DateTime Created;
-            public string SourceFolder;
-            public string SourceName;
-            public string DestFolder;
-            public string DestName;
-            public string SourcePath => System.IO.Path.Combine(SourceFolder, SourceName);
-            public string DestPath => System.IO.Path.Combine(DestFolder, DestName);
-        }
-
-        private class TestFiles : List<TestFile>
-        {
-            public void Add(DateTime created, string sourceFolder, string sourceName, string destFolder, string destName)
-            {
-                base.Add(new TestFile(created, sourceFolder, sourceName, destFolder, destName));
-            }
-            public void Add(string destFolder, string destName, bool keep = true)
-            {
-                base.Add(new TestFile(destFolder, destName, keep));
-            }
-        }
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -127,13 +84,11 @@ namespace FDR.Tools.Library.Test
             files.Add(rawFolderPath, ".dest_002.cr2.md5");
             files.Add(rawFolderPath, ".dest_001.cr3.md5");
 
-            files.Should().HaveCount(18);
-
-            files.Where(f => f.Create).ToList().ForEach(f => { File.WriteAllText(f.SourcePath, ""); File.SetCreationTimeUtc(f.SourcePath, f.Created); });
+            files.CreateFiles();
 
             actions.ForEach(a => a.Do(folder));
 
-            files.ForEach(f => File.Exists(f.DestPath).Should().Be(f.Keep, f.DestName));
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.DestName));
         }
     }
 }

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using FluentAssertions;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace FDR.Tools.Library.Test
 {
@@ -12,25 +11,88 @@ namespace FDR.Tools.Library.Test
     public class ImportTest
     {
         private string tempFolderPath;
-        private DirectoryInfo folder;
-        private string filePath;
-        private string md5Path;
-        private string errPath;
-        private string missingPath;
-        private const string fileContent = "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
-        private const string hash = "Scs2COKzP61rZd+MuPSWaA==";
+        private string dcim0;
+        private string dcim1;
+        private string dcim2;
+        private string dcim3;
+        private string dcim4;
+        private string source1;
+        private string source2;
+        private string destinationRoot;
+        private string dest1;
+        private string dest2;
+        private string raw1;
+        private string raw2;
+        private readonly TestFiles files = new();
+
+        private const int importConfigCount = 4;
+        private const string appConfigJson = @"
+{
+  ""ImportConfigs"": {
+    ""import1"": {
+      ""Name"": ""import1"",
+      ""DestStructure"": ""date"",
+      ""DateFormat"": ""yyyyMMdd"",
+      ""Rules"": [ { ""Type"": ""contains_folder"", ""Param"": ""???CANON"" }, { ""Type"": ""contains_folder"", ""Param"": ""CANONMSC"" } ],
+      ""BatchRenameConfigs"": [ { ""FileNamePattern"": ""{cdate:yyMMdd}_{counter:3}"", ""AdditionalFileTypes"": [ "".JPG"" ] } ],
+      ""MoveConfigs"": [ { ""FileFilter"": ""*.CR3|*.CR2|*.CRW"", ""RelativeFolder"": ""RAW"" } ]
+    },
+    ""import2"": {
+      ""Name"": ""import2"",
+      ""DestStructure"": ""date"",
+      ""DateFormat"": ""yyyyMMdd"",
+      ""Rules"": [ { ""Type"": ""contains_folder"", ""Param"": ""pictures"" } ],
+      ""BatchRenameConfigs"": [ { ""FileNamePattern"": ""{cdate:yyMMdd}_{counter:3}"", ""AdditionalFileTypes"": [ "".JPG"" ] } ],
+      ""MoveConfigs"": [ { ""FileFilter"": ""*.CR3|*.CR2|*.CRW"", ""RelativeFolder"": ""RAW"" } ]
+    },
+    ""import3"": {
+      ""Name"": ""import3"",
+      ""Rules"": [ { ""Type"": ""contains_file"", ""Param"": ""dummy"" } ]
+    },
+    ""import4"": {
+      ""Name"": ""import4"",
+      ""Rules"": [ { ""Type"": ""volume_label"", ""Param"": ""dummy"" } ]
+    }
+  }
+}
+";
+
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
             tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(tempFolderPath);
-            folder = new DirectoryInfo(tempFolderPath);
 
-            filePath = Path.Combine(tempFolderPath, "test.jpg");
-            md5Path = Path.Combine(tempFolderPath, ".test.jpg.md5");
-            errPath = Path.Combine(tempFolderPath, "test.jpg.error");
-            missingPath = Path.Combine(tempFolderPath, "missing.jpg");
+            dcim0 = Path.Combine(tempFolderPath, "drive0", "DCIM");
+            Directory.CreateDirectory(dcim0);
+            dcim1 = Path.Combine(tempFolderPath, "drive1", "DCIM");
+            Directory.CreateDirectory(dcim1);
+            dcim2 = Path.Combine(tempFolderPath, "drive2", "DCIM");
+            Directory.CreateDirectory(dcim2);
+            dcim3 = Path.Combine(tempFolderPath, "drive3", "DCIM");
+            Directory.CreateDirectory(dcim3);
+            dcim4 = Path.Combine(tempFolderPath, "drive4", "DCIM");
+            Directory.CreateDirectory(dcim4);
+
+            source1 = Path.Combine(dcim1, "100CANON");
+            Directory.CreateDirectory(source1);
+            Directory.CreateDirectory(Path.Combine(dcim1, "CANONMSC"));
+            source2 = Path.Combine(dcim2, "pictures");
+            Directory.CreateDirectory(source2);
+
+            destinationRoot = Path.Combine(tempFolderPath, "ROOT");
+            Directory.CreateDirectory(destinationRoot);
+
+            dest1 = Path.Combine(destinationRoot, "20220101");
+            Directory.CreateDirectory(dest1);
+            dest2 = Path.Combine(destinationRoot, "20220202");
+            Directory.CreateDirectory(dest2);
+
+            raw1 = Path.Combine(dest1, "RAW");
+            Directory.CreateDirectory(raw1);
+            raw2 = Path.Combine(dest2, "RAW");
+            Directory.CreateDirectory(raw2);
         }
 
         [OneTimeTearDown]
@@ -42,119 +104,169 @@ namespace FDR.Tools.Library.Test
         [SetUp]
         public void SetUp()
         {
-            File.WriteAllText(filePath, fileContent);
-            File.SetLastWriteTime(filePath, new DateTime(2000, 12, 31));
-
-            File.WriteAllText(md5Path, hash);
-            File.SetLastWriteTime(md5Path, new DateTime(2000, 12, 31));
+            Directory.GetFiles(tempFolderPath, "*", SearchOption.AllDirectories).ToList().ForEach(f => File.Delete(f));
+            files.Clear();
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (File.Exists(filePath)) File.Delete(filePath);
-            if (File.Exists(md5Path)) File.Delete(md5Path);
-            if (File.Exists(errPath)) File.Delete(errPath);
+            Directory.GetFiles(tempFolderPath, "*", SearchOption.AllDirectories).ToList().ForEach(f => File.Delete(f));
+            files.Clear();
         }
 
-        //[Test]
-        //public void FileNamingTests()
-        //{
-        //    Verify.GetMd5FileName(new FileInfo(filePath)).Should().Be(md5Path, "Invalid MD5 filename was calculated");
-        //    Verify.GetFileNameFromMD5(new FileInfo(md5Path)).Should().Be(filePath, "Invalid filename was calculated from MD5 filename");
-        //    Verify.GetErrorFileName(new FileInfo(filePath)).Should().Be(errPath, "Invalid error filename was calculated");
-        //    Verify.GetFileNameFromError(new FileInfo(errPath)).Should().Be(filePath, "Invalid filename was calculated from error filename");
-        //}
+        [Test]
+        public void FindConfigTests()
+        {
+            var appConfig = JsonConvert.DeserializeObject<AppConfig>(appConfigJson);
+            appConfig.Should().NotBeNull();
+            appConfig.ImportConfigs.Should().HaveCount(importConfigCount);
 
-        //[Test]
-        //public void ComputeHashTests()
-        //{
-        //    Verify.ComputeHash(new FileInfo(filePath)).Should().Be(hash);
-        //    Verify.ComputeHash(new FileInfo(md5Path)).Should().NotBe(hash);
-        //    Task<string>.Run(() => Verify.ComputeHashAsync(new FileInfo(filePath))).Result.Should().Be(hash);
-        //    Task<string>.Run(() => Verify.ComputeHashAsync(new FileInfo(md5Path))).Result.Should().NotBe(hash);
-        //}
+            var import0 = Import.FindConfig(new DirectoryInfo(dcim0), appConfig.ImportConfigs);
+            import0.Should().BeNull("import0");
 
-        //[Test]
-        //public void VerifyTests()
-        //{
-        //    Verify.VerifyFolder(folder);
-        //    File.Exists(errPath).Should().BeFalse();
+            // contains_folder (???CANON, CANONMSC)
+            var import1 = Import.FindConfig(new DirectoryInfo(dcim1), appConfig.ImportConfigs);
+            import1.Should().NotBeNull("import1");
+            import1.Name.Should().Be("import1");
 
-        //    File.WriteAllText(md5Path, "dummy");
-        //    Verify.VerifyFolder(folder);
-        //    File.Exists(errPath).Should().BeTrue();
-        //}
+            // contains_folder (pictures)
+            var import2 = Import.FindConfig(new DirectoryInfo(dcim2), appConfig.ImportConfigs);
+            import2.Should().NotBeNull("import2");
+            import2.Name.Should().Be("import2");
 
-        //[Test]
-        //public void CreateHashFileTests()
-        //{
-        //    File.Delete(md5Path);
-        //    File.Exists(md5Path).Should().BeFalse();
-        //    Verify.CreateHashFile(md5Path, hash, DateTime.UtcNow);
-        //    File.Exists(md5Path).Should().BeTrue();
-        //    File.ReadAllText(md5Path).Should().Be(hash);
+            // contains_file (dummy)
+            File.WriteAllText(Path.Combine(dcim3, "dummy"), "");
+            var import3 = Import.FindConfig(new DirectoryInfo(dcim3), appConfig.ImportConfigs);
+            import3.Should().NotBeNull("import3");
+            import3.Name.Should().Be("import3");
 
-        //    File.Delete(md5Path);
-        //    File.Exists(md5Path).Should().BeFalse();
-        //    Task.Run(() => Verify.CreateHashFileAsync(md5Path, hash, DateTime.UtcNow)).Wait();
-        //    File.Exists(md5Path).Should().BeTrue();
-        //    File.ReadAllText(md5Path).Should().Be(hash);
-        //}
+            // volume_label
+            var volume = Import.GetVolumeLabel(dcim4);
+            appConfig.ImportConfigs["import4"].Rules[0].Param = volume;
+            var import4 = Import.FindConfig(new DirectoryInfo(dcim4), appConfig.ImportConfigs);
+            import4.Should().NotBeNull("import4");
+            import4.Name.Should().Be("import4");
+        }
 
-        //[Test]
-        //public void IsValidImageTests()
-        //{
-        //    Verify.IsValidImage((string)null).Should().BeFalse();
-        //    Verify.IsValidImage((FileInfo)null).Should().BeFalse();
-        //    Task<bool>.Run(() => Verify.IsValidImageAsync((string)null)).Result.Should().BeFalse();
-        //    Task<bool>.Run(() => Verify.IsValidImageAsync((FileInfo)null)).Result.Should().BeFalse();
+        [TestCase(FolderStructure.date, "20211231", false)]
+        [TestCase(FolderStructure.year_date, "2021\\20211231", false)]
+        [TestCase(FolderStructure.year_month_date, "2021\\12\\20211231", false)]
+        [TestCase(FolderStructure.year_month_day, "2021\\12\\31", false)]
+        [TestCase(FolderStructure.year_month, "2021\\12", false)]
+        [TestCase((FolderStructure)999, "", true)]
+        public void GetRelativeDestFolderTests(FolderStructure destStruct, string result, bool exception)
+        {
+            var date = new DateTime(2021, 12, 31);
+            if (exception)
+            {
+                Func<string> func = () => Import.GetRelativeDestFolder(destStruct, date, "yyyyMMdd");
+                func.Should().Throw<NotImplementedException>();
+            }
+            else
+                Import.GetRelativeDestFolder(destStruct, date, "yyyyMMdd").Should().Be(result);
+        }
 
-        //    Verify.IsValidImage("dummy").Should().BeFalse();
-        //    Task<bool>.Run(() => Verify.IsValidImageAsync("dummy")).Result.Should().BeFalse();
+        [TestCase(FolderStructure.date, "C:\\dummy\\20211231", false)]
+        [TestCase(FolderStructure.year_date, "C:\\dummy\\2021\\20211231", false)]
+        [TestCase(FolderStructure.year_month_date, "C:\\dummy\\2021\\12\\20211231", false)]
+        [TestCase(FolderStructure.year_month_day, "C:\\dummy\\2021\\12\\31", false)]
+        [TestCase(FolderStructure.year_month, "C:\\dummy\\2021\\12", false)]
+        [TestCase((FolderStructure)999, "", true)]
+        public void GetAbsoluteDestFolderTests(FolderStructure destStruct, string result, bool exception)
+        {
+            var date = new DateTime(2021, 12, 31);
+            if (exception)
+            {
+                Func<string> func = () => Import.GetAbsoluteDestFolder("C:\\dummy\\", destStruct, date, "yyyyMMdd");
+                func.Should().Throw<NotImplementedException>();
+            }
+            else
+                Import.GetAbsoluteDestFolder("C:\\dummy\\", destStruct, date, "yyyyMMdd").Should().Be(result);
+        }
 
-        //    Verify.IsValidImage(missingPath).Should().BeFalse();
-        //    Verify.IsValidImage(new FileInfo(missingPath)).Should().BeFalse();
-        //    Task<bool>.Run(() => Verify.IsValidImageAsync(missingPath)).Result.Should().BeFalse();
-        //    Task<bool>.Run(() => Verify.IsValidImageAsync(new FileInfo(missingPath))).Result.Should().BeFalse();
+        [Test]
+        public void CopyFileTests()
+        {
+            var appConfig = JsonConvert.DeserializeObject<AppConfig>(appConfigJson);
+            appConfig.Should().NotBeNull();
+            appConfig.ImportConfigs.Should().HaveCount(importConfigCount);
+            appConfig.ImportConfigs.ToList().ForEach(ic => ic.Value.DestRoot = destinationRoot);
 
-        //    Verify.IsValidImage(filePath).Should().BeFalse();
-        //    Verify.IsValidImage(new FileInfo(filePath)).Should().BeFalse();
-        //    Task<bool>.Run(() => Verify.IsValidImageAsync(filePath)).Result.Should().BeFalse();
-        //    Task<bool>.Run(() => Verify.IsValidImageAsync(new FileInfo(filePath))).Result.Should().BeFalse();
+            files.Add(new DateTime(2022, 01, 01), source1, "01.crw", dest1, "01.crw");
+            files.Add(new DateTime(2022, 01, 01), source1, "02.cr2", dest1, "02.cr2");
+            files.Add(new DateTime(2022, 01, 01), source1, "03.cr3", dest1, "03.cr3");
+            files.Add(new DateTime(2022, 01, 01), source1, "04.jpg", dest1, "04.jpg");
+            files.CreateFiles();
 
-        //    var jpgPath = Path.Combine(tempFolderPath, Guid.NewGuid().ToString() + ".jpg");
-        //    var image = new Image<Argb32>(100, 100);
-        //    image.Should().NotBeNull();
-        //    image.SaveAsJpeg(jpgPath);
-        //    File.Exists(jpgPath).Should().BeTrue();
+            var count = files.Where(f => f.SourceFolder != f.DestFolder).Count();
+            int i = 0;
+            foreach (var f in files)
+            {
+                i++;
+                Import.CopyFile(destinationRoot, new FileInfo(f.GetSourcePath()), FolderStructure.date, "yyyyMMdd", 100 * i / count);
+            }
 
-        //    Verify.IsValidImage(jpgPath).Should().BeTrue();
-        //    Verify.IsValidImage(new FileInfo(jpgPath)).Should().BeTrue();
-        //    Task<bool>.Run(() => Verify.IsValidImageAsync(jpgPath)).Result.Should().BeTrue();
-        //    Task<bool>.Run(() => Verify.IsValidImageAsync(new FileInfo(jpgPath))).Result.Should().BeTrue();
-        //}
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+        }
 
-        //[Test]
-        //public void HashTests()
-        //{
-        //    File.Delete(md5Path);
-        //    File.Exists(md5Path).Should().BeFalse();
-        //    Verify.HashFolder(folder);
-        //    File.Exists(md5Path).Should().BeTrue();
-        //    File.ReadAllText(md5Path).Should().Be(hash);
-        //}
+        [Test]
+        public void MoveFilesInFolderTests()
+        {
+            var appConfig = JsonConvert.DeserializeObject<AppConfig>(appConfigJson);
+            appConfig.Should().NotBeNull();
+            appConfig.ImportConfigs.Should().HaveCount(importConfigCount);
+            appConfig.ImportConfigs.ToList().ForEach(ic => ic.Value.DestRoot = destinationRoot);
 
-        //[Test]
-        //public void RehashTests()
-        //{
-        //    var begin = DateTime.UtcNow.AddMilliseconds(-300);
-        //    File.WriteAllText(md5Path, "dummy");
-        //    Verify.HashFolder(folder, true);
-        //    File.Exists(md5Path).Should().BeTrue();
-        //    File.ReadAllText(md5Path).Should().Be(hash);
-        //    File.GetLastWriteTimeUtc(md5Path).Should().Be(File.GetLastWriteTimeUtc(filePath));
-        //    File.GetCreationTimeUtc(md5Path).Should().BeAfter(begin);
-        //}
+            files.Add(dest1, "01.crw", raw1, "01.crw");
+            files.Add(dest1, "02.cr2", raw1, "02.cr2");
+            files.Add(dest1, "03.cr3", raw1, "03.cr3");
+            files.Add(dest1, "04.jpg", dest1, "04.jpg");
+            files.CreateFiles();
+
+            Import.MoveFilesInFolder(new DirectoryInfo(dest1), new MoveConfig());
+
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+        }
+
+        [Test]
+        public void ImportTests()
+        {
+            var appConfig = JsonConvert.DeserializeObject<AppConfig>(appConfigJson);
+            appConfig.Should().NotBeNull();
+            appConfig.ImportConfigs.Should().HaveCount(importConfigCount);
+            appConfig.ImportConfigs.ToList().ForEach(ic => ic.Value.DestRoot = destinationRoot);
+
+
+
+
+
+
+            //files.Add(new DateTime(2022, 1, 3), tempFolderPath, "01.jpg", tempFolderPath, "dest_003.jpg");
+            //files.Add(new DateTime(2022, 1, 2), tempFolderPath, "02.jpg", tempFolderPath, "dest_002.jpg");
+            //files.Add(new DateTime(2022, 1, 1), tempFolderPath, "03.jpg", tempFolderPath, "dest_001.jpg");
+            //files.Add(tempFolderPath, ".01.jpg.md5", false);
+            //files.Add(tempFolderPath, ".02.jpg.md5", false);
+            //files.Add(tempFolderPath, ".03.jpg.md5", false);
+            //files.Add(tempFolderPath, ".dest_003.jpg.md5");
+            //files.Add(tempFolderPath, ".dest_002.jpg.md5");
+            //files.Add(tempFolderPath, ".dest_001.jpg.md5");
+
+            //files.Add(new DateTime(2022, 1, 3), tempFolderPath, "01.crw", rawFolderPath, "dest_003.crw");
+            //files.Add(new DateTime(2022, 1, 2), tempFolderPath, "02.cr2", rawFolderPath, "dest_002.cr2");
+            //files.Add(new DateTime(2022, 1, 1), tempFolderPath, "03.cr3", rawFolderPath, "dest_001.cr3");
+            //files.Add(tempFolderPath, ".01.crw.md5", false);
+            //files.Add(tempFolderPath, ".02.cr2.md5", false);
+            //files.Add(tempFolderPath, ".03.cr3.md5", false);
+            //files.Add(rawFolderPath, ".dest_003.crw.md5");
+            //files.Add(rawFolderPath, ".dest_002.cr2.md5");
+            //files.Add(rawFolderPath, ".dest_001.cr3.md5");
+
+            //files.CreateFiles();
+
+            //actions.ForEach(a => a.Do(folder));
+
+            //files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.DestName));
+        }
     }
 }

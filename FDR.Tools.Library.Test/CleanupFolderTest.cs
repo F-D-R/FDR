@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
@@ -15,28 +14,6 @@ namespace FDR.Tools.Library.Test
         private string rawFolderPath;
         private string panoramaFolderPath;
         private readonly TestFiles files = new();
-
-        private class TestFile
-        {
-            public TestFile(string folder, string name, bool keep)
-            {
-                Folder = folder;
-                Name = name;
-                Keep = keep;
-            }
-            public string Folder;
-            public string Name;
-            public bool Keep;
-            public string Path => System.IO.Path.Combine(Folder, Name);
-        }
-
-        private class TestFiles : List<TestFile>
-        {
-            public void Add(string folder, string name, bool keep)
-            {
-                base.Add(new TestFile(folder, name, keep));
-            }
-        }
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -150,11 +127,11 @@ namespace FDR.Tools.Library.Test
             files.Add(panoramaFolderPath, "missing2.jpg.error", false);
             files.Add(panoramaFolderPath, "missing3.jpg.error", false);
 
-            files.ForEach(f => File.WriteAllText(f.Path, ""));
+            files.CreateFiles();
 
             Raw.CleanupFolder(tempFolder);
 
-            files.ForEach(f => File.Exists(f.Path).Should().Be(f.Keep, f.Name));
+            files.ForEach(f => File.Exists(f.GetPath()).Should().Be(f.Keep, f.Name));
         }
 
         [Test]
@@ -208,11 +185,11 @@ namespace FDR.Tools.Library.Test
             files.Add(panoramaFolderPath, "missing2.jpg.error", false);
             files.Add(panoramaFolderPath, "missing3.jpg.error", false);
 
-            files.ForEach(f => File.WriteAllText(f.Path, ""));
+            files.CreateFiles();
 
             Raw.CleanupFolder(tempFolder);
 
-            files.ForEach(f => File.Exists(f.Path).Should().Be(f.Keep, f.Name));
+            files.ForEach(f => File.Exists(f.GetPath()).Should().Be(f.Keep, f.Name));
         }
     }
 }
