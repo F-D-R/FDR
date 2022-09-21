@@ -133,19 +133,24 @@ namespace FDR.Tools.Library
             return result;
         }
 
-        public static DateTime GetExifDate(this FileInfo file)
+        public static DateTime GetExifDate(this FileInfo file, DateTime defaultDateUtc)
         {
             try
             {
                 IImageInfo imageInfo = Image.Identify(file.FullName);
                 var dateString = imageInfo.Metadata?.ExifProfile?.GetValue<string>(ExifTag.DateTimeOriginal)?.ToString();
-                if (string.IsNullOrWhiteSpace(dateString)) return file.CreationTimeUtc;
+                if (string.IsNullOrWhiteSpace(dateString)) return defaultDateUtc;
                 return DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", null);
             }
             catch (Exception)
             {
-                return file.CreationTimeUtc;
+                return defaultDateUtc;
             }
+        }
+
+        public static DateTime GetExifDate(this FileInfo file)
+        {
+            return GetExifDate(file, file.LastWriteTimeUtc);
         }
 
         public static void RenameFolder(DirectoryInfo folder, string? pattern)

@@ -64,9 +64,9 @@ namespace FDR.Tools.Library.Test
             File.Exists(file2Path).Should().BeFalse();
             File.Exists(file2PlusPath).Should().BeFalse();
             File.Exists(otherFilePath).Should().BeTrue();
-            File.Exists(Path.Combine(folderPath, "020304_01.cr3")).Should().BeTrue();
-            File.Exists(Path.Combine(folderPath, "010204_02.cr2")).Should().BeTrue();
-            File.Exists(Path.Combine(folderPath, "010204_02.jpg")).Should().BeTrue();
+            File.Exists(Path.Combine(folderPath, "020304_02.cr3")).Should().BeTrue();
+            File.Exists(Path.Combine(folderPath, "010204_01.cr2")).Should().BeTrue();
+            File.Exists(Path.Combine(folderPath, "010204_01.jpg")).Should().BeTrue();
         }
 
         [Test]
