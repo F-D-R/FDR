@@ -78,6 +78,8 @@ namespace FDR.Tools.Library
             Trace.WriteLine($"Copying {file.FullName} to {dest}");
             Common.Progress(progressPercent);
             file.CopyTo(dest);
+            File.SetCreationTimeUtc(dest, file.CreationTimeUtc);
+            File.SetLastWriteTimeUtc(dest, file.LastWriteTimeUtc);
         }
 
         public static void MoveFilesInFolder(DirectoryInfo folder, MoveConfig config)

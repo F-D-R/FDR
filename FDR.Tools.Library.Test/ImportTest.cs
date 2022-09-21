@@ -4,6 +4,7 @@ using NUnit.Framework;
 using FluentAssertions;
 using System.Linq;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace FDR.Tools.Library.Test
 {
@@ -63,6 +64,19 @@ namespace FDR.Tools.Library.Test
         {
             tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(tempFolderPath);
+        }
+
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
+        {
+            if (Directory.Exists(tempFolderPath)) Directory.Delete(tempFolderPath, true);
+        }
+
+        [SetUp]
+        public void SetUp()
+        {
+            Directory.GetFiles(tempFolderPath, "*", SearchOption.AllDirectories).ToList().ForEach(f => File.Delete(f));
+            files.Clear();
 
             dcim0 = Path.Combine(tempFolderPath, "drive0", "DCIM");
             Directory.CreateDirectory(dcim0);
@@ -93,19 +107,6 @@ namespace FDR.Tools.Library.Test
             Directory.CreateDirectory(raw1);
             raw2 = Path.Combine(dest2, "RAW");
             Directory.CreateDirectory(raw2);
-        }
-
-        [OneTimeTearDown]
-        public void OneTimeTearDown()
-        {
-            if (Directory.Exists(tempFolderPath)) Directory.Delete(tempFolderPath, true);
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
-            Directory.GetFiles(tempFolderPath, "*", SearchOption.AllDirectories).ToList().ForEach(f => File.Delete(f));
-            files.Clear();
         }
 
         [TearDown]
@@ -188,11 +189,6 @@ namespace FDR.Tools.Library.Test
         [Test]
         public void CopyFileTests()
         {
-            var appConfig = JsonConvert.DeserializeObject<AppConfig>(appConfigJson);
-            appConfig.Should().NotBeNull();
-            appConfig.ImportConfigs.Should().HaveCount(importConfigCount);
-            appConfig.ImportConfigs.ToList().ForEach(ic => ic.Value.DestRoot = destinationRoot);
-
             files.Add(new DateTime(2022, 01, 01), source1, "01.crw", dest1, "01.crw");
             files.Add(new DateTime(2022, 01, 01), source1, "02.cr2", dest1, "02.cr2");
             files.Add(new DateTime(2022, 01, 01), source1, "03.cr3", dest1, "03.cr3");
@@ -213,11 +209,6 @@ namespace FDR.Tools.Library.Test
         [Test]
         public void MoveFilesInFolderTests()
         {
-            var appConfig = JsonConvert.DeserializeObject<AppConfig>(appConfigJson);
-            appConfig.Should().NotBeNull();
-            appConfig.ImportConfigs.Should().HaveCount(importConfigCount);
-            appConfig.ImportConfigs.ToList().ForEach(ic => ic.Value.DestRoot = destinationRoot);
-
             files.Add(dest1, "01.crw", raw1, "01.crw");
             files.Add(dest1, "02.cr2", raw1, "02.cr2");
             files.Add(dest1, "03.cr3", raw1, "03.cr3");
@@ -232,41 +223,29 @@ namespace FDR.Tools.Library.Test
         [Test]
         public void ImportTests()
         {
-            var appConfig = JsonConvert.DeserializeObject<AppConfig>(appConfigJson);
-            appConfig.Should().NotBeNull();
-            appConfig.ImportConfigs.Should().HaveCount(importConfigCount);
-            appConfig.ImportConfigs.ToList().ForEach(ic => ic.Value.DestRoot = destinationRoot);
+            using (ConsoleTraceListener consoleTracer = new ConsoleTraceListener())
+            {
+                Trace.Listeners.Add(consoleTracer);
 
+                var appConfig = JsonConvert.DeserializeObject<AppConfig>(appConfigJson);
+                appConfig.Should().NotBeNull();
+                appConfig.ImportConfigs.Should().HaveCount(importConfigCount);
+                appConfig.ImportConfigs.ToList().ForEach(ic => ic.Value.DestRoot = destinationRoot);
 
+                files.Add(new DateTime(2022, 1, 1, 13, 59, 3), source1, "aaa.cr3", raw1, "220101_003.cr3");
+                files.Add(new DateTime(2022, 1, 1, 13, 59, 3), source1, "aaa.jpg", dest1, "220101_003.jpg");
+                files.Add(new DateTime(2022, 1, 1, 13, 59, 2), source1, "bbb.cr2", raw1, "220101_002.cr2");
+                files.Add(new DateTime(2022, 1, 1, 13, 59, 2), source1, "bbb.jpg", dest1, "220101_002.jpg");
+                files.Add(new DateTime(2022, 1, 1, 13, 59, 1), source1, "ccc.crw", raw1, "220101_001.crw");
+                files.Add(new DateTime(2022, 1, 1, 13, 59, 1), source1, "ccc.jpg", dest1, "220101_001.jpg");
+                files.CreateFiles();
 
+                Directory.Delete(dest1, true);
+                var import1 = appConfig.ImportConfigs["import1"];
+                Import.ImportFiles(new DirectoryInfo(source1), import1);
 
-
-
-            //files.Add(new DateTime(2022, 1, 3), tempFolderPath, "01.jpg", tempFolderPath, "dest_003.jpg");
-            //files.Add(new DateTime(2022, 1, 2), tempFolderPath, "02.jpg", tempFolderPath, "dest_002.jpg");
-            //files.Add(new DateTime(2022, 1, 1), tempFolderPath, "03.jpg", tempFolderPath, "dest_001.jpg");
-            //files.Add(tempFolderPath, ".01.jpg.md5", false);
-            //files.Add(tempFolderPath, ".02.jpg.md5", false);
-            //files.Add(tempFolderPath, ".03.jpg.md5", false);
-            //files.Add(tempFolderPath, ".dest_003.jpg.md5");
-            //files.Add(tempFolderPath, ".dest_002.jpg.md5");
-            //files.Add(tempFolderPath, ".dest_001.jpg.md5");
-
-            //files.Add(new DateTime(2022, 1, 3), tempFolderPath, "01.crw", rawFolderPath, "dest_003.crw");
-            //files.Add(new DateTime(2022, 1, 2), tempFolderPath, "02.cr2", rawFolderPath, "dest_002.cr2");
-            //files.Add(new DateTime(2022, 1, 1), tempFolderPath, "03.cr3", rawFolderPath, "dest_001.cr3");
-            //files.Add(tempFolderPath, ".01.crw.md5", false);
-            //files.Add(tempFolderPath, ".02.cr2.md5", false);
-            //files.Add(tempFolderPath, ".03.cr3.md5", false);
-            //files.Add(rawFolderPath, ".dest_003.crw.md5");
-            //files.Add(rawFolderPath, ".dest_002.cr2.md5");
-            //files.Add(rawFolderPath, ".dest_001.cr3.md5");
-
-            //files.CreateFiles();
-
-            //actions.ForEach(a => a.Do(folder));
-
-            //files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.DestName));
+                files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            }
         }
     }
 }
