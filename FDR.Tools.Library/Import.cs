@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using System.Threading;
+using static FDR.Tools.Library.Import;
 
 namespace FDR.Tools.Library
 {
     public static class Import
     {
-        private class SourceInfo
+        internal class SourceInfo
         {
             public DirectoryInfo? DirectoryInfo { get; set; }
             public string? Path { get; set; }
@@ -250,12 +251,8 @@ namespace FDR.Tools.Library
             return matchingConfigs.FirstOrDefault();
         }
 
-        public static void ImportWizard(Dictionary<string, ImportConfig> configs, DirectoryInfo? folder = null, bool auto = false)
+        private static List<DirectoryInfo> GetSources(DirectoryInfo? folder)
         {
-            if (configs == null) throw new ArgumentNullException("configs");
-            if (configs.Count == 0) throw new ArgumentNullException("Import configurations cannot be empty!");
-            foreach (var c in configs) c.Value.Validate();
-
             List<DirectoryInfo> sources;
             if (folder == null)
             {
@@ -268,7 +265,11 @@ namespace FDR.Tools.Library
                 if (folder.Name != "DCIM") throw new ArgumentException("The given import folder is not a DCIM folder!");
                 sources = new List<DirectoryInfo>() { folder };
             }
+            return sources;
+        }
 
+        private static List<SourceInfo> GetSourceInfos(Dictionary<string, ImportConfig> configs, List<DirectoryInfo> sources)
+        {
             var sourceInfos = new List<SourceInfo>();
             foreach (var source in sources)
             {
@@ -282,98 +283,96 @@ namespace FDR.Tools.Library
                     si.SumFileCount = Common.GetFiles(source, si.ImportConfig).Count();
                 sourceInfos.Add(si);
             }
+            return sourceInfos;
+        }
 
-            SourceInfo? selectedSI = null;
+        private static SourceInfo? SelectSourceInfo(List<SourceInfo> sourceInfos, bool auto)
+        {
+            if (auto && sourceInfos.Count == 1)
+                return sourceInfos[0];
+
             if (sourceInfos.Count == 0)
             {
                 Common.Msg("No source has been found!", ConsoleColor.Red);
-                return;
+                return null;
             }
-            else if (auto && sourceInfos.Count == 1)
+
+            Common.Msg("Select source:");
+            int i = 1;
+            foreach (var si in sourceInfos)
             {
-                selectedSI = sourceInfos[0];
+                if (si.ImportConfig == null)
+                    Common.Msg($"    {i}. {si.Path}\tNo configuration for drive {GetVolumeLabel(si.Path!)}");
+                else
+                    Common.Msg($"    {i}. {si.Path}\tConfig: {si.ConfigName} ({si.SumFileCount} files on drive {GetVolumeLabel(si.Path!)})");
+                i++;
             }
+            Common.Msg($"Enter the number or the source (1..{i - 1}) or ESC to abort: ", ConsoleColor.White, false);
+
+            while (true)
+            {
+                while (!Console.KeyAvailable) Thread.Sleep(300);
+                var key = Console.ReadKey(true);
+
+                if (key.Key == ConsoleKey.Escape)
+                {
+                    Common.Msg("");
+                    Common.Msg("Import aborted...", ConsoleColor.Red);
+                    return null;
+                }
+
+                if (int.TryParse(key.KeyChar.ToString(), out int selection) && selection > 0 && selection < i)
+                {
+                    Common.Msg($"{key.KeyChar}");
+                    return sourceInfos[selection - 1];
+                }
+            }
+        }
+
+        private static ImportConfig? SelectImportConfig(Dictionary<string, ImportConfig> configs, SourceInfo sourceInfo)
+        {
+            if (sourceInfo.ImportConfig == null)
+                Common.Msg($"Selected source: {sourceInfo.Path}\tNo configuration for drive {GetVolumeLabel(sourceInfo.Path!)}");
             else
+                Common.Msg($"Selected source: {sourceInfo.Path}\tConfig: {sourceInfo.ConfigName} ({sourceInfo.SumFileCount} files on drive {GetVolumeLabel(sourceInfo.Path!)})");
+
+            Common.Msg("Select configuration:");
+            int i = 1;
+            foreach (var c in configs)
             {
-                Common.Msg("Select source:");
-                int i = 1;
-                foreach (var si in sourceInfos)
+                Common.Msg($"    {i}. {c.Value.Name} ({c.Value.DestRoot})");
+                i++;
+            }
+            Common.Msg($"Enter the number or the configuration (1..{i - 1}) or ESC to abort: ", ConsoleColor.White, false);
+
+            ImportConfig? config = null;
+            while (config == null)
+            {
+                while (!Console.KeyAvailable) Thread.Sleep(300);
+                var key = Console.ReadKey(true);
+
+                if (key.Key == ConsoleKey.Escape)
                 {
-                    if (si.ImportConfig == null)
-                        Common.Msg($"    {i}. {si.Path}\tNo configuration for drive {GetVolumeLabel(si.Path!)}");
-                    else
-                        Common.Msg($"    {i}. {si.Path}\tConfig: {si.ConfigName} ({si.SumFileCount} files on drive {GetVolumeLabel(si.Path!)})");
-                    i++;
+                    Common.Msg("");
+                    Common.Msg("Import aborted...", ConsoleColor.Red);
+                    return null;
                 }
-                Common.Msg($"Enter the number or the source (1..{i - 1}) or ESC to abort: ", ConsoleColor.White, false);
 
-                while (selectedSI == null)
+                if (int.TryParse(key.KeyChar.ToString(), out int selection) && selection > 0 && selection < i)
                 {
-                    while (!Console.KeyAvailable) Thread.Sleep(300);
-                    var key = Console.ReadKey(true);
-
-                    if (key.Key == ConsoleKey.Escape)
-                    {
-                        Common.Msg("");
-                        Common.Msg("Import aborted...", ConsoleColor.Red);
-                        return;
-                    }
-
-                    if (int.TryParse(key.KeyChar.ToString(), out int selection) && selection < i)
-                    {
-                        Common.Msg($"{key.KeyChar}");
-                        selectedSI = sourceInfos[selection - 1];
-                    }
+                    Common.Msg($"{key.KeyChar}");
+                    config = configs.ToArray().ElementAt(selection - 1).Value;
+                    sourceInfo.ImportConfig = config;
                 }
             }
-            if (selectedSI == null) return;
 
-            if (selectedSI.ImportConfig == null)
-                Common.Msg($"Selected source: {selectedSI.Path}\tNo configuration for drive {GetVolumeLabel(selectedSI.Path!)}");
-            else
-                Common.Msg($"Selected source: {selectedSI.Path}\tConfig: {selectedSI.ConfigName} ({selectedSI.SumFileCount} files on drive {GetVolumeLabel(selectedSI.Path!)})");
+            sourceInfo.SumFileCount = Common.GetFiles(sourceInfo.DirectoryInfo!, config).Count();
+            Common.Msg($"Selected source: {sourceInfo.Path}\tConfig: {sourceInfo.ConfigName} ({sourceInfo.SumFileCount} files on drive {GetVolumeLabel(sourceInfo.Path!)})");
+            return config;
+        }
 
-            var config = selectedSI.ImportConfig;
-
-            if (config == null)
-            {
-                Common.Msg("Select configuration:");
-                int i = 1;
-                foreach (var c in configs)
-                {
-                    Common.Msg($"    {i}. {c.Value.Name} ({c.Value.DestRoot})");
-                    i++;
-                }
-                Common.Msg($"Enter the number or the configuration (1..{i - 1}) or ESC to abort: ", ConsoleColor.White, false);
-
-                while (config == null)
-                {
-                    while (!Console.KeyAvailable) Thread.Sleep(300);
-                    var key = Console.ReadKey(true);
-
-                    if (key.Key == ConsoleKey.Escape)
-                    {
-                        Common.Msg("");
-                        Common.Msg("Import aborted...", ConsoleColor.Red);
-                        return;
-                    }
-
-                    if (int.TryParse(key.KeyChar.ToString(), out int selection) && selection < i)
-                    {
-                        Common.Msg($"{key.KeyChar}");
-                        config = configs.ToArray().ElementAt(selection - 1).Value;
-                        selectedSI.ImportConfig = config;
-                    }
-                }
-
-                if (config != null)
-                {
-                    selectedSI.SumFileCount = Common.GetFiles(selectedSI.DirectoryInfo!, config).Count();
-                    Common.Msg($"Selected source: {selectedSI.Path}\tConfig: {selectedSI.ConfigName} ({selectedSI.SumFileCount} files on drive {GetVolumeLabel(selectedSI.Path!)})");
-                }
-            }
-            if (config == null) return;
-
+        private static void PrintImportConfiguration(ImportConfig config)
+        {
             Trace.Indent();
             Trace.WriteLine($"DestRoot: {config.DestRoot}");
             Trace.WriteLine($"DestStructure: {config.DestStructure}");
@@ -387,6 +386,21 @@ namespace FDR.Tools.Library
                     Trace.WriteLine($"Move: {mc.FileFilter} to {mc.RelativeFolder}");
             Trace.WriteLine("");
             Trace.Unindent();
+        }
+
+        public static void ImportWizard(Dictionary<string, ImportConfig> configs, DirectoryInfo? folder = null, bool auto = false)
+        {
+            if (configs == null) throw new ArgumentNullException(nameof(configs));
+            if (configs.Count == 0) throw new ArgumentNullException("Import configurations cannot be empty!");
+            foreach (var c in configs) c.Value.Validate();
+
+            var sources = GetSources(folder);
+            var sourceInfos = GetSourceInfos(configs, sources);
+            var selectedSI = SelectSourceInfo(sourceInfos, auto);
+            if (selectedSI == null) return;
+            var config = SelectImportConfig(configs, selectedSI);
+            if (config == null) return;
+            PrintImportConfiguration(config);
 
             Import.ImportFiles(selectedSI.DirectoryInfo!, config);
 
