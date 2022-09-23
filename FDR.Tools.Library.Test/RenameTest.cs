@@ -2,6 +2,7 @@
 using System.IO;
 using NUnit.Framework;
 using FluentAssertions;
+using NUnit.Framework.Internal;
 
 namespace FDR.Tools.Library.Test
 {
@@ -9,41 +10,13 @@ namespace FDR.Tools.Library.Test
     public class RenameTest
     {
         private string tempFolderPath;
-        private string folderPath;
-        private string file1Path;
-        private string file2Path;
-        private string file2PlusPath;
-        private string otherFilePath;
-        private DirectoryInfo folder;
+        private readonly TestFiles files = new();
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
             tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(tempFolderPath);
-
-            folderPath = Path.Combine(tempFolderPath, "temp", "testfolder");
-            Directory.CreateDirectory(folderPath);
-
-            file1Path = Path.Combine(folderPath, "ccc.cr3");
-            File.WriteAllText(file1Path, "");
-            File.SetCreationTime(file1Path, new DateTime(2001, 2, 3));
-            File.SetLastWriteTime(file1Path, new DateTime(2002, 3, 4));
-
-            file2Path = Path.Combine(folderPath, "bbb.cr2");
-            File.WriteAllText(file2Path, "");
-            File.SetCreationTime(file2Path, new DateTime(2001, 2, 4));
-            File.SetLastWriteTime(file2Path, new DateTime(2001, 2, 4));
-
-            file2PlusPath = Path.Combine(folderPath, "bbb.jpg");
-            File.WriteAllText(file2PlusPath, "");
-
-            otherFilePath = Path.Combine(folderPath, "aaa.txt");
-            File.WriteAllText(otherFilePath, "");
-
-            Directory.SetCreationTime(folderPath, new DateTime(2001, 2, 3));
-            Directory.SetLastWriteTime(folderPath, new DateTime(2004, 5, 6));
-            folder = new DirectoryInfo(folderPath);
         }
 
         [OneTimeTearDown]
@@ -57,16 +30,16 @@ namespace FDR.Tools.Library.Test
         {
             var config = new BatchRenameConfig() { FilenamePattern = "{mdate:yyMMdd}_{counter:2}" };
             config.Should().NotBeNull();
-            folder.Should().NotBeNull();
-            Rename.RenameFilesInFolder(folder, config);
 
-            File.Exists(file1Path).Should().BeFalse();
-            File.Exists(file2Path).Should().BeFalse();
-            File.Exists(file2PlusPath).Should().BeFalse();
-            File.Exists(otherFilePath).Should().BeTrue();
-            File.Exists(Path.Combine(folderPath, "020304_02.cr3")).Should().BeTrue();
-            File.Exists(Path.Combine(folderPath, "010204_01.cr2")).Should().BeTrue();
-            File.Exists(Path.Combine(folderPath, "010204_01.jpg")).Should().BeTrue();
+            files.Add(new DateTime(2002, 3, 4), tempFolderPath, "ccc.cr3", tempFolderPath, "020304_02.cr3");
+            files.Add(new DateTime(2001, 2, 4), tempFolderPath, "bbb.cr2", tempFolderPath, "010204_01.cr2");
+            files.Add(tempFolderPath, "bbb.jpg", tempFolderPath, "010204_01.jpg");
+            files.Add(tempFolderPath, "aaa.txt", tempFolderPath, "aaa.txt");
+            files.CreateFiles();
+
+            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
         }
 
         [Test]
@@ -74,10 +47,18 @@ namespace FDR.Tools.Library.Test
         {
             var config = new RenameConfig() { FilenamePattern = "{pfolder}" };
             config.Should().NotBeNull();
+
+            var folderPath = Path.Combine(tempFolderPath, "folder");
+            Directory.CreateDirectory(folderPath);
+            Directory.SetCreationTime(folderPath, new DateTime(2001, 2, 3));
+            Directory.SetLastWriteTime(folderPath, new DateTime(2004, 5, 6));
+            var folder = new DirectoryInfo(folderPath);
             folder.Should().NotBeNull();
             folder.Parent.Should().NotBeNull();
             var parentPath = folder.Parent.FullName;
             parentPath.Should().NotBeNullOrWhiteSpace();
+            parentPath.Should().Be(tempFolderPath);
+
             Rename.RenameFolder(folder, config);
 
             Directory.Exists(folderPath).Should().BeFalse();
