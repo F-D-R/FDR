@@ -245,6 +245,21 @@ namespace FDR.Tools.Library.Test
                 Import.ImportFiles(new DirectoryInfo(source1), import1);
 
                 files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+
+
+                files.Add(new DateTime(2022, 2, 2, 13, 59, 3), source2, "aaa.cr3", raw2, "220202_003.cr3");
+                files.Add(new DateTime(2022, 2, 2, 13, 59, 3), source2, "aaa.jpg", dest2, "220202_003.jpg");
+                files.Add(new DateTime(2022, 2, 2, 13, 59, 2), source2, "bbb.cr2", raw2, "220202_002.cr2");
+                files.Add(new DateTime(2022, 2, 2, 13, 59, 2), source2, "bbb.jpg", dest2, "220202_002.jpg");
+                files.Add(new DateTime(2022, 2, 2, 13, 59, 1), source2, "ccc.crw", raw2, "220202_001.crw");
+                files.Add(new DateTime(2022, 2, 2, 13, 59, 1), source2, "ccc.jpg", dest2, "220202_001.jpg");
+                files.CreateFiles();
+
+                Directory.Delete(dest2, true);
+                var import2 = appConfig.ImportConfigs["import2"];
+                Import.ImportFiles(new DirectoryInfo(source2), import2);
+
+                files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
             }
         }
     }

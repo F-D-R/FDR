@@ -39,7 +39,8 @@ namespace FDR.Tools.Library
             BatchRenameConfigs?.ToList().ForEach(brnc => brnc.Value.Validate());
             BatchResizeConfigs?.ToList().ForEach(brsc => brsc.Value.Validate());
             MoveConfigs?.ToList().ForEach(mc => mc.Value.Validate());
-            ImportConfigs?.ToList().ForEach(ic => ic.Value.Validate());
+            ImportConfigs.Where(ic => ic.Value?.AppConfig == null).ToList().ForEach(ic => ic.Value.AppConfig = this);
+            ImportConfigs.ToList().ForEach(ic => ic.Value.Validate());
         }
     }
 
