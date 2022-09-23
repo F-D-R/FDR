@@ -124,9 +124,11 @@ namespace FDR.Tools.Library.Test
             Task<bool>.Run(() => Verify.IsValidImageAsync(new FileInfo(filePath))).Result.Should().BeFalse();
 
             var jpgPath = Path.Combine(tempFolderPath, Guid.NewGuid().ToString() + ".jpg");
-            var image = new Image<Argb32>(100, 100);
-            image.Should().NotBeNull();
-            image.SaveAsJpeg(jpgPath);
+            using (var image = new Image<Argb32>(100, 100))
+            {
+                image.Should().NotBeNull();
+                image.SaveAsJpeg(jpgPath);
+            }
             File.Exists(jpgPath).Should().BeTrue();
 
             Verify.IsValidImage(jpgPath).Should().BeTrue();

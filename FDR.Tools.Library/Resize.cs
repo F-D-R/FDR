@@ -10,7 +10,7 @@ namespace FDR.Tools.Library
 {
     public static class Resize
     {
-        public static void ResizeFile(FileInfo file, int counter, BatchResizeConfig config, int progressPercent)
+        public static void ResizeFile(FileInfo file, int counter, ResizeConfig config, int progressPercent)
         {
             if (config == null) throw new ArgumentNullException("config");
             config.Validate();
@@ -28,28 +28,31 @@ namespace FDR.Tools.Library
             int maxWidth = config.MaxWidth;
             int maxHeight = config.MaxHeight;
 
-            ResizeMode resizeMode = ResizeMode.Max;
-            switch (config.ResizeMethod)
-            {
-                case ResizeMethod.max_width:
-                    maxHeight = int.MaxValue;
-                    resizeMode = ResizeMode.Min;
-                    break;
-                case ResizeMethod.max_height:
-                    maxWidth = int.MaxValue;
-                    resizeMode = ResizeMode.Min;
-                    break;
-                case ResizeMethod.stretch:
-                    resizeMode = ResizeMode.Stretch;
-                    break;
-            }
-
             using (Image image = Image.Load(file.FullName))
             {
-                if (!((config.ResizeMethod == ResizeMethod.stretch && image.Width == maxWidth && image.Height == maxHeight)
-                    || (config.ResizeMethod == ResizeMethod.max_width && image.Width == maxWidth)
-                    || (config.ResizeMethod == ResizeMethod.max_height && image.Height == maxHeight)))
-                    image.Mutate(x => x.Resize(new ResizeOptions() { Size = new Size(config.MaxWidth, config.MaxHeight), Mode = resizeMode }));
+                ResizeMode resizeMode = ResizeMode.Max;
+                bool resize = true;
+                switch (config.ResizeMethod)
+                {
+                    case ResizeMethod.fit_in:
+                        resize = (image.Width != maxWidth && image.Height != maxHeight) || (image.Width == maxWidth && image.Height > maxHeight) || (image.Height == maxHeight && image.Width > maxWidth);
+                        break;
+                    case ResizeMethod.max_width:
+                        resize = image.Width != maxWidth;
+                        maxHeight = int.MaxValue;
+                        break;
+                    case ResizeMethod.max_height:
+                        resize = image.Height != maxHeight;
+                        maxWidth = int.MaxValue;
+                        break;
+                    case ResizeMethod.stretch:
+                        resize = image.Width != maxWidth || image.Height != maxHeight;
+                        resizeMode = ResizeMode.Stretch;
+                        break;
+                }
+
+                if (resize)
+                    image.Mutate(x => x.Resize(new ResizeOptions() { Size = new Size(maxWidth, maxHeight), Mode = resizeMode }));
 
                 if (config.ClearMetadata) ClearMetadata(image);
 
