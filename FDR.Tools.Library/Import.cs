@@ -201,86 +201,42 @@ namespace FDR.Tools.Library
             //            a.Do(new DirectoryInfo(fn));
         }
 
-        internal static ImportConfig? FindConfig(DirectoryInfo source, Dictionary<string, ImportConfig> configs)
+        internal static ImportConfig? FindConfig(DirectoryInfo sourceFolder, Dictionary<string, ImportConfig> configs)
         {
             var matchingConfigs = new List<ImportConfig>();
 
-            foreach (var config in configs)
-            {
-                if (config.Value.Rules != null && config.Value.Rules.Count > 0)
-                {
-                    ImportConfig? tmpconfig = null;
-                    bool ok = true;
-
-                    foreach (var rule in config.Value.Rules)
-                    {
-                        switch (rule.Type)
-                        {
-                            case ImportRuleType.volume_label:
-                                if (string.Compare(GetVolumeLabel(source.FullName), rule.Param, true) == 0)
-                                    tmpconfig = config.Value;
-                                else
-                                    ok = false;
-                                break;
-
-                            case ImportRuleType.contains_file:
-                                if (Common.GetFiles(source, rule.Param??"*", true).Any())
-                                    tmpconfig = config.Value;
-                                else
-                                    ok = false;
-                                break;
-
-                            case ImportRuleType.contains_folder:
-                                //TODO: Common.GetDirectories
-                                if (Directory.GetDirectories(source.FullName, rule.Param??"*", SearchOption.AllDirectories).Any())
-                                    tmpconfig = config.Value;
-                                else
-                                    ok = false;
-                                break;
-
-                            default:
-                                throw new NotImplementedException($"Unknown rule type: {rule.Type}");
-                        }
-                    }
-
-                    if (ok && tmpconfig != null && !matchingConfigs.Contains(tmpconfig))
-                        matchingConfigs.Add(tmpconfig);
-                }
-            }
+            configs
+                .Where(c => c.Value.Rules.Evaluate(sourceFolder)).ToList()
+                .ForEach(c => matchingConfigs.Add(c.Value));
 
             return matchingConfigs.FirstOrDefault();
         }
 
-        private static List<DirectoryInfo> GetSources(DirectoryInfo? folder)
+        private static List<DirectoryInfo> GetSourceFolders(DirectoryInfo? givenFolder)
         {
-            List<DirectoryInfo> sources;
-            if (folder == null)
+            if (givenFolder != null)
             {
-                Common.Msg("Import");
-                sources = DetectSources();
+                Common.Msg($"Import ({givenFolder.FullName})");
+                if (givenFolder.Name != "DCIM") throw new ArgumentException("The given import folder is not a DCIM folder!");
+                return new List<DirectoryInfo>() { givenFolder };
             }
-            else
-            {
-                Common.Msg($"Import ({folder.FullName})");
-                if (folder.Name != "DCIM") throw new ArgumentException("The given import folder is not a DCIM folder!");
-                sources = new List<DirectoryInfo>() { folder };
-            }
-            return sources;
+
+            Common.Msg("Import");
+            return DetectSources();
         }
 
-        private static List<SourceInfo> GetSourceInfos(Dictionary<string, ImportConfig> configs, List<DirectoryInfo> sources)
+        private static List<SourceInfo> GetSourceInfos(Dictionary<string, ImportConfig> configs, List<DirectoryInfo> sourceFolders)
         {
             var sourceInfos = new List<SourceInfo>();
-            foreach (var source in sources)
+            foreach (var folder in sourceFolders)
             {
-                var si = new SourceInfo
-                {
-                    DirectoryInfo = source,
-                    Path = source.FullName,
-                    ImportConfig = FindConfig(source, configs)
-                };
+                var si = new SourceInfo();
+                si.DirectoryInfo = folder;
+                si.Path = folder.FullName;
+                si.ImportConfig = FindConfig(folder, configs);
+
                 if (si.ImportConfig != null)
-                    si.SumFileCount = Common.GetFiles(source, si.ImportConfig).Count();
+                    si.SumFileCount = Common.GetFiles(folder, si.ImportConfig).Count();
                 sourceInfos.Add(si);
             }
             return sourceInfos;
@@ -394,15 +350,15 @@ namespace FDR.Tools.Library
             if (configs.Count == 0) throw new ArgumentNullException("Import configurations cannot be empty!");
             foreach (var c in configs) c.Value.Validate();
 
-            var sources = GetSources(folder);
-            var sourceInfos = GetSourceInfos(configs, sources);
-            var selectedSI = SelectSourceInfo(sourceInfos, auto);
-            if (selectedSI == null) return;
-            var config = SelectImportConfig(configs, selectedSI);
+            var sourceFolders = GetSourceFolders(folder);
+            var sourceInfos = GetSourceInfos(configs, sourceFolders);
+            var selectedSourceInfo = SelectSourceInfo(sourceInfos, auto);
+            if (selectedSourceInfo == null || selectedSourceInfo.DirectoryInfo == null) return;
+            var config = SelectImportConfig(configs, selectedSourceInfo);
             if (config == null) return;
             PrintImportConfiguration(config);
 
-            Import.ImportFiles(selectedSI.DirectoryInfo!, config);
+            ImportFiles(selectedSourceInfo.DirectoryInfo, config);
 
             Common.Msg("                        ");
             Common.Msg("Successfully finished...", ConsoleColor.Green);

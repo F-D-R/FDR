@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Linq;
 
 namespace FDR.Tools.Library
 {
@@ -35,13 +37,47 @@ namespace FDR.Tools.Library
         }
     }
 
+    public sealed class ImportRules : List<ImportRule>
+    {
+        public bool Evaluate(DirectoryInfo source)
+        {
+            if (Count == 0) return false;
+
+            foreach (var rule in this)
+            {
+                switch (rule.Type)
+                {
+                    case ImportRuleType.volume_label:
+                        if (string.Compare(Import.GetVolumeLabel(source.FullName), rule.Param, true) != 0)
+                            return false;
+                        break;
+
+                    case ImportRuleType.contains_file:
+                        if (!Common.GetFiles(source, rule.Param??"*", true).Any())
+                            return false;
+                        break;
+
+                    case ImportRuleType.contains_folder:
+                        //TODO: Common.GetDirectories
+                        if (!Directory.GetDirectories(source.FullName, rule.Param??"*", SearchOption.AllDirectories).Any())
+                            return false;
+                        break;
+
+                    default:
+                        throw new NotImplementedException($"Unknown rule type: {rule.Type}");
+                }
+            }
+            return true;
+        }
+    }
+
     public sealed class ImportConfig : ConfigPartBase
     {
         private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.CRW|*.JPG|*.MP4|*.AVI|*.MOV";
 
         public string? Name { get; set; }
 
-        public List<ImportRule> Rules { get; } = new List<ImportRule>();
+        public ImportRules Rules { get; } = new ImportRules();
 
         public string? DestRoot { get; set; }
 
