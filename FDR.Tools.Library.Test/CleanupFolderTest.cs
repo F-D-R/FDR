@@ -7,7 +7,7 @@ using FluentAssertions;
 namespace FDR.Tools.Library.Test
 {
     [TestFixture]
-    public class CleanupFolderTest
+    public class CleanupFolderTest : TestBase
     {
         private string tempFolderPath;
         private DirectoryInfo tempFolder;
@@ -16,8 +16,10 @@ namespace FDR.Tools.Library.Test
         private readonly TestFiles files = new();
 
         [OneTimeSetUp]
-        public void OneTimeSetUp()
+        public override void OneTimeSetUp()
         {
+            base.OneTimeSetUp();
+
             tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(tempFolderPath);
             tempFolder = new DirectoryInfo(tempFolderPath);
@@ -30,23 +32,29 @@ namespace FDR.Tools.Library.Test
         }
 
         [OneTimeTearDown]
-        public void OneTimeTearDown()
+        public override void OneTimeTearDown()
         {
             if (Directory.Exists(tempFolderPath)) Directory.Delete(tempFolderPath, true);
+
+            base.OneTimeTearDown();
         }
 
         [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
+            base.SetUp();
+
             Directory.GetFiles(tempFolderPath, "*", SearchOption.AllDirectories).ToList().ForEach(f => File.Delete(f));
             files.Clear();
         }
 
         [TearDown]
-        public void TearDown()
+        public override void TearDown()
         {
             Directory.GetFiles(tempFolderPath, "*", SearchOption.AllDirectories).ToList().ForEach(f => File.Delete(f));
             files.Clear();
+
+            base.TearDown();
         }
 
         [Test]

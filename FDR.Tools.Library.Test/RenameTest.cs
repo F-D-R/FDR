@@ -7,22 +7,26 @@ using NUnit.Framework.Internal;
 namespace FDR.Tools.Library.Test
 {
     [TestFixture]
-    public class RenameTest
+    public class RenameTest : TestBase
     {
         private string tempFolderPath;
         private readonly TestFiles files = new();
 
         [OneTimeSetUp]
-        public void OneTimeSetUp()
+        public override void OneTimeSetUp()
         {
+            base.OneTimeSetUp();
+
             tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(tempFolderPath);
         }
 
         [OneTimeTearDown]
-        public void OneTimeTearDown()
+        public override void OneTimeTearDown()
         {
             if (Directory.Exists(tempFolderPath)) Directory.Delete(tempFolderPath, true);
+
+            base.OneTimeTearDown();
         }
 
         [Test]

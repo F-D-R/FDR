@@ -9,7 +9,7 @@ using SixLabors.ImageSharp.PixelFormats;
 namespace FDR.Tools.Library.Test
 {
     [TestFixture]
-    public class VerifyTest
+    public class VerifyTest : TestBase
     {
         private string tempFolderPath;
         private DirectoryInfo folder;
@@ -21,8 +21,10 @@ namespace FDR.Tools.Library.Test
         private const string hash = "Scs2COKzP61rZd+MuPSWaA==";
 
         [OneTimeSetUp]
-        public void OneTimeSetUp()
+        public override void OneTimeSetUp()
         {
+            base.OneTimeSetUp();
+
             tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(tempFolderPath);
             folder = new DirectoryInfo(tempFolderPath);
@@ -34,14 +36,18 @@ namespace FDR.Tools.Library.Test
         }
 
         [OneTimeTearDown]
-        public void OneTimeTearDown()
+        public override void OneTimeTearDown()
         {
             if (Directory.Exists(tempFolderPath)) Directory.Delete(tempFolderPath, true);
+
+            base.OneTimeTearDown();
         }
 
         [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
+            base.SetUp();
+
             File.WriteAllText(filePath, fileContent);
             File.SetLastWriteTime(filePath, new DateTime(2000, 12, 31));
 
@@ -50,11 +56,13 @@ namespace FDR.Tools.Library.Test
         }
 
         [TearDown]
-        public void TearDown()
+        public override void TearDown()
         {
             if (File.Exists(filePath)) File.Delete(filePath);
             if (File.Exists(md5Path)) File.Delete(md5Path);
             if (File.Exists(errPath)) File.Delete(errPath);
+
+            base.TearDown();
         }
 
         [Test]

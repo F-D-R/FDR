@@ -118,7 +118,7 @@ namespace FDR.Tools.Library
 
             ParallelOptions parallelOptions = new()
             {
-                MaxDegreeOfParallelism = 4
+                MaxDegreeOfParallelism = 8
             };
 
             var task = Parallel.ForEachAsync(files, parallelOptions, async (file, token) =>
@@ -159,7 +159,7 @@ namespace FDR.Tools.Library
 
             ParallelOptions parallelOptions = new()
             {
-                MaxDegreeOfParallelism = 4
+                MaxDegreeOfParallelism = 8
             };
 
             var task = Parallel.ForEachAsync(files, parallelOptions, async (file, token) =>

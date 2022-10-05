@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace FDR.Tools.Library
@@ -73,47 +72,49 @@ namespace FDR.Tools.Library
                 Parallel.ForEach(files, parallelOptions, (file, token) =>
                 {
                     i++;
+                    if (i % 10 == 0) Progress(i);
 
-                    if (string.Compare(file.Directory?.Name, DEFAULT_RAW_FOLDER, true) == 0)
+                    // Handle only RAW folder files:
+                    if (string.Compare(file.Directory?.Name, DEFAULT_RAW_FOLDER, true) != 0) return;
+
+                    var rawFolder = file.Directory;
+                    var jpgFolder = rawFolder?.Parent;
+                    if (jpgFolder == null) return;
+
+                    // Exit if JPG folder is empty, i.e. the RAW files are not jet converted:
+                    if (!jpgFolder.EnumerateFiles().Any()) return;
+
+                    // Exit if there is a JPG file:
+                    if (Directory.EnumerateFiles(jpgFolder.FullName, Path.GetFileNameWithoutExtension(file.Name) + "*.jpg", jpgOptions).Any()) return;
+
+                    Trace.WriteLine($"Deleting raw file: {file.FullName}");
+                    IncrementRawCount();
+                    file.Delete();
+
+                    var hashFile = Verify.GetMd5FileName(file);
+                    if (File.Exists(hashFile))
                     {
-                        var rawFolder = file.Directory;
-                        var jpgFolder = rawFolder?.Parent;
-
-                        if (jpgFolder != null)
-                        {
-                            if (jpgFolder.EnumerateFiles().Any() && !Directory.EnumerateFiles(jpgFolder.FullName, Path.GetFileNameWithoutExtension(file.Name) + "*.jpg", jpgOptions).Any())
-                            {
-                                Trace.WriteLine($"Deleting raw file: {file.FullName}");
-                                IncrementRawCount();
-                                file.Delete();
-
-                                var hashFile = Verify.GetMd5FileName(file);
-                                if (File.Exists(hashFile))
-                                {
-                                    Trace.WriteLine($"Deleting raw hash file: {hashFile}");
-                                    IncrementHashCount();
-                                    File.Delete(hashFile);
-                                }
-
-                                var errFile = Verify.GetErrorFileName(file);
-                                if (File.Exists(errFile))
-                                {
-                                    Trace.WriteLine($"Deleting raw error file: {errFile}");
-                                    IncrementErrCount();
-                                    File.Delete(errFile);
-                                }
-
-                                if (rawFolder != null && rawFolder.Exists && !rawFolder.EnumerateFiles().Any())
-                                {
-                                    Trace.WriteLine($"Deleting raw folder: {rawFolder}");
-                                    rawFolder.Delete();
-                                }
-                            }
-                        }
+                        Trace.WriteLine($"Deleting raw hash file: {hashFile}");
+                        IncrementHashCount();
+                        File.Delete(hashFile);
                     }
 
-                    if (i % 10 == 0)
-                        Progress(i);
+                    var errFile = Verify.GetErrorFileName(file);
+                    if (File.Exists(errFile))
+                    {
+                        Trace.WriteLine($"Deleting raw error file: {errFile}");
+                        IncrementErrCount();
+                        File.Delete(errFile);
+                    }
+
+                    lock (this)
+                    {
+                        if (rawFolder != null && rawFolder.Exists && !rawFolder.EnumerateFiles().Any())
+                        {
+                            Trace.WriteLine($"Deleting raw folder: {rawFolder}");
+                            rawFolder.Delete();
+                        }
+                    }
                 });
 
                 Progress(i, true);

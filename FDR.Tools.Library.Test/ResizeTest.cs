@@ -9,21 +9,25 @@ using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 namespace FDR.Tools.Library.Test
 {
     [TestFixture]
-    public class ResizeTest
+    public class ResizeTest : TestBase
     {
         private string tempFolderPath;
 
         [OneTimeSetUp]
-        public void OneTimeSetUp()
+        public override void OneTimeSetUp()
         {
+            base.OneTimeSetUp();
+
             tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(tempFolderPath);
         }
 
         [OneTimeTearDown]
-        public void OneTimeTearDown()
+        public override void OneTimeTearDown()
         {
             if (Directory.Exists(tempFolderPath)) Directory.Delete(tempFolderPath, true);
+
+            base.OneTimeTearDown();
         }
 
         [TestCase(ResizeMethod.fit_in, 200, 200, 200, 100, false)]
