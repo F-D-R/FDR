@@ -15,14 +15,30 @@ namespace FDR.Tools.Library
 
     public class RenameConfig : ConfigPartBase
     {
+        private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.CRW|*.MP4|*.AVI|*.MOV";
+
         public string? FilenamePattern { get; set; } = "{name}";
 
         public CharacterCasing FilenameCase { get; set; } = CharacterCasing.unchanged;
 
         public CharacterCasing ExtensionCase { get; set; } = CharacterCasing.lower;
 
+        private string? filter;
+        public virtual string FileFilter
+        {
+            get { return !string.IsNullOrWhiteSpace(filter) ? filter : DEFAULT_FILTER; }
+            set { filter = value; }
+        }
+
+        public List<string> AdditionalFileTypes { get; } = new List<string>() { ".JPG" };
+
+        public bool Recursive { get; set; } = false;
+
+        public bool StopOnError { get; set; } = true;
+
         public override void Validate()
         {
+            base.Validate();
             if (string.IsNullOrWhiteSpace(FilenamePattern)) throw new InvalidDataException("Renaming filename pattern cannot be empty!");
             switch (FilenameCase)
             {
@@ -42,34 +58,6 @@ namespace FDR.Tools.Library
                 default:
                     throw new InvalidDataException("Invalid ExtensionCase!");
             }
-        }
-    }
-
-    public sealed class RenameConfigs : ConfigDictionaryBase<RenameConfig>
-    {
-        public RenameConfigs(AppConfig appConfig) : base(appConfig) { }
-    }
-
-    public sealed class BatchRenameConfig : RenameConfig
-    {
-        private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.CRW|*.MP4|*.AVI|*.MOV";
-
-        private string? filter;
-        public string FileFilter
-        {
-            get { return !string.IsNullOrWhiteSpace(filter) ? filter : DEFAULT_FILTER; }
-            set { filter = value; }
-        }
-
-        public List<string> AdditionalFileTypes { get; } = new List<string>() { ".JPG" };
-
-        public bool Recursive { get; set; } = false;
-
-        public bool StopOnError { get; set; } = true;
-
-        public override void Validate()
-        {
-            base.Validate();
             foreach (var type in AdditionalFileTypes)
             {
                 if (string.IsNullOrWhiteSpace(type)) throw new InvalidDataException("Additional file type cannot be empty!");
@@ -79,8 +67,8 @@ namespace FDR.Tools.Library
         }
     }
 
-    public sealed class BatchRenameConfigs : ConfigDictionaryBase<BatchRenameConfig>
+    public sealed class RenameConfigs : ConfigDictionaryBase<RenameConfig>
     {
-        public BatchRenameConfigs(AppConfig appConfig) : base(appConfig) { }
+        public RenameConfigs(AppConfig appConfig) : base(appConfig) { }
     }
 }

@@ -22,23 +22,6 @@ namespace FDR.Tools.Library.Test
 
             config.FilenamePattern = "{name}";
             validate.Should().NotThrow();
-        }
-
-        [Test]
-        public void BatchRenameConfigTests()
-        {
-            var config = new BatchRenameConfig();
-            config.Should().NotBeNull();
-            System.Action validate = () => config.Validate();
-
-            config.FilenamePattern.Should().NotBeNullOrWhiteSpace();
-            validate.Should().NotThrow();
-
-            config.FilenamePattern = null;
-            validate.Should().Throw<InvalidDataException>();
-
-            config.FilenamePattern = "{name}";
-            validate.Should().NotThrow();
 
             config.FileFilter = null;
             config.FileFilter.Should().NotBeNullOrWhiteSpace();

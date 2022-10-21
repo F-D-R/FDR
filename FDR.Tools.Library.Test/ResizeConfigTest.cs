@@ -18,40 +18,6 @@ namespace FDR.Tools.Library.Test
             config.ResizeMethod = ResizeMethod.fit_in;
             config.MaxWidth = 100;
             config.MaxHeight = 100;
-
-            config.FilenamePattern.Should().NotBeNullOrWhiteSpace();
-            validate.Should().NotThrow();
-
-            config.FilenamePattern = null;
-            validate.Should().Throw<InvalidDataException>();
-
-            config.FilenamePattern = "{name}";
-            validate.Should().NotThrow();
-
-            config.MaxWidth = 0;
-            validate.Should().Throw<InvalidDataException>();
-
-            config.MaxWidth = 600;
-            validate.Should().NotThrow();
-
-            config.MaxHeight = 0;
-            validate.Should().Throw<InvalidDataException>();
-
-            config.MaxHeight = 600;
-            validate.Should().NotThrow();
-        }
-
-        [Test]
-        public void BatchResizeConfigTests()
-        {
-            var config = new BatchResizeConfig();
-            config.Should().NotBeNull();
-            System.Action validate = () => config.Validate();
-
-            config.FilenamePattern = "{name}";
-            config.ResizeMethod = ResizeMethod.fit_in;
-            config.MaxWidth = 100;
-            config.MaxHeight = 100;
             config.FileFilter = "*.jpg";
 
             config.FilenamePattern.Should().NotBeNullOrWhiteSpace();

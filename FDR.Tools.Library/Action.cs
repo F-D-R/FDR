@@ -33,9 +33,9 @@ namespace FDR.Tools.Library
             switch (Type)
             {
                 case ActionType.rename:
-                    BatchRenameConfig? batchRenameConfig;
-                    if (AppConfig == null || !AppConfig.BatchRenameConfigs.TryGetValue(Config??"", out batchRenameConfig)) throw new ArgumentOutOfRangeException();
-                    Rename.RenameFilesInFolder(folder, batchRenameConfig);
+                    RenameConfig? renameConfig;
+                    if (AppConfig == null || !AppConfig.RenameConfigs.TryGetValue(Config??"", out renameConfig)) throw new ArgumentOutOfRangeException();
+                    Rename.RenameFilesInFolder(folder, renameConfig);
                     break;
 
                 case ActionType.move:
@@ -45,9 +45,9 @@ namespace FDR.Tools.Library
                     break;
 
                 case ActionType.resize:
-                    BatchResizeConfig? batchResizeConfig;
-                    if (AppConfig == null || !AppConfig.BatchResizeConfigs.TryGetValue(Config??"", out batchResizeConfig)) throw new ArgumentOutOfRangeException();
-                    Resize.ResizeFilesInFolder(folder, batchResizeConfig);
+                    ResizeConfig? resizeConfig;
+                    if (AppConfig == null || !AppConfig.ResizeConfigs.TryGetValue(Config??"", out resizeConfig)) throw new ArgumentOutOfRangeException();
+                    Resize.ResizeFilesInFolder(folder, resizeConfig);
                     break;
 
                 case ActionType.hash:
@@ -76,8 +76,8 @@ namespace FDR.Tools.Library
                 case ActionType.rename:
                     if (AppConfig == null) throw new InvalidDataException("Application config cannot be empty!");
                     if (string.IsNullOrWhiteSpace(Config)) throw new InvalidDataException("ActionConfig cannot be empty!");
-                    BatchRenameConfig? batchRenameConfig;
-                    if (!AppConfig.BatchRenameConfigs.TryGetValue(Config, out batchRenameConfig)) throw new ArgumentOutOfRangeException();
+                    RenameConfig? renameConfig;
+                    if (!AppConfig.RenameConfigs.TryGetValue(Config, out renameConfig)) throw new ArgumentOutOfRangeException();
                     break;
 
                 case ActionType.move:
@@ -90,8 +90,8 @@ namespace FDR.Tools.Library
                 case ActionType.resize:
                     if (AppConfig == null) throw new InvalidDataException("Application config cannot be empty!");
                     if (string.IsNullOrWhiteSpace(Config)) throw new InvalidDataException("ActionConfig cannot be empty!");
-                    BatchResizeConfig? batchResizeConfig;
-                    if (!AppConfig.BatchResizeConfigs.TryGetValue(Config, out batchResizeConfig)) throw new ArgumentOutOfRangeException();
+                    ResizeConfig? resizeConfig;
+                    if (!AppConfig.ResizeConfigs.TryGetValue(Config, out resizeConfig)) throw new ArgumentOutOfRangeException();
                     break;
 
                 case ActionType.hash:

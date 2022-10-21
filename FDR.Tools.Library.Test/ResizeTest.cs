@@ -112,7 +112,7 @@ namespace FDR.Tools.Library.Test
             var newPath1 = Path.Combine(tempFolderPath, name1 + "_resized.jpg");
             var newPath2 = Path.Combine(tempFolderPath, name2 + "_resized.jpg");
 
-            var config = new BatchResizeConfig();
+            var config = new ResizeConfig();
             config.Should().NotBeNull();
             System.Action validate = () => config.Validate();
             config.FileFilter = "*.jpg";

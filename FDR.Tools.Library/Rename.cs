@@ -213,10 +213,10 @@ namespace FDR.Tools.Library
 
             Common.Progress(progressPercent);
 
-            if (config is BatchRenameConfig batchRenameConfig)
+            if (config is RenameConfig renameConfig)
             {
-                if (batchRenameConfig.AdditionalFileTypes == null) return;
-                foreach (var type in batchRenameConfig.AdditionalFileTypes)
+                if (renameConfig.AdditionalFileTypes == null) return;
+                foreach (var type in renameConfig.AdditionalFileTypes)
                 {
                     origName = origNameWithoutExtension + type;
                     var origPath = Path.Combine(path, origName);
@@ -242,7 +242,7 @@ namespace FDR.Tools.Library
             }
         }
 
-        public static void RenameFilesInFolder(DirectoryInfo folder, BatchRenameConfig config)
+        public static void RenameFilesInFolder(DirectoryInfo folder, RenameConfig config)
         {
             if (config == null) throw new ArgumentNullException("config");
             config.Validate();

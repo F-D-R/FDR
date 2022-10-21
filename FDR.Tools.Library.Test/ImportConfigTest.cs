@@ -73,8 +73,8 @@ namespace FDR.Tools.Library.Test
             a.Type = ActionType.rename;
             a.Config = "rename";
             validate.Should().Throw<ArgumentOutOfRangeException>("Rename action with invalid ActionConfig");
-            appConfig.BatchRenameConfigs.Add("rename", new BatchRenameConfig());
-            appConfig.BatchRenameConfigs.Should().HaveCount(1);
+            appConfig.RenameConfigs.Add("rename", new RenameConfig());
+            appConfig.RenameConfigs.Should().HaveCount(1);
             validate.Should().NotThrow();
             a.Type = ActionType.resize;
             a.Config = null;
@@ -82,8 +82,8 @@ namespace FDR.Tools.Library.Test
             a.Type = ActionType.resize;
             a.Config = "resize";
             validate.Should().Throw<ArgumentOutOfRangeException>("Resize action with invalid ActionConfig");
-            appConfig.BatchResizeConfigs.Add("resize", new BatchResizeConfig());
-            appConfig.BatchResizeConfigs.Should().HaveCount(1);
+            appConfig.ResizeConfigs.Add("resize", new ResizeConfig());
+            appConfig.ResizeConfigs.Should().HaveCount(1);
             validate.Should().NotThrow();
             a.Type = ActionType.move;
             a.Config = null;

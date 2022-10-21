@@ -52,8 +52,8 @@ namespace FDR.Tools.Library.Test
             appConfig.Should().NotBeNull();
             appConfig.MoveConfigs.Add("move", new MoveConfig());
             appConfig.MoveConfigs.Should().HaveCount(1);
-            appConfig.BatchRenameConfigs.Add("rename", new BatchRenameConfig() { FilenamePattern = "dest_{counter:3}", AdditionalFileTypes = { ".JPG" } });
-            appConfig.BatchRenameConfigs.Should().HaveCount(1);
+            appConfig.RenameConfigs.Add("rename", new RenameConfig() { FilenamePattern = "dest_{counter:3}", AdditionalFileTypes = { ".JPG" } });
+            appConfig.RenameConfigs.Should().HaveCount(1);
             var actions = new Actions(appConfig);
             actions.Should().NotBeNull();
             actions.Add(new Action() { Type = ActionType.hash });

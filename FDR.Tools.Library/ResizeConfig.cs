@@ -16,6 +16,8 @@ namespace FDR.Tools.Library
 
     public class ResizeConfig : RenameConfig
     {
+        private const string DEFAULT_FILTER = "*.JPG";
+
         public ResizeMethod ResizeMethod { get; set; } = ResizeMethod.fit_in;
 
         public int MaxWidth { get; set; }
@@ -30,6 +32,13 @@ namespace FDR.Tools.Library
         {
             get { return Math.Max(0, Math.Min(100, jpgQuality)); }
             set { jpgQuality = Math.Max(0, Math.Min(100, value)); }
+        }
+
+        private string? filter;
+        public override string FileFilter
+        {
+            get { return string.IsNullOrWhiteSpace(filter) ? DEFAULT_FILTER : filter; }
+            set { filter = value; }
         }
 
         public override void Validate()
@@ -55,29 +64,5 @@ namespace FDR.Tools.Library
     public sealed class ResizeConfigs : ConfigDictionaryBase<ResizeConfig>
     {
         public ResizeConfigs(AppConfig appConfig) : base(appConfig) { }
-    }
-
-    public sealed class BatchResizeConfig : ResizeConfig
-    {
-        private const string DEFAULT_FILTER = "*.JPG";
-
-        private string? filter;
-        public string FileFilter
-        {
-            get { return string.IsNullOrWhiteSpace(filter) ? DEFAULT_FILTER : filter; }
-            set { filter = value; }
-        }
-
-        public bool StopOnError { get; set; } = true;
-
-        public override void Validate()
-        {
-            base.Validate();
-        }
-    }
-
-    public sealed class BatchResizeConfigs : ConfigDictionaryBase<BatchResizeConfig>
-    {
-        public BatchResizeConfigs(AppConfig appConfig) : base(appConfig) { }
     }
 }

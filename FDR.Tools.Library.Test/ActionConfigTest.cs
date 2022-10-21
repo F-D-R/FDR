@@ -35,8 +35,8 @@ namespace FDR.Tools.Library.Test
             config.Type = ActionType.rename;
             config.Config = "dummy";
             validate.Should().Throw<ArgumentOutOfRangeException>();
-            appConfig.BatchRenameConfigs.Add("dummy", new BatchRenameConfig());
-            appConfig.BatchRenameConfigs.Should().HaveCount(1);
+            appConfig.RenameConfigs.Add("dummy", new RenameConfig());
+            appConfig.RenameConfigs.Should().HaveCount(1);
             validate.Should().NotThrow();
 
             config.Type = ActionType.resize;
@@ -45,8 +45,8 @@ namespace FDR.Tools.Library.Test
             config.Type = ActionType.resize;
             config.Config = "dummy";
             validate.Should().Throw<ArgumentOutOfRangeException>();
-            appConfig.BatchResizeConfigs.Add("dummy", new BatchResizeConfig());
-            appConfig.BatchResizeConfigs.Should().HaveCount(1);
+            appConfig.ResizeConfigs.Add("dummy", new ResizeConfig());
+            appConfig.ResizeConfigs.Should().HaveCount(1);
             validate.Should().NotThrow();
 
             config.Type = ActionType.move;

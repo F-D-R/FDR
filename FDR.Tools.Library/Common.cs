@@ -51,7 +51,7 @@ namespace FDR.Tools.Library
             return GetFiles(folder, config.FileFilter, true);
         }
 
-        public static List<FileInfo> GetFiles(DirectoryInfo folder, BatchResizeConfig config)
+        public static List<FileInfo> GetFiles(DirectoryInfo folder, ResizeConfig config)
         {
             if (config == null) throw new ArgumentNullException("config");
             config.Validate();

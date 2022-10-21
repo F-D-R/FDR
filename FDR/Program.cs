@@ -120,8 +120,8 @@ namespace FDR
                                 return;
                             }
                             appConfig = LoadAppConfig();
-                            BatchRenameConfig? renameConfig;
-                            if (!appConfig.BatchRenameConfigs.TryGetValue(config, out renameConfig))
+                            RenameConfig? renameConfig;
+                            if (!appConfig.RenameConfigs.TryGetValue(config, out renameConfig))
                             {
                                 Common.Msg("Given rename configuration does not exist!", ConsoleColor.Red);
                                 return;
@@ -138,8 +138,8 @@ namespace FDR
                                 return;
                             }
                             appConfig = LoadAppConfig();
-                            BatchResizeConfig? resizeConfig;
-                            if (!appConfig.BatchResizeConfigs.TryGetValue(config, out resizeConfig))
+                            ResizeConfig? resizeConfig;
+                            if (!appConfig.ResizeConfigs.TryGetValue(config, out resizeConfig))
                             {
                                 Common.Msg("Given resize configuration does not exist!", ConsoleColor.Red);
                                 return;

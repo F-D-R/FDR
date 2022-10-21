@@ -28,7 +28,7 @@ namespace FDR.Tools.Library.Test
         private const int importConfigCount = 4;
         private const string appConfigJson = @"
 {
-  ""BatchRenameConfigs"": {
+  ""RenameConfigs"": {
     ""yymmdd_ccc"": { ""FileNamePattern"": ""{cdate:yyMMdd}_{counter:3}"", ""AdditionalFileTypes"": [ "".JPG"" ], ""Recursive"": false, ""StopOnError"": true } },
   ""MoveConfigs"": {
     ""raw"": { ""FileFilter"": ""*.CR3|*.CR2|*.CRW"", ""RelativeFolder"": ""RAW"" } },

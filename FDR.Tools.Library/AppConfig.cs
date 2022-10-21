@@ -13,9 +13,7 @@ namespace FDR.Tools.Library
         public AppConfig()
         {
             RenameConfigs = new RenameConfigs(this);
-            BatchRenameConfigs = new BatchRenameConfigs(this);
             ResizeConfigs = new ResizeConfigs(this);
-            BatchResizeConfigs = new BatchResizeConfigs(this);
             MoveConfigs = new Dictionary<string, MoveConfig>();
             ImportConfigs = new ImportConfigs(this);
         }
@@ -23,10 +21,6 @@ namespace FDR.Tools.Library
         public RenameConfigs RenameConfigs { get; }
 
         public ResizeConfigs ResizeConfigs { get; }
-
-        public BatchRenameConfigs BatchRenameConfigs { get; }
-
-        public BatchResizeConfigs BatchResizeConfigs { get; }
 
         public Dictionary<string, MoveConfig> MoveConfigs { get; }
 
@@ -36,8 +30,6 @@ namespace FDR.Tools.Library
         {
             RenameConfigs?.ToList().ForEach(rnc => rnc.Value.Validate());
             ResizeConfigs?.ToList().ForEach(rsc => rsc.Value.Validate());
-            BatchRenameConfigs?.ToList().ForEach(brnc => brnc.Value.Validate());
-            BatchResizeConfigs?.ToList().ForEach(brsc => brsc.Value.Validate());
             MoveConfigs?.ToList().ForEach(mc => mc.Value.Validate());
             ImportConfigs.Where(ic => ic.Value?.AppConfig == null).ToList().ForEach(ic => ic.Value.AppConfig = this);
             ImportConfigs.ToList().ForEach(ic => ic.Value.Validate());

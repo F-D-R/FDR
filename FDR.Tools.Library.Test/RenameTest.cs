@@ -32,7 +32,7 @@ namespace FDR.Tools.Library.Test
         [Test]
         public void RenameFilesInFolderTests()
         {
-            var config = new BatchRenameConfig() { FilenamePattern = "{mdate:yyMMdd}_{counter:2}" };
+            var config = new RenameConfig() { FilenamePattern = "{mdate:yyMMdd}_{counter:2}" };
             config.Should().NotBeNull();
 
             files.Add(new DateTime(2002, 3, 4), tempFolderPath, "ccc.cr3", tempFolderPath, "020304_02.cr3");

@@ -70,7 +70,7 @@ namespace FDR.Tools.Library
             }
         }
 
-        public static void ResizeFilesInFolder(DirectoryInfo folder, BatchResizeConfig config)
+        public static void ResizeFilesInFolder(DirectoryInfo folder, ResizeConfig config)
         {
             if (config == null) throw new ArgumentNullException("config");
             config.Validate();
