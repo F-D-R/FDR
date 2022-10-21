@@ -14,6 +14,11 @@ namespace FDR.Tools.Library.Test
             config.Should().NotBeNull();
             System.Action validate = () => config.Validate();
 
+            config.FilenamePattern = "{name}";
+            config.ResizeMethod = ResizeMethod.fit_in;
+            config.MaxWidth = 100;
+            config.MaxHeight = 100;
+
             config.FilenamePattern.Should().NotBeNullOrWhiteSpace();
             validate.Should().NotThrow();
 
@@ -42,6 +47,12 @@ namespace FDR.Tools.Library.Test
             var config = new BatchResizeConfig();
             config.Should().NotBeNull();
             System.Action validate = () => config.Validate();
+
+            config.FilenamePattern = "{name}";
+            config.ResizeMethod = ResizeMethod.fit_in;
+            config.MaxWidth = 100;
+            config.MaxHeight = 100;
+            config.FileFilter = "*.jpg";
 
             config.FilenamePattern.Should().NotBeNullOrWhiteSpace();
             validate.Should().NotThrow();

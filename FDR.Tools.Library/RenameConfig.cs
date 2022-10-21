@@ -24,6 +24,24 @@ namespace FDR.Tools.Library
         public override void Validate()
         {
             if (string.IsNullOrWhiteSpace(FilenamePattern)) throw new InvalidDataException("Renaming filename pattern cannot be empty!");
+            switch (FilenameCase)
+            {
+                case CharacterCasing.unchanged:
+                case CharacterCasing.lower:
+                case CharacterCasing.upper:
+                    break;
+                default:
+                    throw new InvalidDataException("Invalid FilenameCase!");
+            }
+            switch (ExtensionCase)
+            {
+                case CharacterCasing.unchanged:
+                case CharacterCasing.lower:
+                case CharacterCasing.upper:
+                    break;
+                default:
+                    throw new InvalidDataException("Invalid ExtensionCase!");
+            }
         }
     }
 
@@ -44,6 +62,8 @@ namespace FDR.Tools.Library
         }
 
         public List<string> AdditionalFileTypes { get; } = new List<string>() { ".JPG" };
+
+        public bool Recursive { get; set; } = false;
 
         public bool StopOnError { get; set; } = true;
 

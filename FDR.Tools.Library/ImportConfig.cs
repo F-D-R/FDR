@@ -34,6 +34,15 @@ namespace FDR.Tools.Library
         public void Validate()
         {
             if (string.IsNullOrWhiteSpace(Param)) throw new InvalidDataException("Rule parameter cannot be empty!");
+            switch (Type)
+            {
+                case ImportRuleType.contains_folder:
+                case ImportRuleType.contains_file:
+                case ImportRuleType.volume_label:
+                    break;
+                default:
+                    throw new InvalidDataException("Invalid Type!");
+            }
         }
     }
 

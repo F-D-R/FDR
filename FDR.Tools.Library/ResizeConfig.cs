@@ -18,11 +18,11 @@ namespace FDR.Tools.Library
     {
         public ResizeMethod ResizeMethod { get; set; } = ResizeMethod.fit_in;
 
-        public int MaxWidth { get; set; } = 600;
+        public int MaxWidth { get; set; }
 
-        public int MaxHeight { get; set; } = 600;
+        public int MaxHeight { get; set; }
 
-        public bool ClearMetadata { get; set; } = true;
+        public bool ClearMetadata { get; set; }
 
         private int jpgQuality = 90;
 
@@ -39,6 +39,16 @@ namespace FDR.Tools.Library
             if (MaxWidth <= 0) throw new InvalidDataException("Maximum width should be more than zero!");
             if (MaxHeight <= 0) throw new InvalidDataException("Maximum height should be more than zero!");
             if (JpgQuality < 0 || JpgQuality > 100) throw new InvalidDataException("JPG Quality must be between 0 and 100!");
+            switch (ResizeMethod)
+            {
+                case ResizeMethod.fit_in:
+                case ResizeMethod.max_width:
+                case ResizeMethod.max_height:
+                case ResizeMethod.stretch:
+                    break;
+                default:
+                    throw new InvalidDataException("Invalid ResizeMethod!");
+            }
         }
     }
 
