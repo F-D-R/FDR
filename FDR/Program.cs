@@ -36,6 +36,7 @@ namespace FDR
             string file = "";
             string reference = "";
             string config = "";
+            string function = "";
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -58,6 +59,11 @@ namespace FDR
                     case "-rename": operation = Operation.Rename; folder = args[i + 1]; break;
                     case "-resize": operation = Operation.Resize; folder = args[i + 1]; break;
                     case "-config": config = args[i + 1]; break;
+                    case "-help":
+                        operation = Operation.Help;
+                        if (args.Length > i + 1 && !args[i + 1].StartsWith("-"))
+                            function = args[i + 1];
+                        break;
                 }
             }
 
@@ -142,7 +148,7 @@ namespace FDR
                             break;
 
                         default:
-                            DisplayHelp(version);
+                            DisplayHelp(version, function);
                             break;
                     }
                 }
@@ -155,34 +161,71 @@ namespace FDR
             }
         }
 
-        private static void DisplayHelp(string version)
+        private static void DisplayHelp(string version, string? function = null)
         {
-            Common.Msg($"FDR Tools {version} - Help", titleColor);
-            Common.Msg("Usage:");
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                Common.Msg("    fdr.exe [options]");
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                Common.Msg("    dotnet FDR.dll [options]");
+            var func = function?.Trim().ToLower();
+            Common.Msg($"FDR Tools {version} - Help" + (string.IsNullOrWhiteSpace(func) ? "" : ": " + func), titleColor);
+
+            if (string.IsNullOrWhiteSpace(func))
+            {
+                Common.Msg("Usage:");
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    Common.Msg("    fdr.exe [options]");
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    Common.Msg("    dotnet FDR.dll [options]");
+                else
+                {
+                    Common.Msg("    dotnet FDR.dll [options]");
+                    Common.Msg("    Unsupported OS version!", ConsoleColor.Red);
+                }
+                Common.Msg("");
+                Common.Msg("Where options can be:");
+                Common.Msg("    -help [function]     Help (this screen)");
+                Common.Msg("    -import [<folder>]   Import memory card content");
+                Common.Msg("    -hash <folder>       Create hash of files in a folder");
+                Common.Msg("    -rehash <folder>     Recreate hashes of all files in a folder");
+                Common.Msg("    -verify <folder>     Verify the files in a folder against their saved hash");
+                Common.Msg("    -diff <folder>       Compare the files of a folder to a reference one");
+                Common.Msg("    -reference <folder>  Reference folder for the diff function");
+                Common.Msg("    -cleanup <folder>    Delete unnecessary raw, hash and err files");
+                Common.Msg("    -rename <folder>     Rename image files based on a given configuration");
+                Common.Msg("    -resize <folder>     Resize image files based on a given configuration");
+                Common.Msg("    -config <config>     Named configuration for some functions like renaming and resizing");
+                Common.Msg("    -auto                Start the import automatically");
+                Common.Msg("    -verbose             More detailed output");
+            }
             else
             {
-                Common.Msg("    dotnet FDR.dll [options]");
-                Common.Msg("    Unsupported OS version!", ConsoleColor.Red);
+                switch (func)
+                {
+                    case "import":
+                        break;
+                    case "hash":
+                        Common.Msg("Creates hash files of files in the folder given after the -hash option for which there were none.");
+                        break;
+                    case "rehash":
+                        Common.Msg("Recreates the hash files of all files in the folder given after the -rehash option whether they existed or not.");
+                        break;
+                    case "verify":
+                        Common.Msg("Verifies the files in the folder given after the -verify option against their saved hash and creates error files whenever there are differences.");
+                        break;
+                    case "diff":
+                        Common.Msg("Compares the files of the folder given after the -diff option to a reference folder given after the -reference option.");
+                        break;
+                    case "cleanup":
+                        Common.Msg("Deletes unnecessary raw, hash and err files.");
+                        break;
+                    case "rename":
+                        Common.Msg("Renames the files matching a filter in the folder given after the -rename option based on a BatchRenameConfig.");
+                        break;
+                    case "resize":
+                        Common.Msg("Resizes the files matching a filter in the folder given after the -resize option based on a BatchResizeConfig.");
+                        break;
+                    default:
+                        Common.Msg("Invalid function: " + func, ConsoleColor.Red);
+                        break;
+                }
             }
-            Common.Msg("");
-            Common.Msg("Where options can be:");
-            Common.Msg("    -help                Help (this screen)");
-            Common.Msg("    -import [<folder>]   Import memory card content");
-            Common.Msg("    -hash <folder>       Create hash of files in a folder");
-            Common.Msg("    -rehash <folder>     Recreate hashes of all files in a folder");
-            Common.Msg("    -verify <folder>     Verify the files in a folder against their saved hash");
-            Common.Msg("    -diff <folder>       Compare the files of a folder to a reference one");
-            Common.Msg("    -reference <folder>  Reference folder for the diff function");
-            Common.Msg("    -cleanup <folder>    Delete unnecessary raw, hash and err files");
-            Common.Msg("    -rename <folder>     Rename image files based on a given configuration");
-            Common.Msg("    -resize <folder>     Resize image files based on a given configuration");
-            Common.Msg("    -config <config>     Named configuration for some functions like renaming and resizing");
-            Common.Msg("    -auto                Start the import automatically");
-            Common.Msg("    -verbose             More detailed output");
         }
 
         private static AppConfig LoadAppConfig()
