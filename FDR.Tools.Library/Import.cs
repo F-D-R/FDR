@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using System.Threading;
-using static FDR.Tools.Library.Import;
 
 namespace FDR.Tools.Library
 {

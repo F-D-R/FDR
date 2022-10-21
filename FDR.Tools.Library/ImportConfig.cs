@@ -101,10 +101,6 @@ namespace FDR.Tools.Library
             set { filter = value; }
         }
 
-        //public List<BatchRenameConfig> BatchRenameConfigs { get; } = new List<BatchRenameConfig>();
-
-        //public List<MoveConfig> MoveConfigs { get; } = new List<MoveConfig>();
-
         public Actions Actions { get; } = new Actions(null);
 
         public override AppConfig? AppConfig
@@ -122,8 +118,6 @@ namespace FDR.Tools.Library
             if (string.IsNullOrWhiteSpace(DestRoot)) throw new InvalidDataException("Destination root cannot be empty!");
             if (string.IsNullOrWhiteSpace(DateFormat)) throw new InvalidDataException("Date format cannot be empty!");
             Rules.ForEach(r => r.Validate());
-            //BatchRenameConfigs.ForEach(rc => rc.Validate());
-            //MoveConfigs.ForEach(mc => mc.Validate());
             Actions.AppConfig = AppConfig;
             Actions.ForEach(a => a.Validate());
             switch (DestStructure)
