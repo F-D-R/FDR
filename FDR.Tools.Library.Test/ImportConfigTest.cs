@@ -58,41 +58,6 @@ namespace FDR.Tools.Library.Test
             config.Rules.Should().HaveCount(1);
             validate.Should().NotThrow();
 
-            config.BatchRenameConfigs.Should().HaveCount(0);
-            config.BatchRenameConfigs.Add(null);
-            config.BatchRenameConfigs.Should().HaveCount(1);
-            validate.Should().Throw<NullReferenceException>("BatchRenameConfigs with null item");
-            config.BatchRenameConfigs.Clear();
-            config.BatchRenameConfigs.Should().HaveCount(0);
-            var brc = new BatchRenameConfig();
-            brc.Should().NotBeNull();
-            config.BatchRenameConfigs.Add(brc);
-            config.BatchRenameConfigs.Should().HaveCount(1);
-            validate.Should().NotThrow();
-            brc.AdditionalFileTypes.Add("");
-            validate.Should().Throw<InvalidDataException>("BatchRenameConfig with invalid AdditionalFileTypes");
-            config.BatchRenameConfigs.Clear();
-            config.BatchRenameConfigs.Should().HaveCount(0);
-            validate.Should().NotThrow();
-
-            config.MoveConfigs.Should().HaveCount(0);
-            var mc = new MoveConfig();
-            mc.Should().NotBeNull();
-            config.MoveConfigs.Add(mc);
-            config.MoveConfigs.Should().HaveCount(1);
-            validate.Should().NotThrow();
-            mc.FileFilter = "";
-            validate.Should().Throw<InvalidDataException>("MoveConfig without FileFilter");
-            mc.FileFilter = "*.CR3";
-            validate.Should().NotThrow();
-            mc.RelativeFolder = "";
-            validate.Should().Throw<InvalidDataException>("MoveConfig without RelativeFolder");
-            mc.RelativeFolder = "RAW";
-            validate.Should().NotThrow();
-            config.MoveConfigs.Clear();
-            config.MoveConfigs.Should().HaveCount(0);
-            validate.Should().NotThrow();
-
             appConfig.ImportConfigs.Add("test", config);
             config.Actions.Should().HaveCount(0);
             var a = new Action(appConfig) { Type = ActionType.hash };

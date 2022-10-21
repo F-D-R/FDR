@@ -182,23 +182,11 @@ namespace FDR.Tools.Library
                 Trace.Unindent();
             }
 
-            // Rename
-            if (config.BatchRenameConfigs != null)
+            // Actions
+            if (config.Actions != null)
                 foreach (var fn in folderNames)
-                    foreach (var rc in config.BatchRenameConfigs)
-                        Rename.RenameFilesInFolder(new DirectoryInfo(fn), rc);
-
-            // Move
-            if (config.MoveConfigs != null)
-                foreach (var fn in folderNames)
-                    foreach (var mc in config.MoveConfigs)
-                        MoveFilesInFolder(new DirectoryInfo(fn), mc);
-
-            //// Actions
-            //if (config.Actions != null)
-            //    foreach (var fn in folderNames)
-            //        foreach (var a in config.Actions)
-            //            a.Do(new DirectoryInfo(fn));
+                    foreach (var a in config.Actions)
+                        a.Do(new DirectoryInfo(fn));
         }
 
         internal static ImportConfig? FindConfig(DirectoryInfo sourceFolder, Dictionary<string, ImportConfig> configs)
@@ -334,12 +322,10 @@ namespace FDR.Tools.Library
             Trace.WriteLine($"DestStructure: {config.DestStructure}");
             Trace.WriteLine($"DateFormat: {config.DateFormat}");
             Trace.WriteLine($"FileFilter: {config.FileFilter}");
-            if (config.BatchRenameConfigs != null)
-                foreach (var rc in config.BatchRenameConfigs)
-                    Trace.WriteLine($"Rename: {rc.FileFilter} to {rc.FilenamePattern} ({rc.FilenameCase}.{rc.ExtensionCase})");
-            if (config.MoveConfigs != null)
-                foreach (var mc in config.MoveConfigs)
-                    Trace.WriteLine($"Move: {mc.FileFilter} to {mc.RelativeFolder}");
+            if (config.Actions != null)
+                foreach (var a in config.Actions)
+                    Trace.WriteLine($"Action: {a.Type} - {a.Config}");
+
             Trace.WriteLine("");
             Trace.Unindent();
         }

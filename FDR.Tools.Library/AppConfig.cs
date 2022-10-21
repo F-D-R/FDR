@@ -60,9 +60,15 @@ namespace FDR.Tools.Library
     public abstract class ConfigDictionaryBase<T> : Dictionary<string, T>
         where T : ConfigPartBase
     {
-        private AppConfig appConfig;
+        private AppConfig? appConfig;
 
         public ConfigDictionaryBase(AppConfig appConfig) => this.appConfig = appConfig;
+
+        public AppConfig? AppConfig
+        {
+            get { return appConfig; }
+            internal set { appConfig = value; }
+        }
 
         public new void Add(string key, T value)
         {

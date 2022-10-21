@@ -28,22 +28,24 @@ namespace FDR.Tools.Library.Test
         private const int importConfigCount = 4;
         private const string appConfigJson = @"
 {
+  ""BatchRenameConfigs"": {
+    ""yymmdd_ccc"": { ""FileNamePattern"": ""{cdate:yyMMdd}_{counter:3}"", ""AdditionalFileTypes"": [ "".JPG"" ], ""Recursive"": false, ""StopOnError"": true } },
+  ""MoveConfigs"": {
+    ""raw"": { ""FileFilter"": ""*.CR3|*.CR2|*.CRW"", ""RelativeFolder"": ""RAW"" } },
   ""ImportConfigs"": {
     ""import1"": {
       ""Name"": ""import1"",
       ""DestStructure"": ""date"",
       ""DateFormat"": ""yyyyMMdd"",
       ""Rules"": [ { ""Type"": ""contains_folder"", ""Param"": ""???CANON"" }, { ""Type"": ""contains_folder"", ""Param"": ""CANONMSC"" } ],
-      ""BatchRenameConfigs"": [ { ""FileNamePattern"": ""{cdate:yyMMdd}_{counter:3}"", ""AdditionalFileTypes"": [ "".JPG"" ] } ],
-      ""MoveConfigs"": [ { ""FileFilter"": ""*.CR3|*.CR2|*.CRW"", ""RelativeFolder"": ""RAW"" } ]
+      ""Actions"": [ { ""Type"": ""rename"", ""Config"": ""yymmdd_ccc"" }, { ""Type"": ""move"", ""Config"": ""raw"" } ]
     },
     ""import2"": {
       ""Name"": ""import2"",
       ""DestStructure"": ""date"",
       ""DateFormat"": ""yyyyMMdd"",
       ""Rules"": [ { ""Type"": ""contains_folder"", ""Param"": ""pictures"" } ],
-      ""BatchRenameConfigs"": [ { ""FileNamePattern"": ""{cdate:yyMMdd}_{counter:3}"", ""AdditionalFileTypes"": [ "".JPG"" ] } ],
-      ""MoveConfigs"": [ { ""FileFilter"": ""*.CR3|*.CR2|*.CRW"", ""RelativeFolder"": ""RAW"" } ]
+      ""Actions"": [ { ""Type"": ""rename"", ""Config"": ""yymmdd_ccc"" }, { ""Type"": ""move"", ""Config"": ""raw"" } ]
     },
     ""import3"": {
       ""Name"": ""import3"",
@@ -234,6 +236,7 @@ namespace FDR.Tools.Library.Test
             appConfig.Should().NotBeNull();
             appConfig.ImportConfigs.Should().HaveCount(importConfigCount);
             appConfig.ImportConfigs.ToList().ForEach(ic => ic.Value.DestRoot = destinationRoot);
+            appConfig.Validate();
 
             files.Add(new DateTime(2022, 1, 1, 13, 59, 3), source1, "aaa.cr3", raw1, "220101_003.cr3");
             files.Add(new DateTime(2022, 1, 1, 13, 59, 3), source1, "aaa.jpg", dest1, "220101_003.jpg");
