@@ -82,7 +82,7 @@ namespace FDR.Tools.Library
                     if (jpgFolder == null) return;
 
                     // Exit if JPG folder is empty, i.e. the RAW files are not jet converted:
-                    if (!jpgFolder.EnumerateFiles().Any()) return;
+                    if (!jpgFolder.EnumerateFiles("*.JPG", jpgOptions).Any()) return;
 
                     // Exit if there is a JPG file:
                     if (Directory.EnumerateFiles(jpgFolder.FullName, Path.GetFileNameWithoutExtension(file.Name) + "*.jpg", jpgOptions).Any()) return;
