@@ -210,12 +210,12 @@ namespace FDR
                     Common.Msg("Deletes unnecessary raw, hash and err files.");
                 else if (func == "rename")
                 {
-                    Common.Msg("Renames the files matching a filter in the folder given after the -rename option based on a BatchRenameConfig.");
+                    Common.Msg("Renames the files matching a filter in the folder given after the -rename option based on a RenameConfig.");
                     FileNamePatternHelp();
                 }
                 else if (func == "resize")
                 {
-                    Common.Msg("Resizes the files matching a filter in the folder given after the -resize option based on a BatchResizeConfig and saves the resized files with a configurable new name.");
+                    Common.Msg("Resizes the files matching a filter in the folder given after the -resize option based on a ResizeConfig and saves the resized files with a configurable new name.");
                     FileNamePatternHelp();
                 }
                 else
