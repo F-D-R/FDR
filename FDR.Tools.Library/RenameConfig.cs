@@ -23,7 +23,7 @@ namespace FDR.Tools.Library
 
         public CharacterCasing ExtensionCase { get; set; } = CharacterCasing.lower;
 
-        private string? filter;
+        protected string? filter;
         public virtual string FileFilter
         {
             get { return !string.IsNullOrWhiteSpace(filter) ? filter : DEFAULT_FILTER; }

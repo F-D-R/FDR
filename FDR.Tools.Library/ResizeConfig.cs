@@ -34,7 +34,6 @@ namespace FDR.Tools.Library
             set { jpgQuality = Math.Max(0, Math.Min(100, value)); }
         }
 
-        private string? filter;
         public override string FileFilter
         {
             get { return string.IsNullOrWhiteSpace(filter) ? DEFAULT_FILTER : filter; }

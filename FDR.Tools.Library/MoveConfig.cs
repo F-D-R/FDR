@@ -2,16 +2,22 @@
 
 namespace FDR.Tools.Library
 {
-    public sealed class MoveConfig
+    public sealed class MoveConfig : RenameConfig
     {
-        public string FileFilter { get; set; } = "*.CR3|*.CR2|*.CRW";  // *.NEF|*.ARW|*.PEF ???
+        private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.CRW";  // *.NEF|*.ARW|*.PEF ???
+
+        public override string FileFilter
+        {
+            get { return string.IsNullOrWhiteSpace(filter) ? DEFAULT_FILTER : filter; }
+            set { filter = value; }
+        }
 
         public string RelativeFolder { get; set; } = "RAW";
 
-        public bool StopOnError { get; set; } = true;
-
-        public void Validate()
+        public override void Validate()
         {
+            base.Validate();
+
             if (string.IsNullOrWhiteSpace(FileFilter)) throw new InvalidDataException("Filename filter cannot be empty!");
             if (string.IsNullOrWhiteSpace(RelativeFolder)) throw new InvalidDataException("Relative folder path cannot be empty!");
         }

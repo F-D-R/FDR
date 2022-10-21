@@ -17,7 +17,7 @@ namespace FDR.Tools.Library.Test
             validate.Should().NotThrow();
 
             config.FileFilter = null;
-            validate.Should().Throw<InvalidDataException>();
+            config.FileFilter.Should().NotBeNullOrWhiteSpace();
 
             config.FileFilter = "*.CR3";
             validate.Should().NotThrow();
