@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -115,13 +114,8 @@ namespace FDR.Tools.Library
                     case SDATE:
                         if (file != null)
                         {
-                            //IImageInfo imageInfo = Image.Identify(file.FullName);
-                            //var dateString = imageInfo.Metadata?.ExifProfile?.GetValue<string>(ExifTag.DateTimeOriginal);
-                            //DateTime date; // = DateTime.ParseExact(dateString?.ToString()??"", "yyyy:MM:dd HH:mm:ss", null);
-                            //if (DateTime.TryParseExact(dateString?.ToString()??"", "yyyy:MM:dd HH:mm:ss", null, System.Globalization.DateTimeStyles.None, date))
-                            //    result = result.Replace(match.Value, date.ToString(arg), StringComparison.InvariantCultureIgnoreCase);
                             var date = GetExifDate(file);
-                                result = result.Replace(match.Value, date.ToString(arg), StringComparison.InvariantCultureIgnoreCase);
+                            result = result.Replace(match.Value, date.ToString(arg), StringComparison.InvariantCultureIgnoreCase);
                         }
                         break;
 
@@ -219,33 +213,30 @@ namespace FDR.Tools.Library
 
             Common.Progress(progressPercent);
 
-            if (config is BatchRenameConfig)
+            if (config is BatchRenameConfig batchRenameConfig)
             {
-                var additionalFileTypes = ((BatchRenameConfig)config).AdditionalFileTypes;
-                if (additionalFileTypes != null)
+                if (batchRenameConfig.AdditionalFileTypes == null) return;
+                foreach (var type in batchRenameConfig.AdditionalFileTypes)
                 {
-                    foreach (var type in additionalFileTypes)
+                    origName = origNameWithoutExtension + type;
+                    var origPath = Path.Combine(path, origName);
+                    if (File.Exists(origPath))
                     {
-                        origName = origNameWithoutExtension + type;
-                        var origPath = Path.Combine(path, origName);
-                        if (File.Exists(origPath))
-                        {
-                            var extension = type;
-                            if (config.ExtensionCase == CharacterCasing.lower)
-                                extension = extension.ToLower();
-                            else if (config.ExtensionCase == CharacterCasing.upper)
-                                extension = extension.ToUpper();
+                        var extension = type;
+                        if (config.ExtensionCase == CharacterCasing.lower)
+                            extension = extension.ToLower();
+                        else if (config.ExtensionCase == CharacterCasing.upper)
+                            extension = extension.ToUpper();
 
-                            newName = Path.GetFileNameWithoutExtension(newFullName) + extension;
-                            var newPath = Path.Combine(path, newName);
-                            if (string.Compare(origName, newName, false) != 0)
-                            {
-                                Trace.WriteLine($"Renaming file {origName} to {newName}");
-                                File.Move(origPath, newPath);
-                            }
-                            else
-                                Trace.WriteLine($"{origName} matches the new name...");
+                        newName = Path.GetFileNameWithoutExtension(newFullName) + extension;
+                        var newPath = Path.Combine(path, newName);
+                        if (string.Compare(origName, newName, false) != 0)
+                        {
+                            Trace.WriteLine($"Renaming file {origName} to {newName}");
+                            File.Move(origPath, newPath);
                         }
+                        else
+                            Trace.WriteLine($"{origName} matches the new name...");
                     }
                 }
             }
@@ -264,8 +255,6 @@ namespace FDR.Tools.Library
 
             if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
 
-            //var files = Common.GetFiles(folder, filter, false).OrderBy(f => f.CreationTimeUtc).ToList();
-            //var files = Common.GetFiles(folder, filter, false).OrderBy(f => f.LastWriteTimeUtc).ToList();
             var files = Common.GetFiles(folder, filter, config.Recursive).OrderBy(f => f.GetExifDate()).ToList();
             int fileCount = files.Count;
 

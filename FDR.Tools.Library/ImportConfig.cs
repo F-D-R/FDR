@@ -27,7 +27,7 @@ namespace FDR.Tools.Library
 
     public sealed class ImportRule : IValidatable
     {
-        public ImportRuleType Type { get; set; } = ImportRuleType.contains_folder;
+        public ImportRuleType Type { get; set; }
 
         public string? Param { get; set; }
 
@@ -125,6 +125,17 @@ namespace FDR.Tools.Library
             BatchRenameConfigs.ForEach(rc => rc.Validate());
             MoveConfigs.ForEach(mc => mc.Validate());
             Actions.ForEach(a => a.Validate());
+            switch (DestStructure)
+            {
+                case FolderStructure.date:
+                case FolderStructure.year_date:
+                case FolderStructure.year_month:
+                case FolderStructure.year_month_date:
+                case FolderStructure.year_month_day:
+                    break;
+                default:
+                    throw new InvalidDataException("Invalid DestStructure!");
+            }
         }
     }
 

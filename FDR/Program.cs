@@ -180,8 +180,8 @@ namespace FDR
                 }
                 Common.Msg("");
                 Common.Msg("Where options can be:");
-                Common.Msg("    -help [function]     Help (this screen)");
-                Common.Msg("    -import [<folder>]   Import memory card content");
+                Common.Msg("    -help [function]     Generic help (this screen) or optionally help about a given function");
+                Common.Msg("    -import [<folder>]   Import memory card content or optionally the content of a folder");
                 Common.Msg("    -hash <folder>       Create hash of files in a folder");
                 Common.Msg("    -rehash <folder>     Recreate hashes of all files in a folder");
                 Common.Msg("    -verify <folder>     Verify the files in a folder against their saved hash");
@@ -196,35 +196,47 @@ namespace FDR
             }
             else
             {
-                switch (func)
+                if (func =="import")
+                    Common.Msg("Imports memory card content based on the selected configuration.");
+                else if (func == "hash")
+                    Common.Msg("Creates hash files of files in the folder given after the -hash option for which there were none.");
+                else if (func == "rehash")
+                    Common.Msg("Recreates the hash files of all files in the folder given after the -rehash option whether they existed or not.");
+                else if (func == "verify")
+                    Common.Msg("Verifies the files in the folder given after the -verify option against their saved hash and creates error files whenever there are differences.");
+                else if (func == "diff")
+                    Common.Msg("Compares the files of the folder given after the -diff option to a reference folder given after the -reference option.");
+                else if (func == "cleanup")
+                    Common.Msg("Deletes unnecessary raw, hash and err files.");
+                else if (func == "rename")
                 {
-                    case "import":
-                        break;
-                    case "hash":
-                        Common.Msg("Creates hash files of files in the folder given after the -hash option for which there were none.");
-                        break;
-                    case "rehash":
-                        Common.Msg("Recreates the hash files of all files in the folder given after the -rehash option whether they existed or not.");
-                        break;
-                    case "verify":
-                        Common.Msg("Verifies the files in the folder given after the -verify option against their saved hash and creates error files whenever there are differences.");
-                        break;
-                    case "diff":
-                        Common.Msg("Compares the files of the folder given after the -diff option to a reference folder given after the -reference option.");
-                        break;
-                    case "cleanup":
-                        Common.Msg("Deletes unnecessary raw, hash and err files.");
-                        break;
-                    case "rename":
-                        Common.Msg("Renames the files matching a filter in the folder given after the -rename option based on a BatchRenameConfig.");
-                        break;
-                    case "resize":
-                        Common.Msg("Resizes the files matching a filter in the folder given after the -resize option based on a BatchResizeConfig.");
-                        break;
-                    default:
-                        Common.Msg("Invalid function: " + func, ConsoleColor.Red);
-                        break;
+                    Common.Msg("Renames the files matching a filter in the folder given after the -rename option based on a BatchRenameConfig.");
+                    FileNamePatternHelp();
                 }
+                else if (func == "resize")
+                {
+                    Common.Msg("Resizes the files matching a filter in the folder given after the -resize option based on a BatchResizeConfig and saves the resized files with a configurable new name.");
+                    FileNamePatternHelp();
+                }
+                else
+                    Common.Msg("Invalid function: " + func, ConsoleColor.Red);
+            }
+
+            void FileNamePatternHelp()
+            {
+                Common.Msg("");
+                Common.Msg("The FileNamePattern can have the following formatting options:");
+                Common.Msg("    {now[:format]}              Current date time with optional date format");
+                Common.Msg("    {name[:start,length]}       Name without extension with optional start index and character length");
+                Common.Msg("    {pfolder[:start,length]}    Parent folder's name with optional start index and character length");
+                Common.Msg("    {cdate[:format]}            Creation date with optional date format");
+                Common.Msg("    {mdate[:format]}            Modify date with optional date format");
+                Common.Msg("    {edate[:format]}            EXIF date (=sdate) with optional date format");
+                Common.Msg("    {sdate[:format]}            Shooting date (=edate) with optional date format");
+                Common.Msg("    {counter[:digits]}          File counter with optional number of digits starting with 1");
+                Common.Msg("");
+                Common.Msg("...see the format description here:");
+                Common.Msg("    https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings");
             }
         }
 
