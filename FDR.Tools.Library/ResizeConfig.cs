@@ -14,7 +14,7 @@ namespace FDR.Tools.Library
         stretch
     }
 
-    public class ResizeConfig : RenameConfig
+    public class ResizeConfig : MoveConfig
     {
         private const string DEFAULT_FILTER = "*.JPG";
 

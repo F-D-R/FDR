@@ -2,7 +2,7 @@
 
 namespace FDR.Tools.Library
 {
-    public sealed class MoveConfig : RenameConfig
+    public class MoveConfig : RenameConfig
     {
         private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.CRW";  // *.NEF|*.ARW|*.PEF ???
 
