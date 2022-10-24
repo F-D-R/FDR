@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -32,17 +33,24 @@ namespace FDR.Tools.Library
         {
             Common.Msg("");
             Common.Msg("The FilenamePattern can have the following formatting placeholders:");
-            Common.Msg("    {now[:format]}            - Current date time with optional date format");
-            Common.Msg("    {name[:start,length]}     - Name without extension with optional start index and character length");
-            Common.Msg("    {pfolder[:start,length]}  - Parent folder's name with optional start index and character length");
-            Common.Msg("    {cdate[:format]}          - Creation date with optional date format");
-            Common.Msg("    {mdate[:format]}          - Modify date with optional date format");
-            Common.Msg("    {edate[:format]}          - EXIF date (=sdate) with optional date format");
-            Common.Msg("    {sdate[:format]}          - Shooting date (=edate) with optional date format");
-            Common.Msg("    {counter[:digits]}        - File counter with optional number of digits starting with 1");
+            Common.ShowAttributeHelp(GetFormatList(), false);
             Common.Msg("");
             Common.Msg("...see the detailed format description here:");
             Common.Msg("    https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings");
+        }
+
+        private static Dictionary<string, string> GetFormatList()
+        {
+            var list = new Dictionary<string, string>();
+            list.Add($"{{{NOW}[:format]}}", "Current date time with optional date format");
+            list.Add($"{{{NAME}[:start,length]}}", "Name without extension with optional start index and character length");
+            list.Add($"{{{PFOLDER}[:start,length]}}", "Parent folder's name with optional start index and character length");
+            list.Add($"{{{CDATE}[:format]}}", "Creation date with optional date format");
+            list.Add($"{{{MDATE}[:format]}}", "Modify date with optional date format");
+            list.Add($"{{{EDATE}[:format]}}", $"EXIF date (={SDATE}) with optional date format");
+            list.Add($"{{{SDATE}[:format]}}", $"Shooting date (={EDATE}) with optional date format");
+            list.Add($"{{{COUNTER}[:digits]}}", "File counter with optional number of digits starting with 1");
+            return list;
         }
 
         public static string EvaluateNamePattern(string pattern, FileSystemInfo? fsi)

@@ -28,7 +28,7 @@ namespace FDR.Tools.Library
                 Msg($"    {percent}%                   \r", ConsoleColor.Gray, false);
         }
 
-        public static void ShowAttributeHelp(Dictionary<string, string> attributes)
+        public static void ShowAttributeHelp(Dictionary<string, string> attributes, bool quoteKey = true)
         {
             var width = Console.WindowWidth;
             var maxKey = attributes.Aggregate("", (max, cur) => max.Length > cur.Key.Length ? max : cur.Key).Length;
@@ -36,13 +36,13 @@ namespace FDR.Tools.Library
 
             const int indent = 2;
             const int space = 1;
-            var width1 = indent + maxKey + 2 + space;
+            var width1 = indent + maxKey + ((quoteKey) ? 2 : 0) + space;
             var width2 = width - width1;
             var textWidth = width2 - 2;
 
             foreach (var a in attributes)
             {
-                var first = new string(' ', indent) + "\"" + a.Key + "\"" + new string(' ', space);
+                var first = new string(' ', indent) + ((quoteKey) ? "\"" : "") + a.Key + ((quoteKey) ? "\"" : "") + new string(' ', space);
                 var msg = first.PadRight(width1, ' ') + "- ";
                 var words = a.Value.Split(' ');
                 var lines = new List<string>();
