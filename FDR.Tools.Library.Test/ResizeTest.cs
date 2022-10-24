@@ -142,15 +142,15 @@ namespace FDR.Tools.Library.Test
             var name1 = Guid.NewGuid().ToString();
             var name2 = Guid.NewGuid().ToString();
 
-            files.Add(tempFolderPath, name1 + ".jpg", tempFolderPath + "/resized1", name1 + ".jpg");
-            files.Add(tempFolderPath, name2 + ".jpg", tempFolderPath + "/resized1", name2 + ".jpg");
+            files.Add(tempFolderPath, name1 + ".jpg", tempFolderPath + "/resized2", name1 + ".jpg");
+            files.Add(tempFolderPath, name2 + ".jpg", tempFolderPath + "/resized2", name2 + ".jpg");
 
             var config = new ResizeConfig();
             config.Should().NotBeNull();
             System.Action validate = () => config.Validate();
             config.FileFilter = "*.jpg";
             config.FilenamePattern = "{name}";
-            config.RelativeFolder = "resized1";
+            config.RelativeFolder = "resized2";
             config.ResizeMethod = ResizeMethod.stretch;
             config.MaxWidth = 50;
             config.MaxHeight = 50;
@@ -186,14 +186,14 @@ namespace FDR.Tools.Library.Test
             var name1 = Guid.NewGuid().ToString();
             var name2 = Guid.NewGuid().ToString();
 
-            files.Add(tempFolderPath, name1 + ".jpg", tempFolderPath + "/resized1", name1 + "_small.jpg");
-            files.Add(tempFolderPath, name2 + ".jpg", tempFolderPath + "/resized1", name2 + "_small.jpg");
+            files.Add(tempFolderPath, name1 + ".jpg", tempFolderPath + "/resized3", name1 + "_small.jpg");
+            files.Add(tempFolderPath, name2 + ".jpg", tempFolderPath + "/resized3", name2 + "_small.jpg");
 
             var config = new ResizeConfig();
             config.Should().NotBeNull();
             System.Action validate = () => config.Validate();
             config.FileFilter = "*.jpg";
-            config.FilenamePattern = "resized1/{name}_small";
+            config.FilenamePattern = "resized3/{name}_small";
             //config.RelativeFolder = "resized1";
             config.ResizeMethod = ResizeMethod.stretch;
             config.MaxWidth = 50;
