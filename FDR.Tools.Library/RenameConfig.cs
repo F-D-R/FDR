@@ -15,6 +15,19 @@ namespace FDR.Tools.Library
 
     public class RenameConfig : ConfigPartBase
     {
+        public static Dictionary<string, string> GetRenameConfigAttributeList()
+        {
+            var attributes = new Dictionary<string, string>();
+            attributes.Add(nameof(FileFilter), "Filter condition for the files to process. Wildcards (*?) are supported. Multiple filters can be defined separated with pipes. Example: \"*.CR3|*.CR2\"");
+            attributes.Add(nameof(AdditionalFileTypes), "List of file types (extensions) which should be renamed together with the originally filtered files. Example: { \"JPG\", \"XMP\" }");
+            attributes.Add(nameof(FilenamePattern), "The name pattern to rename the files to. It can contain static text parts and placeholders described below. Example: \"{mdate:yyMMdd}_{counter:3}s\"");
+            attributes.Add(nameof(FilenameCase), $"The character case of the new filename. Possible values: \"{nameof(CharacterCasing.unchanged)}\", \"{nameof(CharacterCasing.lower)}\", \"{nameof(CharacterCasing.upper)}\". Default is {nameof(CharacterCasing.unchanged)}.");
+            attributes.Add(nameof(ExtensionCase), $"The character case of the new file's extension. Possible values: \"{nameof(CharacterCasing.unchanged)}\", \"{nameof(CharacterCasing.lower)}\", \"{nameof(CharacterCasing.upper)}\". Default is {nameof(CharacterCasing.lower)}.");
+            attributes.Add(nameof(Recursive), "Defines if only the files of the current folder should be renamed (false) or the ones in the subfolders as well (true). Default is false.");
+            attributes.Add(nameof(StopOnError), "Defines whether to stop on the first error during batch renaming of several files (true) or to continue the batch (false). Default is true.");
+            return attributes;
+        }
+
         private const string DEFAULT_FILTER = "*.*";
 
         public string? FilenamePattern { get; set; } = "{name}";

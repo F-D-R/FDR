@@ -1,9 +1,17 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace FDR.Tools.Library
 {
     public class MoveConfig : RenameConfig
     {
+        public static Dictionary<string, string> GetMoveConfigAttributeList()
+        {
+            var attributes = RenameConfig.GetRenameConfigAttributeList();
+            attributes.Add(nameof(RelativeFolder), "Folder(s) name relative to the source folder. It can contain several folder names separated by slashes. Upper navigation is also supported with double dots. Example: \"*../some/other/folder\"");
+            return attributes;
+        }
+
         private const string DEFAULT_FILTER = "*.*";
 
         public override string FileFilter

@@ -13,16 +13,8 @@ namespace FDR.Tools.Library
         {
             Common.Msg("");
             Common.Msg("The move function can have the following attributes in a MoveConfigs object:");
-            Import.ShowMoveConfigAttributeList();
+            Common.ShowAttributeHelp(MoveConfig.GetMoveConfigAttributeList());
             Rename.ShowFileNamePatternHelp();
-        }
-
-        public static void ShowMoveConfigAttributeList()
-        {
-            Rename.ShowRenameConfigAttributeList();
-            Common.Msg($"    \"RelativeFolder\"       - Folder(s) name relative to the source folder. It can contain several names");
-            Common.Msg($"                             separated by a slash. Upper navigation is also supported wit double dots.");
-            Common.Msg($"                             Example: \"*../some/other/folder\"");
         }
 
         internal class SourceInfo

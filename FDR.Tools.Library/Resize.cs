@@ -14,19 +14,8 @@ namespace FDR.Tools.Library
         {
             Common.Msg("");
             Common.Msg("The resize function can have the following attributes in a ResizeConfigs object:");
-            Resize.ShowResizeConfigAttributeList();
+            Common.ShowAttributeHelp(ResizeConfig.GetResizeConfigAttributeList());
             Rename.ShowFileNamePatternHelp();
-        }
-
-        public static void ShowResizeConfigAttributeList()
-        {
-            Import.ShowMoveConfigAttributeList();
-            Common.Msg($"    \"ResizeMethod\"         - The method of resizing. Possible values: \"{nameof(ResizeMethod.fit_in)}\", \"{nameof(ResizeMethod.max_width)}\", \"{nameof(ResizeMethod.max_height)}\", \"{nameof(ResizeMethod.stretch)}\"");
-            Common.Msg($"                             Default is fit_in.");
-            Common.Msg($"    \"MaxWidth\"             - The maximum width to which the image will be resized.");
-            Common.Msg($"    \"MaxHeight\"            - The maximum height to which the image will be resized.");
-            Common.Msg($"    \"JpgQuality\"           - The quality of the resized JPG image. Valid range: 0 to 100.");
-            Common.Msg($"    \"ClearMetadata\"        - Defines if all the metadata should be erased from the resized image. Default is false.");
         }
 
         public static void ResizeFile(FileInfo file, int counter, ResizeConfig config, int progressPercent)

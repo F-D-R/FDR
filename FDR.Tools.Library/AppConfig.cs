@@ -44,9 +44,7 @@ namespace FDR.Tools.Library
 
         public virtual AppConfig? AppConfig { get; internal set; }
 
-        public virtual void Validate()
-        {
-        }
+        public virtual void Validate() { }
     }
 
     public abstract class ConfigDictionaryBase<T> : Dictionary<string, T>

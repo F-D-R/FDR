@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -16,7 +17,19 @@ namespace FDR.Tools.Library
 
     public class ResizeConfig : MoveConfig
     {
+        public static Dictionary<string, string> GetResizeConfigAttributeList()
+        {
+            var attributes = MoveConfig.GetMoveConfigAttributeList();
+            attributes.Add(nameof(ResizeMethod), $"The method of resizing. Possible values: \"{nameof(ResizeMethod.fit_in)}\", \"{nameof(ResizeMethod.max_width)}\", \"{nameof(ResizeMethod.max_height)}\", \"{nameof(ResizeMethod.stretch)}\". Default is {nameof(ResizeMethod.fit_in)}.");
+            attributes.Add(nameof(MaxWidth), "The maximum width to which the image will be resized.");
+            attributes.Add(nameof(MaxHeight), "The maximum height to which the image will be resized.");
+            attributes.Add(nameof(JpgQuality), $"The quality of the resized JPG image. Valid range is from 0 to 100. Default is {DEFAULT_QUALITY}.");
+            attributes.Add(nameof(ClearMetadata), "Defines if all the metadata should be erased from the resized image. Default is false.");
+            return attributes;
+        }
+
         private const string DEFAULT_FILTER = "*.JPG";
+        private const int DEFAULT_QUALITY = 90;
 
         public ResizeMethod ResizeMethod { get; set; } = ResizeMethod.fit_in;
 
@@ -26,7 +39,7 @@ namespace FDR.Tools.Library
 
         public bool ClearMetadata { get; set; }
 
-        private int jpgQuality = 90;
+        private int jpgQuality = DEFAULT_QUALITY;
 
         public int JpgQuality
         {

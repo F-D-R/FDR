@@ -28,6 +28,48 @@ namespace FDR.Tools.Library
                 Msg($"    {percent}%                   \r", ConsoleColor.Gray, false);
         }
 
+        public static void ShowAttributeHelp(Dictionary<string, string> attributes)
+        {
+            var width = Console.WindowWidth;
+            var maxKey = attributes.Aggregate("", (max, cur) => max.Length > cur.Key.Length ? max : cur.Key).Length;
+            var maxValue = attributes.Aggregate("", (max, cur) => max.Length > cur.Value.Length ? max : cur.Value).Length;
+
+            const int indent = 2;
+            const int space = 1;
+            var width1 = indent + maxKey + 2 + space;
+            var width2 = width - width1;
+            var textWidth = width2 - 2;
+
+            foreach (var a in attributes)
+            {
+                var first = new string(' ', indent) + "\"" + a.Key + "\"" + new string(' ', space);
+                var msg = first.PadRight(width1, ' ') + "- ";
+                var words = a.Value.Split(' ');
+                var lines = new List<string>();
+                string line = "";
+                foreach (var word in words)
+                {
+                    if ((line.Length + 1 + word.Length) < textWidth)
+                        line += word + ' ';
+                    else
+                    {
+                        lines.Add(line.TrimEnd());
+                        line = word + ' ';
+                    }
+                }
+                if (line.Length > 0) lines.Add(line);
+                if (lines.Count > 0)
+                {
+                    Common.Msg(msg + lines[0]);
+                    msg = "";
+                }
+                for (int i = 1; i < lines.Count; i++)
+                {
+                    Common.Msg(new string(' ', width1 + 2) + lines[i]);
+                }
+            }
+        }
+
         public static bool IsFolderValid(string folder)
         {
             if (string.IsNullOrWhiteSpace(folder))
