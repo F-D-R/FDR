@@ -98,23 +98,13 @@ namespace FDR.Tools.Library
             var files = Common.GetFiles(folder, filter, config.Recursive).OrderBy(f => f.GetExifDate()).ToList();
             var fileCount = files.Count;
 
-            var newconfig = new RenameConfig();
-            newconfig.AppConfig = config.AppConfig;
-            newconfig.AdditionalFileTypes.AddRange(config.AdditionalFileTypes);
-            newconfig.FilenameCase = config.FilenameCase;
-            newconfig.ExtensionCase = config.ExtensionCase;
-            if (string.IsNullOrWhiteSpace(config.RelativeFolder))
-                newconfig.FilenamePattern = config.FilenamePattern;
-            else
-                newconfig.FilenamePattern = config.RelativeFolder + "/" + config.FilenamePattern;
-
             int counter = 1;
             Common.Progress(0);
             foreach (var file in files)
             {
                 try
                 {
-                    Rename.RenameFile(file, newconfig, counter, 100 * counter / fileCount);
+                    Rename.RenameFile(file, config.GetNewRenameConfig(), counter, 100 * counter / fileCount);
                 }
                 catch (IOException)
                 {

@@ -18,11 +18,22 @@ namespace FDR.Tools.Library
             if (!file.Exists) throw new FileNotFoundException("File doesn't exist!", file.FullName);
 
             var path = Path.GetDirectoryName(file.FullName)??"";
-            var newFullName = Rename.CalculateFileName(file, config, counter);
+            var newFullName = Rename.CalculateFileName(file, config.GetNewRenameConfig(), counter);
             if (string.Compare(Path.GetExtension(newFullName), ".jpg", true) != 0)
                 newFullName = Path.Combine(path, Path.GetFileNameWithoutExtension(newFullName) + ".jpg");
 
+            var destFolder = Path.GetDirectoryName(newFullName);
+            if (destFolder != null && !Directory.Exists(destFolder))
+            {
+                Trace.WriteLine($"Creating destination folder {destFolder}");
+                Directory.CreateDirectory(destFolder);
+            }
+
+#if RELEASE
             Trace.WriteLine($"Resizing file {file.Name} to {Path.GetFileName(newFullName)}");
+#else
+            Trace.WriteLine($"Resizing file {file.FullName} to {newFullName}");
+#endif
             Common.Progress(progressPercent);
 
             int maxWidth = config.MaxWidth;

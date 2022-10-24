@@ -135,5 +135,93 @@ namespace FDR.Tools.Library.Test
             File.Delete(newPath1);
             File.Delete(newPath2);
         }
+
+        [Test]
+        public void ResizeFilesInFolderTests2()
+        {
+            var name1 = Guid.NewGuid().ToString();
+            var name2 = Guid.NewGuid().ToString();
+
+            files.Add(tempFolderPath, name1 + ".jpg", tempFolderPath + "/resized1", name1 + ".jpg");
+            files.Add(tempFolderPath, name2 + ".jpg", tempFolderPath + "/resized1", name2 + ".jpg");
+
+            var config = new ResizeConfig();
+            config.Should().NotBeNull();
+            System.Action validate = () => config.Validate();
+            config.FileFilter = "*.jpg";
+            config.FilenamePattern = "{name}";
+            config.RelativeFolder = "resized1";
+            config.ResizeMethod = ResizeMethod.stretch;
+            config.MaxWidth = 50;
+            config.MaxHeight = 50;
+            config.ClearMetadata = true;
+            validate.Should().NotThrow();
+
+            Helper.CreateJpgFile(files[0].GetSourcePath(), 200, 100);
+            File.Exists(files[0].GetSourcePath()).Should().BeTrue();
+
+            Helper.CreateJpgFile(files[1].GetSourcePath(), 300, 400);
+            File.Exists(files[1].GetSourcePath()).Should().BeTrue();
+
+            Resize.ResizeFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+
+            File.Exists(files[0].GetDestPath()).Should().BeTrue();
+            var info1 = Image.Identify(files[0].GetDestPath());
+            info1.Should().NotBeNull();
+            info1.Width.Should().Be(50);
+            info1.Height.Should().Be(50);
+            info1.Metadata.ExifProfile.Should().BeNull();
+
+            File.Exists(files[1].GetDestPath()).Should().BeTrue();
+            var info2 = Image.Identify(files[1].GetDestPath());
+            info2.Should().NotBeNull();
+            info2.Width.Should().Be(50);
+            info2.Height.Should().Be(50);
+            info2.Metadata.ExifProfile.Should().BeNull();
+        }
+
+        [Test]
+        public void ResizeFilesInFolderTests3()
+        {
+            var name1 = Guid.NewGuid().ToString();
+            var name2 = Guid.NewGuid().ToString();
+
+            files.Add(tempFolderPath, name1 + ".jpg", tempFolderPath + "/resized1", name1 + "_small.jpg");
+            files.Add(tempFolderPath, name2 + ".jpg", tempFolderPath + "/resized1", name2 + "_small.jpg");
+
+            var config = new ResizeConfig();
+            config.Should().NotBeNull();
+            System.Action validate = () => config.Validate();
+            config.FileFilter = "*.jpg";
+            config.FilenamePattern = "resized1/{name}_small";
+            //config.RelativeFolder = "resized1";
+            config.ResizeMethod = ResizeMethod.stretch;
+            config.MaxWidth = 50;
+            config.MaxHeight = 50;
+            config.ClearMetadata = true;
+            validate.Should().NotThrow();
+
+            Helper.CreateJpgFile(files[0].GetSourcePath(), 200, 100);
+            File.Exists(files[0].GetSourcePath()).Should().BeTrue();
+
+            Helper.CreateJpgFile(files[1].GetSourcePath(), 300, 400);
+            File.Exists(files[1].GetSourcePath()).Should().BeTrue();
+
+            Resize.ResizeFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+
+            File.Exists(files[0].GetDestPath()).Should().BeTrue();
+            var info1 = Image.Identify(files[0].GetDestPath());
+            info1.Should().NotBeNull();
+            info1.Width.Should().Be(50);
+            info1.Height.Should().Be(50);
+            info1.Metadata.ExifProfile.Should().BeNull();
+
+            File.Exists(files[1].GetDestPath()).Should().BeTrue();
+            var info2 = Image.Identify(files[1].GetDestPath());
+            info2.Should().NotBeNull();
+            info2.Width.Should().Be(50);
+            info2.Height.Should().Be(50);
+            info2.Metadata.ExifProfile.Should().BeNull();
+        }
     }
 }

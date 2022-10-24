@@ -4,7 +4,6 @@ namespace FDR.Tools.Library
 {
     public class MoveConfig : RenameConfig
     {
-        //private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.CRW";  // *.NEF|*.ARW|*.PEF ???
         private const string DEFAULT_FILTER = "*.*";
 
         public override string FileFilter
@@ -15,12 +14,28 @@ namespace FDR.Tools.Library
 
         public string? RelativeFolder { get; set; }
 
+        public RenameConfig GetNewRenameConfig()
+        {
+            var config = new RenameConfig();
+            config.AppConfig = AppConfig;
+            config.FileFilter = FileFilter;
+            config.AdditionalFileTypes.AddRange(AdditionalFileTypes);
+            if (string.IsNullOrWhiteSpace(RelativeFolder))
+                config.FilenamePattern = FilenamePattern;
+            else
+                config.FilenamePattern = RelativeFolder + "/" + FilenamePattern;
+            config.FilenameCase = FilenameCase;
+            config.ExtensionCase = ExtensionCase;
+            config.Recursive = Recursive;
+            config.StopOnError = StopOnError;
+            return config;
+        }
+
         public override void Validate()
         {
             base.Validate();
 
             if (string.IsNullOrWhiteSpace(FileFilter)) throw new InvalidDataException("Filename filter cannot be empty!");
-            //if (string.IsNullOrWhiteSpace(RelativeFolder)) throw new InvalidDataException("Relative folder path cannot be empty!");
         }
     }
 }
