@@ -8,9 +8,8 @@ using Newtonsoft.Json;
 namespace FDR.Tools.Library.Test
 {
     [TestFixture]
-    public class ImportTest : TestBase
+    public class ImportTest : TempFolderTestBase
     {
-        private string tempFolderPath;
         private string dcim0;
         private string dcim1;
         private string dcim2;
@@ -23,7 +22,6 @@ namespace FDR.Tools.Library.Test
         private string dest2;
         private string raw1;
         private string raw2;
-        private readonly TestFiles files = new();
 
         private const int importConfigCount = 4;
         private const string appConfigJson = @"
@@ -60,30 +58,10 @@ namespace FDR.Tools.Library.Test
 ";
 
 
-        [OneTimeSetUp]
-        public override void OneTimeSetUp()
-        {
-            base.OneTimeSetUp();
-
-            tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            Directory.CreateDirectory(tempFolderPath);
-        }
-
-        [OneTimeTearDown]
-        public override void OneTimeTearDown()
-        {
-            if (Directory.Exists(tempFolderPath)) Directory.Delete(tempFolderPath, true);
-
-            base.OneTimeTearDown();
-        }
-
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-
-            Directory.GetFiles(tempFolderPath, "*", SearchOption.AllDirectories).ToList().ForEach(f => File.Delete(f));
-            files.Clear();
 
             dcim0 = Path.Combine(tempFolderPath, "drive0", "DCIM");
             Directory.CreateDirectory(dcim0);
@@ -114,15 +92,6 @@ namespace FDR.Tools.Library.Test
             Directory.CreateDirectory(raw1);
             raw2 = Path.Combine(dest2, "RAW");
             Directory.CreateDirectory(raw2);
-        }
-
-        [TearDown]
-        public override void TearDown()
-        {
-            Directory.GetFiles(tempFolderPath, "*", SearchOption.AllDirectories).ToList().ForEach(f => File.Delete(f));
-            files.Clear();
-
-            base.TearDown();
         }
 
         [Test]

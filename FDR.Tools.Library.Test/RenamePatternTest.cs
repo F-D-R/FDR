@@ -6,22 +6,20 @@ using FluentAssertions;
 namespace FDR.Tools.Library.Test
 {
     [TestFixture]
-    public class RenamePatternTest
+    public class RenamePatternTest : TempFolderTestBase
     {
-        private string tempFolderPath;
         private string folderPath;
-        private string filePath;
         private DirectoryInfo folder;
+        private string filePath;
         private FileInfo file;
 
-        [OneTimeSetUp]
-        public void OneTimeSetUp()
+        public override void SetUp()
         {
-            tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            Directory.CreateDirectory(tempFolderPath);
+            base.SetUp();
 
             folderPath = Path.Combine(tempFolderPath, "temp", "testfolder");
-            Directory.CreateDirectory(folderPath);
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
 
             filePath = Path.Combine(folderPath, "abcdef.txt");
             File.WriteAllText(filePath, "");
@@ -32,12 +30,6 @@ namespace FDR.Tools.Library.Test
             Directory.SetCreationTime(folderPath, new DateTime(2001, 2, 3));
             Directory.SetLastWriteTime(folderPath, new DateTime(2004, 5, 6));
             folder = new DirectoryInfo(folderPath);
-        }
-
-        [OneTimeTearDown]
-        public void OneTimeTearDown()
-        {
-            if (Directory.Exists(tempFolderPath)) Directory.Delete(tempFolderPath, true);
         }
 
         [Test]
