@@ -10,8 +10,9 @@ namespace FDR.Tools.Library
 {
     public static class Resize
     {
-        public static void ShowResizeConfigHelp()
+        public static void ShowResizeHelp()
         {
+            Common.Msg("Resizes the files matching a filter in the folder given after the -resize option based on a ResizeConfig and saves the resized files with a configurable new name.");
             Common.Msg("");
             Common.Msg("The resize function can have the following attributes in a ResizeConfigs object:");
             Common.ShowAttributeHelp(ResizeConfig.GetResizeConfigAttributeList());

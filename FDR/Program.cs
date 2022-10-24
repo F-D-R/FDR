@@ -209,20 +209,11 @@ namespace FDR
                 else if (func == "cleanup")
                     Common.Msg("Deletes unnecessary raw, hash and err files.");
                 else if (func == "rename")
-                {
-                    Common.Msg("Renames the files matching a filter in the folder given after the -rename option based on a RenameConfig.");
-                    Rename.ShowRenameConfigHelp();
-                }
+                    Rename.ShowRenameHelp();
                 else if (func == "move")
-                {
-                    Common.Msg("Moves the files matching a filter in the folder given after the -move option based on a MoveConfig.");
-                    Import.ShowMoveConfigHelp();
-                }
+                    Import.ShowMoveHelp();
                 else if (func == "resize")
-                {
-                    Common.Msg("Resizes the files matching a filter in the folder given after the -resize option based on a ResizeConfig and saves the resized files with a configurable new name.");
-                    Resize.ShowResizeConfigHelp();
-                }
+                    Resize.ShowResizeHelp();
                 else
                     Common.Msg("Invalid function: " + func, ConsoleColor.Red);
             }

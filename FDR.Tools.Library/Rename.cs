@@ -21,8 +21,9 @@ namespace FDR.Tools.Library
         private const string SDATE = "sdate";               // Shooting date (=EDATE)
         private const string COUNTER = "counter";           // File counter starting with 1
 
-        public static void ShowRenameConfigHelp()
+        public static void ShowRenameHelp()
         {
+            Common.Msg("Renames the files matching a filter in the folder given after the -rename option based on a RenameConfig.");
             Common.Msg("");
             Common.Msg("The rename function can have the following attributes in a RenameConfigs object:");
             Common.ShowAttributeHelp(RenameConfig.GetRenameConfigAttributeList());
