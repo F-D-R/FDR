@@ -197,15 +197,26 @@ namespace FDR.Tools.Library
             if (file == null) throw new ArgumentNullException("file");
             if (!file.Exists) throw new FileNotFoundException("File doesn't exist!", file.FullName);
 
-            var path = Path.GetDirectoryName(file.FullName)??"";
+            var sourcePath = Path.GetDirectoryName(file.FullName)??"";
             var origName = file.Name;
             var origNameWithoutExtension = Path.GetFileNameWithoutExtension(origName);
             var newFullName = CalculateFileName(file, config, counter);
+            var destPath = Path.GetDirectoryName(newFullName)??"";
             var newName = Path.GetFileName(newFullName);
 
-            if (string.Compare(origName, newName, false) != 0)
+            if (string.Compare(file.FullName, newFullName, false) != 0)
             {
-                Trace.WriteLine($"Renaming file {origName} to {newName}");
+                var folder = Path.GetDirectoryName(newFullName);
+                if (folder != null && !Directory.Exists(folder))
+                {
+                    Trace.WriteLine($"Creating destination folder {folder}");
+                    Directory.CreateDirectory(folder);
+                }
+#if RELEASE
+                Trace.WriteLine($"Moving file {origName} to {newName}");
+#else
+                Trace.WriteLine($"Moving file {file.FullName} to {newFullName}");
+#endif
                 file.MoveTo(newFullName);
             }
             else
@@ -218,7 +229,7 @@ namespace FDR.Tools.Library
             {
                 var ext = '.' + type.Trim().TrimStart('*').TrimStart('.');
                 origName = origNameWithoutExtension + ext;
-                var origPath = Path.Combine(path, origName);
+                var origPath = Path.Combine(sourcePath, origName);
                 if (File.Exists(origPath))
                 {
                     if (config.ExtensionCase == CharacterCasing.lower)
@@ -227,10 +238,14 @@ namespace FDR.Tools.Library
                         ext = ext.ToUpper();
 
                     newName = Path.GetFileNameWithoutExtension(newFullName) + ext;
-                    var newPath = Path.Combine(path, newName);
+                    var newPath = Path.Combine(destPath, newName);
                     if (string.Compare(origName, newName, false) != 0)
                     {
-                        Trace.WriteLine($"Renaming file {origName} to {newName}");
+#if RELEASE
+                        Trace.WriteLine($"Moving file {origName} to {newName}");
+#else
+                        Trace.WriteLine($"Moving file {origPath} to {newPath}");
+#endif
                         File.Move(origPath, newPath);
                     }
                     else
@@ -247,10 +262,10 @@ namespace FDR.Tools.Library
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
             var filter = config.FileFilter;
+            if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
+
             Common.Msg($"Renaming {filter} files in {folder.FullName}");
             Trace.Indent();
-
-            if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
 
             var files = Common.GetFiles(folder, filter, config.Recursive).OrderBy(f => f.GetExifDate()).ToList();
             int fileCount = files.Count;

@@ -95,28 +95,32 @@ namespace FDR.Tools.Library
             Common.Msg($"Moving {filter} files in {folder.FullName} to {config.RelativeFolder}");
             Trace.Indent();
 
-            var files = Common.GetFiles(folder, filter, false);
-            var filecount = files.Count();
+            var files = Common.GetFiles(folder, filter, config.Recursive).OrderBy(f => f.GetExifDate()).ToList();
+            var fileCount = files.Count;
 
-            var destfolder = Path.Combine(folder.FullName, config.RelativeFolder);
-            if (!Directory.Exists(destfolder)) Directory.CreateDirectory(destfolder);
+            var newconfig = new RenameConfig();
+            newconfig.AppConfig = config.AppConfig;
+            newconfig.AdditionalFileTypes.AddRange(config.AdditionalFileTypes);
+            newconfig.FilenameCase = config.FilenameCase;
+            newconfig.ExtensionCase = config.ExtensionCase;
+            if (string.IsNullOrWhiteSpace(config.RelativeFolder))
+                newconfig.FilenamePattern = config.FilenamePattern;
+            else
+                newconfig.FilenamePattern = config.RelativeFolder + "/" + config.FilenamePattern;
 
-            var i = 0;
+            int counter = 1;
             Common.Progress(0);
-            foreach (var file in files.OrderBy(f => f.CreationTimeUtc).ToList())
+            foreach (var file in files)
             {
                 try
                 {
-                    var destfile = Path.Combine(destfolder, file.Name);
-                    Trace.WriteLine($"Moving file {file.Name} to {destfile}");
-                    Common.Progress(100 * i / filecount);
-                    file.MoveTo(destfile);
-                    i++;
+                    Rename.RenameFile(file, newconfig, counter, 100 * counter / fileCount);
                 }
                 catch (IOException)
                 {
                     if (config.StopOnError) throw;
                 }
+                counter++;
             }
 
             Trace.Unindent();

@@ -48,7 +48,13 @@ namespace FDR.Tools.Library.Test
 
         public void CreateFiles()
         {
-            this.Where(f => f.Create).ToList().ForEach(f => { File.WriteAllText(f.GetSourcePath(), ""); File.SetCreationTimeUtc(f.GetSourcePath(), f.Created); File.SetLastWriteTimeUtc(f.GetSourcePath(), f.Created); });
+            this.Where(f => f.Create).ToList().ForEach(f =>
+            {
+                if (!Directory.Exists(f.SourceFolder)) Directory.CreateDirectory(f.SourceFolder);
+                File.WriteAllText(f.GetSourcePath(), "");
+                File.SetCreationTimeUtc(f.GetSourcePath(), f.Created);
+                File.SetLastWriteTimeUtc(f.GetSourcePath(), f.Created);
+            });
         }
     }
 

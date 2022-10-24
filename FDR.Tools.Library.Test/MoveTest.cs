@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using NUnit.Framework;
 using FluentAssertions;
 using NUnit.Framework.Internal;
@@ -9,96 +8,132 @@ namespace FDR.Tools.Library.Test
     [TestFixture]
     public class MoveTest : TempFolderTestBase
     {
-        [Test]
-        public void RenameFilesInFolderWithoutAdditionalTests()
+        private string parentFolderPath;
+        private string sourceFolderPath;
+        private string childFolderPath;
+        private string grandChildFolderPath;
+        private string parallelFolderPath;
+        private DirectoryInfo sourceFolder;
+
+        public override void OneTimeSetUp()
         {
-            var config = new RenameConfig();
+            base.OneTimeSetUp();
+            parentFolderPath = Path.Combine(tempFolderPath, "parent");
+            sourceFolderPath = Path.Combine(parentFolderPath, "source");
+            childFolderPath = Path.Combine(sourceFolderPath, "child");
+            grandChildFolderPath = Path.Combine(childFolderPath, "grandchild");
+            parallelFolderPath = Path.Combine(parentFolderPath, "parallel");
+            sourceFolder = new DirectoryInfo(sourceFolderPath);
+        }
+
+        [Test]
+        public void MoveFilesToChildFolder()
+        {
+            var config = new MoveConfig();
             config.Should().NotBeNull();
             config.FileFilter = "*.CR3|*.CR2";
-            config.FilenamePattern = "{mdate:yyMMdd}_{counter:2}";
-            config.AdditionalFileTypes.Clear();
+            config.RelativeFolder = "child";
 
-            var files = new TestFiles();
-            files.Add(new DateTime(2002, 3, 4), tempFolderPath, "ccc.cr3", tempFolderPath, "020304_02.cr3");
-            files.Add(new DateTime(2001, 2, 4), tempFolderPath, "bbb.cr2", tempFolderPath, "010204_01.cr2");
-            files.Add(tempFolderPath, "bbb.jpg", tempFolderPath, "bbb.jpg");
-            files.Add(tempFolderPath, "aaa.txt", tempFolderPath, "aaa.txt");
+            files.Add(sourceFolderPath, "aaa.cr3", childFolderPath, "aaa.cr3");
+            files.Add(sourceFolderPath, "bbb.cr2", childFolderPath, "bbb.cr2");
+            files.Add(sourceFolderPath, "ccc.jpg", sourceFolderPath, "ccc.jpg");
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Import.MoveFilesInFolder(sourceFolder, config);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
         }
 
         [Test]
-        public void RenameFilesInFolderWithAdditionalTests()
+        public void MoveFilesToGrandChildFolder()
         {
-            var config = new RenameConfig();
+            var config = new MoveConfig();
             config.Should().NotBeNull();
             config.FileFilter = "*.CR3|*.CR2";
-            config.FilenamePattern = "{mdate:yyMMdd}_{counter:2}";
-            config.AdditionalFileTypes.Clear();
-            config.AdditionalFileTypes.Add("JPG");
-            config.AdditionalFileTypes.Add(" *.PNG ");
+            config.RelativeFolder = "child/grandchild";
 
-            var files = new TestFiles();
-            files.Add(new DateTime(2002, 3, 4), tempFolderPath, "ccc.cr3", tempFolderPath, "020304_02.cr3");
-            files.Add(new DateTime(2001, 2, 4), tempFolderPath, "bbb.cr2", tempFolderPath, "010204_01.cr2");
-            files.Add(tempFolderPath, "bbb.jpg", tempFolderPath, "010204_01.jpg");
-            files.Add(tempFolderPath, "bbb.png", tempFolderPath, "010204_01.png");
-            files.Add(tempFolderPath, "aaa.txt", tempFolderPath, "aaa.txt");
+            files.Add(sourceFolderPath, "aaa.cr3", grandChildFolderPath, "aaa.cr3");
+            files.Add(sourceFolderPath, "bbb.cr2", grandChildFolderPath, "bbb.cr2");
+            files.Add(sourceFolderPath, "ccc.jpg", sourceFolderPath, "ccc.jpg");
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Import.MoveFilesInFolder(sourceFolder, config);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
         }
 
         [Test]
-        public void RenameFilesInFolderWithAdditionalMatchingFileFilterTests()
+        public void MoveFilesToParentFolder()
         {
-            var config = new RenameConfig();
+            var config = new MoveConfig();
             config.Should().NotBeNull();
-            config.FileFilter = "*.*";
-            config.FilenamePattern = "{mdate:yyMMdd}_{counter:2}";
-            config.AdditionalFileTypes.Clear();
-            config.AdditionalFileTypes.Add("JPG");
-            config.AdditionalFileTypes.Add(" *.PNG ");
-            config.StopOnError = false;
+            config.FileFilter = "*.CR3|*.CR2";
+            config.RelativeFolder = "..";
 
-            var files = new TestFiles();
-            files.Add(new DateTime(2000, 3, 4), tempFolderPath, "ccc.cr3", tempFolderPath, "000304_01.cr3");
-            files.Add(new DateTime(2001, 2, 4), tempFolderPath, "bbb.cr2", tempFolderPath, "010204_02.cr2");
-            files.Add(tempFolderPath, "bbb.jpg", tempFolderPath, "010204_02.jpg");
-            files.Add(tempFolderPath, "bbb.png", tempFolderPath, "010204_02.png");
+            files.Add(sourceFolderPath, "aaa.cr3", parentFolderPath, "aaa.cr3");
+            files.Add(sourceFolderPath, "bbb.cr2", parentFolderPath, "bbb.cr2");
+            files.Add(sourceFolderPath, "ccc.jpg", sourceFolderPath, "ccc.jpg");
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Import.MoveFilesInFolder(sourceFolder, config);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
         }
 
         [Test]
-        public void RenameFolderTests()
+        public void MoveFilesToParallelFolder()
         {
-            var config = new RenameConfig() { FilenamePattern = "{pfolder}" };
+            var config = new MoveConfig();
             config.Should().NotBeNull();
+            config.FileFilter = "*.CR3|*.CR2";
+            config.RelativeFolder = "../parallel";
 
-            var folderPath = Path.Combine(tempFolderPath, "folder");
-            Directory.CreateDirectory(folderPath);
-            Directory.SetCreationTime(folderPath, new DateTime(2001, 2, 3));
-            Directory.SetLastWriteTime(folderPath, new DateTime(2004, 5, 6));
-            var folder = new DirectoryInfo(folderPath);
-            folder.Should().NotBeNull();
-            folder.Parent.Should().NotBeNull();
-            var parentPath = folder.Parent.FullName;
-            parentPath.Should().NotBeNullOrWhiteSpace();
-            parentPath.Should().Be(tempFolderPath);
+            files.Add(sourceFolderPath, "aaa.cr3", parallelFolderPath, "aaa.cr3");
+            files.Add(sourceFolderPath, "bbb.cr2", parallelFolderPath, "bbb.cr2");
+            files.Add(sourceFolderPath, "ccc.jpg", sourceFolderPath, "ccc.jpg");
+            files.CreateFiles();
 
-            Rename.RenameFolder(folder, config);
+            Import.MoveFilesInFolder(sourceFolder, config);
 
-            Directory.Exists(folderPath).Should().BeFalse();
-            Directory.Exists(Path.Combine(parentPath, Path.GetDirectoryName(parentPath))).Should().BeTrue();
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+        }
+
+        [Test]
+        public void RenameFilesToGrandChildFolder()
+        {
+            var config = new MoveConfig();
+            config.Should().NotBeNull();
+            config.FileFilter = "*.CR3|*.CR2";
+            config.FilenamePattern = "{name}_{name}";
+            config.RelativeFolder = "child/grandchild";
+
+            files.Add(sourceFolderPath, "aaa.cr3", grandChildFolderPath, "aaa_aaa.cr3");
+            files.Add(sourceFolderPath, "bbb.cr2", grandChildFolderPath, "bbb_bbb.cr2");
+            files.Add(sourceFolderPath, "ccc.jpg", sourceFolderPath, "ccc.jpg");
+            files.CreateFiles();
+
+            Import.MoveFilesInFolder(sourceFolder, config);
+
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+        }
+
+        [Test]
+        public void RenameFilesToGrandChildFolder2()
+        {
+            var config = new MoveConfig();
+            config.Should().NotBeNull();
+            config.FileFilter = "*.CR3|*.CR2";
+            config.FilenamePattern = "grandchild/{name}_{name}";
+            config.RelativeFolder = "child";
+
+            files.Add(sourceFolderPath, "aaa.cr3", grandChildFolderPath, "aaa_aaa.cr3");
+            files.Add(sourceFolderPath, "bbb.cr2", grandChildFolderPath, "bbb_bbb.cr2");
+            files.Add(sourceFolderPath, "ccc.jpg", sourceFolderPath, "ccc.jpg");
+            files.CreateFiles();
+
+            Import.MoveFilesInFolder(sourceFolder, config);
+
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
         }
     }
 }
