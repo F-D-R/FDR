@@ -213,31 +213,28 @@ namespace FDR.Tools.Library
 
             Common.Progress(progressPercent);
 
-            if (config is RenameConfig renameConfig)
+            if (config.AdditionalFileTypes == null) return;
+            foreach (var type in config.AdditionalFileTypes)
             {
-                if (renameConfig.AdditionalFileTypes == null) return;
-                foreach (var type in renameConfig.AdditionalFileTypes)
+                var ext = '.' + type.Trim().TrimStart('*').TrimStart('.');
+                origName = origNameWithoutExtension + ext;
+                var origPath = Path.Combine(path, origName);
+                if (File.Exists(origPath))
                 {
-                    origName = origNameWithoutExtension + type;
-                    var origPath = Path.Combine(path, origName);
-                    if (File.Exists(origPath))
-                    {
-                        var extension = type;
-                        if (config.ExtensionCase == CharacterCasing.lower)
-                            extension = extension.ToLower();
-                        else if (config.ExtensionCase == CharacterCasing.upper)
-                            extension = extension.ToUpper();
+                    if (config.ExtensionCase == CharacterCasing.lower)
+                        ext = ext.ToLower();
+                    else if (config.ExtensionCase == CharacterCasing.upper)
+                        ext = ext.ToUpper();
 
-                        newName = Path.GetFileNameWithoutExtension(newFullName) + extension;
-                        var newPath = Path.Combine(path, newName);
-                        if (string.Compare(origName, newName, false) != 0)
-                        {
-                            Trace.WriteLine($"Renaming file {origName} to {newName}");
-                            File.Move(origPath, newPath);
-                        }
-                        else
-                            Trace.WriteLine($"{origName} matches the new name...");
+                    newName = Path.GetFileNameWithoutExtension(newFullName) + ext;
+                    var newPath = Path.Combine(path, newName);
+                    if (string.Compare(origName, newName, false) != 0)
+                    {
+                        Trace.WriteLine($"Renaming file {origName} to {newName}");
+                        File.Move(origPath, newPath);
                     }
+                    else
+                        Trace.WriteLine($"{origName} matches the new name...");
                 }
             }
         }

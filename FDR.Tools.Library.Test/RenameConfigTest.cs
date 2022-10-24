@@ -14,50 +14,40 @@ namespace FDR.Tools.Library.Test
             config.Should().NotBeNull();
             System.Action validate = () => config.Validate();
 
-            config.FilenamePattern.Should().NotBeNullOrWhiteSpace();
+            config.FileFilter.Should().NotBeNullOrWhiteSpace("Default FileFilter");
+            validate.Should().NotThrow();
+
+            config.FileFilter = null;
+            config.FileFilter.Should().NotBeNullOrWhiteSpace("FileFilter must have default");
+            validate.Should().NotThrow();
+
+            config.FileFilter = "*.CR3";
+            config.FileFilter.Should().Be("*.CR3");
+            validate.Should().NotThrow();
+
+            config.FilenamePattern.Should().NotBeNullOrWhiteSpace("Default FilenamePattern");
             validate.Should().NotThrow();
 
             config.FilenamePattern = null;
-            validate.Should().Throw<InvalidDataException>();
+            validate.Should().Throw<InvalidDataException>("FilenamePattern is empty");
 
             config.FilenamePattern = "{name}";
             validate.Should().NotThrow();
 
-            config.FileFilter = null;
-            config.FileFilter.Should().NotBeNullOrWhiteSpace();
-
-            config.FileFilter = "*.CR3";
-            config.FileFilter.Should().Be("*.CR3");
-
-            config.FilenamePattern = null;
-            validate.Should().Throw<InvalidDataException>();
-
-            config.FilenamePattern = "dummy";
-            validate.Should().NotThrow();
-
-            // Empty list
             config.AdditionalFileTypes.Clear();
             validate.Should().NotThrow();
 
-            // Empty item
             config.AdditionalFileTypes.Clear();
             config.AdditionalFileTypes.Add("");
-            validate.Should().Throw<InvalidDataException>();
+            validate.Should().Throw<InvalidDataException>("Empty item");
 
-            // Trailing whitespace
             config.AdditionalFileTypes.Clear();
-            config.AdditionalFileTypes.Add(".JPG ");
-            validate.Should().Throw<InvalidDataException>();
+            config.AdditionalFileTypes.Add(" *. ");
+            validate.Should().Throw<InvalidDataException>("Doesn't contain extension");
 
-            // Missing dot
             config.AdditionalFileTypes.Clear();
             config.AdditionalFileTypes.Add("JPG");
-            validate.Should().Throw<InvalidDataException>();
-
-            // Valid
-            config.AdditionalFileTypes.Clear();
-            config.AdditionalFileTypes.Add(".JPG");
-            config.AdditionalFileTypes.Add(".PNG");
+            config.AdditionalFileTypes.Add(" *.PNG ");
             validate.Should().NotThrow();
         }
     }

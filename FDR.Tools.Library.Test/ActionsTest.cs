@@ -50,9 +50,9 @@ namespace FDR.Tools.Library.Test
         {
             var appConfig = new AppConfig();
             appConfig.Should().NotBeNull();
-            appConfig.MoveConfigs.Add("move", new MoveConfig());
+            appConfig.MoveConfigs.Add("move", new MoveConfig() { FileFilter = "*.CR3|*.CR2|*.CRW", RelativeFolder = "RAW" });
             appConfig.MoveConfigs.Should().HaveCount(1);
-            appConfig.RenameConfigs.Add("rename", new RenameConfig() { FilenamePattern = "dest_{counter:3}", AdditionalFileTypes = { ".JPG" } });
+            appConfig.RenameConfigs.Add("rename", new RenameConfig() { FileFilter = "*.CR3|*.CR2|*.CRW", FilenamePattern = "dest_{counter:3}", AdditionalFileTypes = { ".JPG" } });
             appConfig.RenameConfigs.Should().HaveCount(1);
             var actions = new Actions(appConfig);
             actions.Should().NotBeNull();
@@ -61,7 +61,8 @@ namespace FDR.Tools.Library.Test
             actions.Add(new Action() { Type = ActionType.move, Config = "move" });
             actions.Add(new Action() { Type = ActionType.hash });
             actions.Add(new Action() { Type = ActionType.cleanup });
-            //actions.Add(new ActionClass() { Type = ActionType.rehash });
+            //actions.Add(new Action() { Type = ActionType.rehash });
+            //actions.Should().HaveCount(6);
             actions.Should().HaveCount(5);
 
             files.Add(new DateTime(2022, 1, 3), tempFolderPath, "01.jpg", tempFolderPath, "dest_003.jpg");

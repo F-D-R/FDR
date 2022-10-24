@@ -29,7 +29,7 @@ namespace FDR.Tools.Library.Test
         private const string appConfigJson = @"
 {
   ""RenameConfigs"": {
-    ""yymmdd_ccc"": { ""FileNamePattern"": ""{cdate:yyMMdd}_{counter:3}"", ""AdditionalFileTypes"": [ "".JPG"" ], ""Recursive"": false, ""StopOnError"": true } },
+    ""yymmdd_ccc"": { ""FileFilter"": ""*.CR3|*.CR2|*.CRW"", ""FileNamePattern"": ""{cdate:yyMMdd}_{counter:3}"", ""AdditionalFileTypes"": [ "".JPG"" ], ""Recursive"": false, ""StopOnError"": true } },
   ""MoveConfigs"": {
     ""raw"": { ""FileFilter"": ""*.CR3|*.CR2|*.CRW"", ""RelativeFolder"": ""RAW"" } },
   ""ImportConfigs"": {
@@ -224,7 +224,11 @@ namespace FDR.Tools.Library.Test
             files.Add(dest1, "04.jpg", dest1, "04.jpg");
             files.CreateFiles();
 
-            Import.MoveFilesInFolder(new DirectoryInfo(dest1), new MoveConfig());
+            var config = new MoveConfig();
+            config.FileFilter = "*.CR3|*.CR2|*.CRW";
+            config.RelativeFolder = "RAW";
+
+            Import.MoveFilesInFolder(new DirectoryInfo(dest1), config);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
         }

@@ -15,7 +15,7 @@ namespace FDR.Tools.Library
 
     public class RenameConfig : ConfigPartBase
     {
-        private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.CRW|*.MP4|*.AVI|*.MOV";
+        private const string DEFAULT_FILTER = "*.*";
 
         public string? FilenamePattern { get; set; } = "{name}";
 
@@ -30,7 +30,7 @@ namespace FDR.Tools.Library
             set { filter = value; }
         }
 
-        public List<string> AdditionalFileTypes { get; } = new List<string>() { ".JPG" };
+        public List<string> AdditionalFileTypes { get; } = new List<string>();
 
         public bool Recursive { get; set; } = false;
 
@@ -60,9 +60,8 @@ namespace FDR.Tools.Library
             }
             foreach (var type in AdditionalFileTypes)
             {
-                if (string.IsNullOrWhiteSpace(type)) throw new InvalidDataException("Additional file type cannot be empty!");
-                if (string.CompareOrdinal(type, type.Trim()) != 0) throw new InvalidDataException("Additional file type must not contain white spaces!");
-                if (!type.StartsWith(".")) throw new InvalidDataException("Additional file type must start with a dot!");
+                if (type == null) throw new InvalidDataException("Additional file type cannot be null!");
+                if (string.IsNullOrWhiteSpace(type.Trim().TrimStart('*').TrimStart('.'))) throw new InvalidDataException("Additional file type cannot be empty!");
             }
         }
     }

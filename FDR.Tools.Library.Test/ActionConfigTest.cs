@@ -27,34 +27,34 @@ namespace FDR.Tools.Library.Test
 
             config.Type = (ActionType)9999;
             config.Config = null;
-            validate.Should().Throw<NotImplementedException>();
+            validate.Should().Throw<NotImplementedException>("Invalid action type");
 
             config.Type = ActionType.rename;
             config.Config = null;
-            validate.Should().Throw<InvalidDataException>();
+            validate.Should().Throw<InvalidDataException>("Missing rename config name");
             config.Type = ActionType.rename;
             config.Config = "dummy";
-            validate.Should().Throw<ArgumentOutOfRangeException>();
+            validate.Should().Throw<ArgumentOutOfRangeException>("Missing rename config");
             appConfig.RenameConfigs.Add("dummy", new RenameConfig());
             appConfig.RenameConfigs.Should().HaveCount(1);
             validate.Should().NotThrow();
 
             config.Type = ActionType.resize;
             config.Config = null;
-            validate.Should().Throw<InvalidDataException>();
+            validate.Should().Throw<InvalidDataException>("Missing resize config name");
             config.Type = ActionType.resize;
             config.Config = "dummy";
-            validate.Should().Throw<ArgumentOutOfRangeException>();
+            validate.Should().Throw<ArgumentOutOfRangeException>("Missing resize config");
             appConfig.ResizeConfigs.Add("dummy", new ResizeConfig());
             appConfig.ResizeConfigs.Should().HaveCount(1);
             validate.Should().NotThrow();
 
             config.Type = ActionType.move;
             config.Config = null;
-            validate.Should().Throw<InvalidDataException>();
+            validate.Should().Throw<InvalidDataException>("Missing move config name");
             config.Type = ActionType.move;
             config.Config = "dummy";
-            validate.Should().Throw<ArgumentOutOfRangeException>();
+            validate.Should().Throw<ArgumentOutOfRangeException>("Missing move config");
             appConfig.MoveConfigs.Add("dummy", new MoveConfig());
             appConfig.MoveConfigs.Should().HaveCount(1);
             validate.Should().NotThrow();
@@ -71,15 +71,15 @@ namespace FDR.Tools.Library.Test
 
             config.Type = ActionType.rename;
             config.Config = "dummy";
-            validate.Should().Throw<InvalidDataException>();
+            validate.Should().Throw<InvalidDataException>("Missing rename config");
 
             config.Type = ActionType.resize;
             config.Config = "dummy";
-            validate.Should().Throw<InvalidDataException>();
+            validate.Should().Throw<InvalidDataException>("Missing resize config");
 
             config.Type = ActionType.move;
             config.Config = "dummy";
-            validate.Should().Throw<InvalidDataException>();
+            validate.Should().Throw<InvalidDataException>("Missing move config");
         }
 
         [Test]
@@ -97,7 +97,10 @@ namespace FDR.Tools.Library.Test
             var a = new Action() { Type = ActionType.hash };
             a.Should().NotBeNull();
             actions.Add(a);
-            actions.Should().HaveCount(1);
+            a = new Action() { Type = ActionType.rehash };
+            a.Should().NotBeNull();
+            actions.Add(a);
+            actions.Should().HaveCount(2);
             validate.Should().NotThrow();
         }
     }
