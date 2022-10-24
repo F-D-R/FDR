@@ -16,7 +16,7 @@ namespace FDR.Tools.Library
             Common.Msg("");
             Common.Msg("The resize function can have the following attributes in a ResizeConfigs object:");
             Common.ShowAttributeHelp(ResizeConfig.GetResizeConfigAttributeList());
-            Rename.ShowFileNamePatternHelp();
+            Rename.ShowFilenamePatternHelp();
         }
 
         public static void ResizeFile(FileInfo file, int counter, ResizeConfig config, int progressPercent)

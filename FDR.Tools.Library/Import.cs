@@ -15,7 +15,7 @@ namespace FDR.Tools.Library
             Common.Msg("");
             Common.Msg("The move function can have the following attributes in a MoveConfigs object:");
             Common.ShowAttributeHelp(MoveConfig.GetMoveConfigAttributeList());
-            Rename.ShowFileNamePatternHelp();
+            Rename.ShowFilenamePatternHelp();
         }
 
         internal class SourceInfo

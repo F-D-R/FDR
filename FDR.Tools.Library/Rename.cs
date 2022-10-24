@@ -27,20 +27,20 @@ namespace FDR.Tools.Library
             Common.Msg("");
             Common.Msg("The rename function can have the following attributes in a RenameConfigs object:");
             Common.ShowAttributeHelp(RenameConfig.GetRenameConfigAttributeList());
-            Rename.ShowFileNamePatternHelp();
+            Rename.ShowFilenamePatternHelp();
         }
 
-        public static void ShowFileNamePatternHelp()
+        public static void ShowFilenamePatternHelp()
         {
             Common.Msg("");
             Common.Msg("The FilenamePattern can have the following formatting placeholders:");
-            Common.ShowAttributeHelp(GetFormatList(), false);
+            Common.ShowAttributeHelp(GetPlaceholderList(), false);
             Common.Msg("");
             Common.Msg("...see the detailed format description here:");
             Common.Msg("    https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings");
         }
 
-        private static Dictionary<string, string> GetFormatList()
+        private static Dictionary<string, string> GetPlaceholderList()
         {
             var list = new Dictionary<string, string>();
             list.Add($"{{{NOW}[:format]}}", "Current date time with optional date format");
