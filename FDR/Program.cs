@@ -211,32 +211,20 @@ namespace FDR
                 else if (func == "rename")
                 {
                     Common.Msg("Renames the files matching a filter in the folder given after the -rename option based on a RenameConfig.");
-                    FileNamePatternHelp();
+                    Rename.ShowRenameConfigHelp();
+                }
+                else if (func == "move")
+                {
+                    Common.Msg("Moves the files matching a filter in the folder given after the -move option based on a MoveConfig.");
+                    Import.ShowMoveConfigHelp();
                 }
                 else if (func == "resize")
                 {
                     Common.Msg("Resizes the files matching a filter in the folder given after the -resize option based on a ResizeConfig and saves the resized files with a configurable new name.");
-                    FileNamePatternHelp();
+                    Resize.ShowResizeConfigHelp();
                 }
                 else
                     Common.Msg("Invalid function: " + func, ConsoleColor.Red);
-            }
-
-            void FileNamePatternHelp()
-            {
-                Common.Msg("");
-                Common.Msg("The FileNamePattern can have the following formatting options:");
-                Common.Msg("    {now[:format]}              Current date time with optional date format");
-                Common.Msg("    {name[:start,length]}       Name without extension with optional start index and character length");
-                Common.Msg("    {pfolder[:start,length]}    Parent folder's name with optional start index and character length");
-                Common.Msg("    {cdate[:format]}            Creation date with optional date format");
-                Common.Msg("    {mdate[:format]}            Modify date with optional date format");
-                Common.Msg("    {edate[:format]}            EXIF date (=sdate) with optional date format");
-                Common.Msg("    {sdate[:format]}            Shooting date (=edate) with optional date format");
-                Common.Msg("    {counter[:digits]}          File counter with optional number of digits starting with 1");
-                Common.Msg("");
-                Common.Msg("...see the format description here:");
-                Common.Msg("    https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings");
             }
         }
 

@@ -20,6 +20,49 @@ namespace FDR.Tools.Library
         private const string SDATE = "sdate";               // Shooting date (=EDATE)
         private const string COUNTER = "counter";           // File counter starting with 1
 
+        public static void ShowRenameConfigHelp()
+        {
+            Common.Msg("");
+            Common.Msg("The rename function can have the following attributes in a RenameConfigs object:");
+            Rename.ShowRenameConfigAttributeList();
+            Rename.ShowFileNamePatternHelp();
+        }
+
+        public static void ShowRenameConfigAttributeList()
+        {
+            Common.Msg($"    \"FileFilter\"           - Filter condition for the files to process. Wildcards (*?) are supported.");
+            Common.Msg($"                             Multiple filters can be defined separated with pipe. Example: \"*.CR3|*.CR2\"");
+            Common.Msg($"    \"AdditionalFileTypes\"  - List of file types (extensions) which should be renamed together");
+            Common.Msg($"                             with the originally filtered files. Example: {{ \"JPG\", \"XMP\" }}");
+            Common.Msg($"    \"FilenamePattern\"      - The name pattern to rename the files to. It can contain static text parts");
+            Common.Msg($"                             and placeholders described below. Example: \"{{mdate:yyMMdd}}_{{counter:3}}s\"");
+            Common.Msg($"    \"FilenameCase\"         - The character case of the new filename.");
+            Common.Msg($"                             Possible values: \"{nameof(CharacterCasing.unchanged)}\", \"{nameof(CharacterCasing.lower)}\", \"{nameof(CharacterCasing.upper)}\". Default is {nameof(CharacterCasing.unchanged)}.");
+            Common.Msg($"    \"ExtensionCase\"        - The character case of the new file's extension.");
+            Common.Msg($"                             Possible values: \"{nameof(CharacterCasing.unchanged)}\", \"{nameof(CharacterCasing.lower)}\", \"{nameof(CharacterCasing.upper)}\". Default is {nameof(CharacterCasing.lower)}.");
+            Common.Msg($"    \"Recursive\"            - Defines if only the files of the current folder should be renamed (false)");
+            Common.Msg($"                             or the ones in the subfolders as well (true). Default is false.");
+            Common.Msg($"    \"StopOnError\"          - Defines whether to stop on the first error during batch renaming of several files (true)");
+            Common.Msg($"                             or to continue the batch (false). Default is true.");
+        }
+
+        public static void ShowFileNamePatternHelp()
+        {
+            Common.Msg("");
+            Common.Msg("The FilenamePattern can have the following formatting placeholders:");
+            Common.Msg("    {now[:format]}            - Current date time with optional date format");
+            Common.Msg("    {name[:start,length]}     - Name without extension with optional start index and character length");
+            Common.Msg("    {pfolder[:start,length]}  - Parent folder's name with optional start index and character length");
+            Common.Msg("    {cdate[:format]}          - Creation date with optional date format");
+            Common.Msg("    {mdate[:format]}          - Modify date with optional date format");
+            Common.Msg("    {edate[:format]}          - EXIF date (=sdate) with optional date format");
+            Common.Msg("    {sdate[:format]}          - Shooting date (=edate) with optional date format");
+            Common.Msg("    {counter[:digits]}        - File counter with optional number of digits starting with 1");
+            Common.Msg("");
+            Common.Msg("...see the detailed format description here:");
+            Common.Msg("    https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings");
+        }
+
         public static string EvaluateNamePattern(string pattern, FileSystemInfo? fsi)
         {
             string result = pattern;
