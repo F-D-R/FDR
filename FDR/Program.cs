@@ -197,7 +197,7 @@ namespace FDR
             else
             {
                 if (func =="import")
-                    Common.Msg("\nImports memory card content based on the selected configuration.");
+                    Import.ShowImportHelp();
                 else if (func == "hash")
                     Common.Msg("\nCreates hidden hash files of files in the folder given after the -hash option for which there were none yet.");
                 else if (func == "rehash")

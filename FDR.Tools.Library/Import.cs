@@ -9,6 +9,15 @@ namespace FDR.Tools.Library
 {
     public static class Import
     {
+        public static void ShowImportHelp()
+        {
+            Common.Msg("");
+            Common.Msg("Imports memory card content based on the selected configuration.");
+            Common.Msg("");
+            Common.Msg("An import configuration has the following attributes in an ImportConfigs list:");
+            Common.ShowAttributeHelp(ImportConfig.GetImportConfigAttributeList());
+        }
+
         public static void ShowMoveHelp()
         {
             Common.Msg("");
