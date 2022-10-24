@@ -116,6 +116,29 @@ namespace FDR.Tools.Library.Test
         }
 
         [Test]
+        public void RenameFilesInFolderWithAdditionalMatchingFileFilterPlusJpg()
+        {
+            var config = new RenameConfig();
+            config.Should().NotBeNull();
+            config.FileFilter = "*.*";
+            config.FilenamePattern = "{mdate:yyMMdd}_{counter:2}";
+            config.AdditionalFileTypes.Add("JPG");
+            config.AdditionalFileTypes.Add(" *.PNG ");
+            config.StopOnError = false;
+
+            files.Add(new DateTime(2000, 3, 4), tempFolderPath, "ccc.cr3", tempFolderPath, "000304_01.cr3");
+            files.Add(new DateTime(2001, 2, 4), tempFolderPath, "bbb.cr2", tempFolderPath, "010204_02.cr2");
+            files.Add(tempFolderPath, "bbb.jpg", tempFolderPath, "010204_02.jpg");
+            files.Add(tempFolderPath, "bbb.png", tempFolderPath, "010204_02.png");
+            files.Add(new DateTime(2002, 4, 5), tempFolderPath, "ddd.jpg", tempFolderPath, "020405_03.jpg");
+            files.CreateFiles();
+
+            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+        }
+
+        [Test]
         public void RenameFolderTests()
         {
             var config = new RenameConfig() { FilenamePattern = "{pfolder}" };
