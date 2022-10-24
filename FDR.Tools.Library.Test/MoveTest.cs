@@ -3,7 +3,6 @@ using System.IO;
 using NUnit.Framework;
 using FluentAssertions;
 using NUnit.Framework.Internal;
-using System.Linq;
 
 namespace FDR.Tools.Library.Test
 {
