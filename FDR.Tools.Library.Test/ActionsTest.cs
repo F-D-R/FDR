@@ -2,47 +2,21 @@
 using System.IO;
 using NUnit.Framework;
 using FluentAssertions;
-using System.Linq;
 
 namespace FDR.Tools.Library.Test
 {
     [TestFixture]
-    public class ActionsTest
+    public class ActionsTest : TempFolderTestBase
     {
-        private string tempFolderPath;
-        private DirectoryInfo folder;
         private string rawFolderPath;
-        private readonly TestFiles files = new();
 
         [OneTimeSetUp]
-        public void OneTimeSetUp()
+        public override void OneTimeSetUp()
         {
-            tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            Directory.CreateDirectory(tempFolderPath);
-            folder = new DirectoryInfo(tempFolderPath);
+            base.OneTimeSetUp();
 
             rawFolderPath = Path.Combine(tempFolderPath, "RAW");
             Directory.CreateDirectory(rawFolderPath);
-        }
-
-        [OneTimeTearDown]
-        public void OneTimeTearDown()
-        {
-            if (Directory.Exists(tempFolderPath)) Directory.Delete(tempFolderPath, true);
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
-            Directory.GetFiles(tempFolderPath, "*", SearchOption.AllDirectories).ToList().ForEach(f => File.Delete(f));
-            files.Clear();
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            Directory.GetFiles(tempFolderPath, "*", SearchOption.AllDirectories).ToList().ForEach(f => File.Delete(f));
-            files.Clear();
         }
 
         [Test]
@@ -87,7 +61,7 @@ namespace FDR.Tools.Library.Test
 
             files.CreateFiles();
 
-            actions.ForEach(a => a.Do(folder));
+            actions.ForEach(a => a.Do(tempFolder));
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.DestName));
         }

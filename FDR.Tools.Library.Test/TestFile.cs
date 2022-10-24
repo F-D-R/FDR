@@ -8,7 +8,7 @@ using SixLabors.ImageSharp;
 
 namespace FDR.Tools.Library.Test
 {
-    internal class TestFile
+    public class TestFile
     {
         public TestFile() { Created = DateTime.Now; }
 
@@ -29,7 +29,7 @@ namespace FDR.Tools.Library.Test
         public string GetPath() => GetDestPath();
     }
 
-    internal class TestFiles : List<TestFile>
+    public class TestFiles : List<TestFile>
     {
         public void Add(string sourceFolder, string sourceName, string destFolder, string destName)
         {

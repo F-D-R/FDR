@@ -1,60 +1,25 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using NUnit.Framework;
 using FluentAssertions;
 
 namespace FDR.Tools.Library.Test
 {
     [TestFixture]
-    public class CleanupFolderTest : TestBase
+    public class CleanupFolderTest : TempFolderTestBase
     {
-        private string tempFolderPath;
-        private DirectoryInfo tempFolder;
         private string rawFolderPath;
         private string panoramaFolderPath;
-        private readonly TestFiles files = new();
 
         [OneTimeSetUp]
         public override void OneTimeSetUp()
         {
             base.OneTimeSetUp();
 
-            tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            Directory.CreateDirectory(tempFolderPath);
-            tempFolder = new DirectoryInfo(tempFolderPath);
-
             rawFolderPath = Path.Combine(tempFolderPath, "RAW");
             Directory.CreateDirectory(rawFolderPath);
 
             panoramaFolderPath = Path.Combine(tempFolderPath, "panorama");
             Directory.CreateDirectory(panoramaFolderPath);
-        }
-
-        [OneTimeTearDown]
-        public override void OneTimeTearDown()
-        {
-            if (Directory.Exists(tempFolderPath)) Directory.Delete(tempFolderPath, true);
-
-            base.OneTimeTearDown();
-        }
-
-        [SetUp]
-        public override void SetUp()
-        {
-            base.SetUp();
-
-            Directory.GetFiles(tempFolderPath, "*", SearchOption.AllDirectories).ToList().ForEach(f => File.Delete(f));
-            files.Clear();
-        }
-
-        [TearDown]
-        public override void TearDown()
-        {
-            Directory.GetFiles(tempFolderPath, "*", SearchOption.AllDirectories).ToList().ForEach(f => File.Delete(f));
-            files.Clear();
-
-            base.TearDown();
         }
 
         [Test]

@@ -9,10 +9,8 @@ using SixLabors.ImageSharp.PixelFormats;
 namespace FDR.Tools.Library.Test
 {
     [TestFixture]
-    public class VerifyTest : TestBase
+    public class VerifyTest : TempFolderTestBase
     {
-        private string tempFolderPath;
-        private DirectoryInfo folder;
         private string filePath;
         private string md5Path;
         private string errPath;
@@ -25,22 +23,10 @@ namespace FDR.Tools.Library.Test
         {
             base.OneTimeSetUp();
 
-            tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            Directory.CreateDirectory(tempFolderPath);
-            folder = new DirectoryInfo(tempFolderPath);
-
             filePath = Path.Combine(tempFolderPath, "test.jpg");
             md5Path = Path.Combine(tempFolderPath, ".test.jpg.md5");
             errPath = Path.Combine(tempFolderPath, "test.jpg.error");
             missingPath = Path.Combine(tempFolderPath, "missing.jpg");
-        }
-
-        [OneTimeTearDown]
-        public override void OneTimeTearDown()
-        {
-            if (Directory.Exists(tempFolderPath)) Directory.Delete(tempFolderPath, true);
-
-            base.OneTimeTearDown();
         }
 
         [SetUp]
@@ -53,16 +39,6 @@ namespace FDR.Tools.Library.Test
 
             File.WriteAllText(md5Path, hash);
             File.SetLastWriteTime(md5Path, new DateTime(2000, 12, 31));
-        }
-
-        [TearDown]
-        public override void TearDown()
-        {
-            if (File.Exists(filePath)) File.Delete(filePath);
-            if (File.Exists(md5Path)) File.Delete(md5Path);
-            if (File.Exists(errPath)) File.Delete(errPath);
-
-            base.TearDown();
         }
 
         [Test]
@@ -86,11 +62,11 @@ namespace FDR.Tools.Library.Test
         [Test]
         public void VerifyTests()
         {
-            Verify.VerifyFolder(folder);
+            Verify.VerifyFolder(tempFolder);
             File.Exists(errPath).Should().BeFalse();
 
             File.WriteAllText(md5Path, "dummy");
-            Verify.VerifyFolder(folder);
+            Verify.VerifyFolder(tempFolder);
             File.Exists(errPath).Should().BeTrue();
         }
 
@@ -150,7 +126,7 @@ namespace FDR.Tools.Library.Test
         {
             File.Delete(md5Path);
             File.Exists(md5Path).Should().BeFalse();
-            Verify.HashFolder(folder);
+            Verify.HashFolder(tempFolder);
             File.Exists(md5Path).Should().BeTrue();
             File.ReadAllText(md5Path).Should().Be(hash);
         }
@@ -160,7 +136,7 @@ namespace FDR.Tools.Library.Test
         {
             var begin = DateTime.UtcNow.AddMilliseconds(-300);
             File.WriteAllText(md5Path, "dummy");
-            Verify.HashFolder(folder, true);
+            Verify.HashFolder(tempFolder, true);
             File.Exists(md5Path).Should().BeTrue();
             File.ReadAllText(md5Path).Should().Be(hash);
             File.GetLastWriteTimeUtc(md5Path).Should().Be(File.GetLastWriteTimeUtc(filePath));

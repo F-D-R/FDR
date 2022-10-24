@@ -3,11 +3,12 @@ using System.IO;
 using NUnit.Framework;
 using FluentAssertions;
 using NUnit.Framework.Internal;
+using System.Linq;
 
 namespace FDR.Tools.Library.Test
 {
     [TestFixture]
-    public class RenameTest : TempFolderTestBase
+    public class MoveTest : TempFolderTestBase
     {
         [Test]
         public void RenameFilesInFolderWithoutAdditionalTests()
