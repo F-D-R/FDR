@@ -11,6 +11,7 @@ namespace FDR.Tools.Library
     {
         public static void ShowMoveHelp()
         {
+            Common.Msg("");
             Common.Msg("Moves the files matching a filter in the folder given after the -move option based on a MoveConfig.");
             Common.Msg("");
             Common.Msg("The move function can have the following attributes in a MoveConfigs object:");

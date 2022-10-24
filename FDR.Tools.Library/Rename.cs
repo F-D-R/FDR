@@ -23,6 +23,7 @@ namespace FDR.Tools.Library
 
         public static void ShowRenameHelp()
         {
+            Common.Msg("");
             Common.Msg("Renames the files matching a filter in the folder given after the -rename option based on a RenameConfig.");
             Common.Msg("");
             Common.Msg("The rename function can have the following attributes in a RenameConfigs object:");
