@@ -30,24 +30,22 @@ namespace FDR.Tools.Library
 
         public static void ShowAttributeHelp(Dictionary<string, string> attributes, bool quoteKey = true)
         {
-            var width = Console.WindowWidth;
-            var maxKey = attributes.Aggregate("", (max, cur) => max.Length > cur.Key.Length ? max : cur.Key).Length;
-            var maxValue = attributes.Aggregate("", (max, cur) => max.Length > cur.Value.Length ? max : cur.Value).Length;
+            var windowWidth = Console.WindowWidth;
+            var maxKeyLength = attributes.Aggregate("", (max, cur) => max.Length > cur.Key.Length ? max : cur.Key).Length;
+            var maxValueLength = attributes.Aggregate("", (max, cur) => max.Length > cur.Value.Length ? max : cur.Value).Length;
 
             const int indent = 2;
             const int space = 1;
-            var width1 = indent + maxKey + ((quoteKey) ? 2 : 0) + space;
-            var width2 = width - width1;
-            var textWidth = width2 - 2;
+            const string separator = "- ";
+            var attrWidth = indent + maxKeyLength + ((quoteKey) ? 2 : 0) + space;
+            var textWidth = windowWidth - attrWidth - separator.Length;
 
             foreach (var a in attributes)
             {
-                var first = new string(' ', indent) + ((quoteKey) ? "\"" : "") + a.Key + ((quoteKey) ? "\"" : "") + new string(' ', space);
-                var msg = first.PadRight(width1, ' ') + "- ";
-                var words = a.Value.Split(' ');
+                var first = (new string(' ', indent) + ((quoteKey) ? "\"" : "") + a.Key + ((quoteKey) ? "\"" : "") + new string(' ', space)).PadRight(attrWidth, ' ') + separator;
                 var lines = new List<string>();
                 string line = "";
-                foreach (var word in words)
+                foreach (var word in a.Value.Split(' '))
                 {
                     if ((line.Length + 1 + word.Length) < textWidth)
                         line += word + ' ';
@@ -58,15 +56,9 @@ namespace FDR.Tools.Library
                     }
                 }
                 if (line.Length > 0) lines.Add(line);
-                if (lines.Count > 0)
-                {
-                    Common.Msg(msg + lines[0]);
-                    msg = "";
-                }
+                if (lines.Count > 0) Common.Msg(first + lines[0]);
                 for (int i = 1; i < lines.Count; i++)
-                {
-                    Common.Msg(new string(' ', width1 + 2) + lines[i]);
-                }
+                    Common.Msg(new string(' ', attrWidth + 2) + lines[i]);
             }
         }
 
