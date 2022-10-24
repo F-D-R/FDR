@@ -197,17 +197,17 @@ namespace FDR
             else
             {
                 if (func =="import")
-                    Common.Msg("Imports memory card content based on the selected configuration.");
+                    Common.Msg("\nImports memory card content based on the selected configuration.");
                 else if (func == "hash")
-                    Common.Msg("Creates hash files of files in the folder given after the -hash option for which there were none.");
+                    Common.Msg("\nCreates hidden hash files of files in the folder given after the -hash option for which there were none yet.");
                 else if (func == "rehash")
-                    Common.Msg("Recreates the hash files of all files in the folder given after the -rehash option whether they existed or not.");
+                    Common.Msg("\nRecreates the hidden hash files of all files in the folder given after the -rehash option whether they existed or not.");
                 else if (func == "verify")
-                    Common.Msg("Verifies the files in the folder given after the -verify option against their saved hash and creates error files whenever there are differences.");
+                    Common.Msg("\nVerifies the files in the folder given after the -verify option against their saved hidden hash and creates error files whenever there are differences.");
                 else if (func == "diff")
-                    Common.Msg("Compares the files of the folder given after the -diff option to a reference folder given after the -reference option.");
+                    Common.Msg("\nCompares the files of the folder given after the -diff option to a reference folder given after the -reference option.");
                 else if (func == "cleanup")
-                    Common.Msg("Deletes unnecessary raw, hash and err files.");
+                    Common.Msg("\nDeletes unnecessary raw, hash and err files.");
                 else if (func == "rename")
                     Rename.ShowRenameHelp();
                 else if (func == "move")
