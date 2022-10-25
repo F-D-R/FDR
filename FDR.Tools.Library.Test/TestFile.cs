@@ -60,15 +60,17 @@ namespace FDR.Tools.Library.Test
 
     internal static class Helper
     {
-        public static void CreateJpgFile(string filePath, int width = 200, int height = 200)
+        public static void CreateJpgFile(string filePath, int width = 200, int height = 200, DateTime? exifdate = null)
         {
             if (string.IsNullOrWhiteSpace(filePath)) throw new ArgumentNullException(nameof(filePath));
 
             using (var image = new Image<Argb32>(width, height))
             {
                 image.Metadata.ExifProfile = new ExifProfile();
-                var dt = DateTime.Now.ToString("yyyy:MM:dd HH:mm:ss");
-                image.Metadata.ExifProfile.SetValue(ExifTag.DateTimeOriginal, dt);
+                var dt = DateTime.Now;
+                if (exifdate != null) dt = exifdate.Value;
+                var dts = dt.ToString("yyyy:MM:dd HH:mm:ss");
+                image.Metadata.ExifProfile.SetValue(ExifTag.DateTimeOriginal, dts);
                 image.SaveAsJpeg(filePath);
             }
         }
