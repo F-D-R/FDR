@@ -3,8 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using FluentAssertions;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace FDR.Tools.Library.Test
 {
@@ -108,11 +106,7 @@ namespace FDR.Tools.Library.Test
             Task<bool>.Run(() => Verify.IsValidImageAsync(new FileInfo(filePath))).Result.Should().BeFalse();
 
             var jpgPath = Path.Combine(tempFolderPath, Guid.NewGuid().ToString() + ".jpg");
-            using (var image = new Image<Argb32>(100, 100))
-            {
-                image.Should().NotBeNull();
-                image.SaveAsJpeg(jpgPath);
-            }
+            Helper.CreateJpgFile(jpgPath);
             File.Exists(jpgPath).Should().BeTrue();
 
             Verify.IsValidImage(jpgPath).Should().BeTrue();
@@ -129,6 +123,9 @@ namespace FDR.Tools.Library.Test
             Verify.HashFolder(tempFolder);
             File.Exists(md5Path).Should().BeTrue();
             File.ReadAllText(md5Path).Should().Be(hash);
+            Verify.HashFolder(tempFolder);
+            File.Exists(md5Path).Should().BeTrue();
+            File.ReadAllText(md5Path).Should().Be(hash);
         }
 
         [Test]
@@ -141,6 +138,9 @@ namespace FDR.Tools.Library.Test
             File.ReadAllText(md5Path).Should().Be(hash);
             File.GetLastWriteTimeUtc(md5Path).Should().Be(File.GetLastWriteTimeUtc(filePath));
             File.GetCreationTimeUtc(md5Path).Should().BeAfter(begin);
+            Verify.HashFolder(tempFolder, true);
+            File.Exists(md5Path).Should().BeTrue();
+            File.ReadAllText(md5Path).Should().Be(hash);
         }
     }
 }
