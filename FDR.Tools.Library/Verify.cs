@@ -105,9 +105,9 @@ namespace FDR.Tools.Library
 
         public static void HashFolder(DirectoryInfo folder, bool force = false)
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
-
             Common.Msg($"Creating hash files for folder {folder}");
+
+            var watch = Stopwatch.StartNew();
 
             var files = Common.GetFiles(folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
@@ -116,11 +116,7 @@ namespace FDR.Tools.Library
             var hashCount = 0;
             Common.Progress(0);
 
-            ParallelOptions parallelOptions = new()
-            {
-                MaxDegreeOfParallelism = 8
-            };
-
+            ParallelOptions parallelOptions = new() { MaxDegreeOfParallelism = 8 };
             var task = Parallel.ForEachAsync(files, parallelOptions, async (file, token) =>
             {
                 i++;
@@ -138,15 +134,15 @@ namespace FDR.Tools.Library
             });
             task.Wait();
 
-            var time = Common.GetTimeString(stopwatch);
+            var time = Common.GetTimeString(watch);
             Common.Msg($"{hashCount} new hash files were created for {fileCount} files in {folder} folder... ({time})", ConsoleColor.Green);
         }
 
         public static void VerifyFolder(DirectoryInfo folder)
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
-
             Common.Msg($"Verifying folder {folder}");
+
+            var watch = Stopwatch.StartNew();
 
             var files = Common.GetFiles(folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
@@ -157,11 +153,7 @@ namespace FDR.Tools.Library
             Common.Progress(0);
             Trace.Indent();
 
-            ParallelOptions parallelOptions = new()
-            {
-                MaxDegreeOfParallelism = 8
-            };
-
+            ParallelOptions parallelOptions = new() { MaxDegreeOfParallelism = 8 };
             var task = Parallel.ForEachAsync(files, parallelOptions, async (file, token) =>
             {
                 i++;
@@ -209,7 +201,7 @@ namespace FDR.Tools.Library
             task.Wait();
             Trace.Unindent();
 
-            var time = Common.GetTimeString(stopwatch);
+            var time = Common.GetTimeString(watch);
             if (errCount > 0)
             {
                 if (warnCount > 0)
@@ -225,9 +217,9 @@ namespace FDR.Tools.Library
 
         public static void DiffFolder(DirectoryInfo folder, DirectoryInfo reference)
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
-
             Common.Msg($"Comparing hashes of files in {folder} folder to {reference} folder");
+
+            var watch = Stopwatch.StartNew();
 
             var files = Common.GetFiles(folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
@@ -240,11 +232,7 @@ namespace FDR.Tools.Library
             Common.Progress(0);
             Trace.Indent();
 
-            ParallelOptions parallelOptions = new()
-            {
-                MaxDegreeOfParallelism = 4
-            };
-
+            ParallelOptions parallelOptions = new() { MaxDegreeOfParallelism = 4 };
             var task = Parallel.ForEachAsync(files, parallelOptions, async (file, token) =>
             {
                 i++;
@@ -309,7 +297,7 @@ namespace FDR.Tools.Library
 
             Trace.Unindent();
 
-            var time = Common.GetTimeString(stopwatch);
+            var time = Common.GetTimeString(watch);
             Common.Msg($"{verified} of {fileCount} files in {folder} folder has been checked against {reference} folder. ({time})");
             if (diff > 0)
                 Common.Msg($"{diff} files differ!", ConsoleColor.Red);
