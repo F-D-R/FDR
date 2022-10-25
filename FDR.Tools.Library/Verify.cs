@@ -53,6 +53,7 @@ namespace FDR.Tools.Library
 
         internal static void CreateHashFile(string hashFile, string hash, DateTime fileDateUtc)
         {
+            if (File.Exists(hashFile)) File.SetAttributes(hashFile, FileAttributes.Normal);
             File.WriteAllText(hashFile, hash);
             File.SetLastWriteTimeUtc(hashFile, fileDateUtc);
             File.SetAttributes(hashFile, File.GetAttributes(hashFile) | FileAttributes.Hidden);
@@ -60,6 +61,7 @@ namespace FDR.Tools.Library
 
         internal static async Task CreateHashFileAsync(string hashFile, string hash, DateTime fileDateUtc)
         {
+            if (File.Exists(hashFile)) File.SetAttributes(hashFile, FileAttributes.Normal);
             await File.WriteAllTextAsync(hashFile, hash);
             File.SetLastWriteTimeUtc(hashFile, fileDateUtc);
             File.SetAttributes(hashFile, File.GetAttributes(hashFile) | FileAttributes.Hidden);
@@ -111,10 +113,12 @@ namespace FDR.Tools.Library
 
             var files = Common.GetFiles(folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
+            int errCount = 0;
 
             var i = 0;
             var hashCount = 0;
             Common.Progress(0);
+            Trace.Indent();
 
             ParallelOptions parallelOptions = new() { MaxDegreeOfParallelism = 8 };
             var task = Parallel.ForEachAsync(files, parallelOptions, async (file, token) =>
@@ -124,6 +128,13 @@ namespace FDR.Tools.Library
                 var md5File = GetMd5FileName(file);
                 if (force || !File.Exists(md5File))
                 {
+                    if (Common.IsImageFile(file) && !(await IsValidImageAsync(file)))
+                    {
+                        errCount++;
+                        Trace.WriteLine($"{file.FullName} - Invalid image!");
+                        await File.WriteAllTextAsync(GetErrorFileName(file), $"{DateTime.Now}\tInvalid image!");
+                    }
+
                     await CreateHashFileAsync(md5File, await ComputeHashAsync(file), file.LastWriteTimeUtc);
                     hashCount++;
                 }
@@ -133,9 +144,13 @@ namespace FDR.Tools.Library
                 Common.Progress(100 * i / fileCount);
             });
             task.Wait();
+            Trace.Unindent();
 
             var time = Common.GetTimeString(watch);
-            Common.Msg($"{hashCount} new hash files were created for {fileCount} files in {folder} folder... ({time})", ConsoleColor.Green);
+            if (errCount > 0)
+                Common.Msg($"{hashCount} new hash files were created for {fileCount} files in {folder} folder with {errCount} invalid images! ({time})", ConsoleColor.Red);
+            else
+                Common.Msg($"{hashCount} new hash files were created for {fileCount} files in {folder} folder... ({time})", ConsoleColor.Green);
         }
 
         public static void VerifyFolder(DirectoryInfo folder)
@@ -166,8 +181,7 @@ namespace FDR.Tools.Library
 
                 if (File.Exists(md5File))
                 {
-                    var oldHash = await File.ReadAllTextAsync(md5File);
-                    oldHash = oldHash.Trim();
+                    var oldHash = (await File.ReadAllTextAsync(md5File)).Trim();
                     if (string.Compare(oldHash, newHash, true) != 0)
                     {
                         errCount++;

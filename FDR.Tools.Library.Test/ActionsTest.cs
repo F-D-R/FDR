@@ -34,12 +34,10 @@ namespace FDR.Tools.Library.Test
             actions.Add(new Action() { Type = ActionType.hash });
             actions.Add(new Action() { Type = ActionType.rename, Config = "rename" });
             actions.Add(new Action() { Type = ActionType.move, Config = "move" });
-            //actions.Add(new Action() { Type = ActionType.hash });
-            actions.Add(new Action() { Type = ActionType.rehash });
+            actions.Add(new Action() { Type = ActionType.hash });
             actions.Add(new Action() { Type = ActionType.cleanup });
-            actions.Should().HaveCount(5);
-            //actions.Add(new Action() { Type = ActionType.rehash });
-            //actions.Should().HaveCount(6);
+            actions.Add(new Action() { Type = ActionType.rehash });
+            actions.Should().HaveCount(6);
 
             files.Add(new DateTime(2022, 1, 3), tempFolderPath, "01.jpg", tempFolderPath, "dest_003.jpg");
             files.Add(new DateTime(2022, 1, 2), tempFolderPath, "02.jpg", tempFolderPath, "dest_002.jpg");
