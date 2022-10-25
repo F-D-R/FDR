@@ -31,34 +31,35 @@ namespace FDR.Tools.Library
         public static void ShowAttributeHelp(Dictionary<string, string> attributes, bool quoteKey = true)
         {
             var windowWidth = Console.WindowWidth;
-            var maxKeyLength = attributes.Aggregate("", (max, cur) => max.Length > cur.Key.Length ? max : cur.Key).Length;
-            var maxValueLength = attributes.Aggregate("", (max, cur) => max.Length > cur.Value.Length ? max : cur.Value).Length;
+            var maxKeyLength = attributes.Aggregate<KeyValuePair<string, string>, int>(0, (max, cur) => max > cur.Key.Length ? max : cur.Key.Length);
 
-            const int indent = 2;
-            const int space = 1;
-            const string separator = "- ";
-            var attrWidth = indent + maxKeyLength + ((quoteKey) ? 2 : 0) + space;
-            var textWidth = windowWidth - attrWidth - separator.Length;
+            const char space = ' ';
+            const char quote = '"';
+            const int indentLength = 2;
+            const int separatorLength = 1;
+            const string bulleting = "- ";
+            var attrWidth = indentLength + maxKeyLength + ((quoteKey) ? 2 : 0) + separatorLength;
+            var textWidth = windowWidth - attrWidth - bulleting.Length;
 
             foreach (var a in attributes)
             {
-                var first = (new string(' ', indent) + ((quoteKey) ? "\"" : "") + a.Key + ((quoteKey) ? "\"" : "") + new string(' ', space)).PadRight(attrWidth, ' ') + separator;
+                var attrLine = (new string(space, indentLength) + ((quoteKey) ? quote : String.Empty) + a.Key + ((quoteKey) ? quote : String.Empty) + new string(space, separatorLength)).PadRight(attrWidth, space) + bulleting;
                 var lines = new List<string>();
-                string line = "";
-                foreach (var word in a.Value.Split(' '))
+                string line = String.Empty;
+                foreach (var word in a.Value.Split(space))
                 {
-                    if ((line.Length + 1 + word.Length) < textWidth)
-                        line += word + ' ';
-                    else
+                    if ((line.Length + word.Length) >= textWidth)
                     {
                         lines.Add(line.TrimEnd());
-                        line = word + ' ';
+                        line = String.Empty;
                     }
+                    line += word + space;
                 }
-                if (line.Length > 0) lines.Add(line);
-                if (lines.Count > 0) Common.Msg(first + lines[0]);
+                if (line.Length > 0) lines.Add(line.TrimEnd());
+
+                Common.Msg(attrLine + (lines.Count > 0 ? lines[0] : String.Empty));
                 for (int i = 1; i < lines.Count; i++)
-                    Common.Msg(new string(' ', attrWidth + 2) + lines[i]);
+                    Common.Msg(new string(space, attrWidth + bulleting.Length) + lines[i]);
             }
         }
 
@@ -90,7 +91,7 @@ namespace FDR.Tools.Library
             if (config == null) throw new ArgumentNullException("config");
             config.Validate();
 
-            return GetFiles(folder, config.FileFilter, true);
+            return GetFiles(folder, config.FileFilter, config.Recursive);
         }
 
         public static List<FileInfo> GetFiles(DirectoryInfo folder, string filter, bool recursive)
@@ -100,16 +101,9 @@ namespace FDR.Tools.Library
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
             var files = new List<FileInfo>();
-            var filters = filter.Split('|');
-            var options = new EnumerationOptions
-            {
-                MatchCasing = MatchCasing.CaseInsensitive,
-                RecurseSubdirectories = recursive
-            };
-            foreach (var tmpfilter in filters)
-            {
+            var options = new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = recursive };
+            foreach (var tmpfilter in filter.Split('|'))
                 files.AddRange(folder.GetFiles(tmpfilter, options));
-            }
 
             return files.OrderBy(f => f.CreationTimeUtc).ToList();
         }
@@ -120,19 +114,8 @@ namespace FDR.Tools.Library
             if (folder == null) throw new ArgumentNullException("folder");
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
-            var filters = filter.Split('|');
-            var options = new EnumerationOptions
-            {
-                MatchCasing = MatchCasing.CaseInsensitive,
-                RecurseSubdirectories = true
-            };
-
-            //var result = folder.EnumerateFiles(filters[0], options);
-            //for (int i = 1; i < filters.Length; i++)
-            //    result = result.Concat(folder.EnumerateFiles(filters[i], options));
-            //return result;
-
-            foreach (var tmpfilter in filters)
+            var options = new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true };
+            foreach (var tmpfilter in filter.Split('|'))
                 foreach (var fi in folder.EnumerateFiles(tmpfilter, options))
                     yield return fi;
         }
