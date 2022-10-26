@@ -148,7 +148,7 @@ namespace FDR.Tools.Library
 
             var time = Common.GetTimeString(watch);
             if (errCount > 0)
-                Common.Msg($"{hashCount} new hash files were created for {fileCount} files in {folder} folder with {errCount} invalid images! ({time})", ConsoleColor.Red);
+                Common.Msg($"{hashCount} new hash files were created for {fileCount} files in {folder} folder, but there were {errCount} invalid images! ({time})", ConsoleColor.Red);
             else
                 Common.Msg($"{hashCount} new hash files were created for {fileCount} files in {folder} folder... ({time})", ConsoleColor.Green);
         }
@@ -206,8 +206,7 @@ namespace FDR.Tools.Library
                         Trace.WriteLine($"{file.FullName} - Invalid image!");
                         await File.WriteAllTextAsync(errFile, $"{DateTime.Now}\tInvalid image!");
                     }
-                    else
-                        await CreateHashFileAsync(md5File, newHash, fileDate);
+                    await CreateHashFileAsync(md5File, newHash, fileDate);
                 }
 
                 Common.Progress(100 * i / fileCount);

@@ -18,9 +18,9 @@ namespace FDR.Tools.Library.Test
             Common.IsFolderValid("").Should().BeFalse();
         }
 
-        [TestCase(".CR3", true)]
-        [TestCase(".CR2", true)]
-        [TestCase(".CRW", true)]
+        [TestCase(".CR3", false)]
+        [TestCase(".CR2", false)]
+        [TestCase(".CRW", false)]
         [TestCase(".JPG", true)]
         [TestCase(".JPEG", true)]
         [TestCase(".TIF", true)]
