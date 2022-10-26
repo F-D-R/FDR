@@ -116,6 +116,23 @@ namespace FDR.Tools.Library.Test
         }
 
         [Test]
+        public void ValidateImageTests()
+        {
+            Verify.ValidateImage(new FileInfo(missingPath)).Should().BeFalse();
+            Task<bool>.Run(() => Verify.ValidateImageAsync(new FileInfo(missingPath))).Result.Should().BeFalse();
+
+            Verify.ValidateImage(new FileInfo(filePath)).Should().BeFalse();
+            Task<bool>.Run(() => Verify.ValidateImageAsync(new FileInfo(filePath))).Result.Should().BeFalse();
+
+            var jpgPath = Path.Combine(tempFolderPath, Guid.NewGuid().ToString() + ".jpg");
+            Helper.CreateJpgFile(jpgPath);
+            File.Exists(jpgPath).Should().BeTrue();
+
+            Verify.ValidateImage(new FileInfo(jpgPath)).Should().BeTrue();
+            Task<bool>.Run(() => Verify.ValidateImageAsync(new FileInfo(jpgPath))).Result.Should().BeTrue();
+        }
+
+        [Test]
         public void HashTests()
         {
             File.Delete(md5Path);

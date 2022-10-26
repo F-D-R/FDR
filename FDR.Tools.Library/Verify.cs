@@ -105,6 +105,28 @@ namespace FDR.Tools.Library
             return await IsValidImageAsync(file.FullName);
         }
 
+        internal static bool ValidateImage(FileInfo file)
+        {
+            if (Common.IsImageFile(file) && !IsValidImage(file))
+            {
+                Trace.WriteLine($"{file.FullName} - Invalid image!");
+                File.WriteAllText(GetErrorFileName(file), $"{DateTime.Now}\tInvalid image!");
+                return false;
+            }
+            return true;
+        }
+
+        internal static async Task<bool> ValidateImageAsync(FileInfo file)
+        {
+            if (Common.IsImageFile(file) && !(await IsValidImageAsync(file)))
+            {
+                Trace.WriteLine($"{file.FullName} - Invalid image!");
+                await File.WriteAllTextAsync(GetErrorFileName(file), $"{DateTime.Now}\tInvalid image!");
+                return false;
+            }
+            return true;
+        }
+
         public static void HashFolder(DirectoryInfo folder, bool force = false)
         {
             Common.Msg($"Creating hash files for folder {folder}");
@@ -128,13 +150,7 @@ namespace FDR.Tools.Library
                 var md5File = GetMd5FileName(file);
                 if (force || !File.Exists(md5File))
                 {
-                    if (Common.IsImageFile(file) && !(await IsValidImageAsync(file)))
-                    {
-                        errCount++;
-                        Trace.WriteLine($"{file.FullName} - Invalid image!");
-                        await File.WriteAllTextAsync(GetErrorFileName(file), $"{DateTime.Now}\tInvalid image!");
-                    }
-
+                    if (!await ValidateImageAsync(file)) errCount++;
                     await CreateHashFileAsync(md5File, await ComputeHashAsync(file), file.LastWriteTimeUtc);
                     hashCount++;
                 }
@@ -200,12 +216,7 @@ namespace FDR.Tools.Library
                 }
                 else
                 {
-                    if (Common.IsImageFile(file) && !(await IsValidImageAsync(file)))
-                    {
-                        errCount++;
-                        Trace.WriteLine($"{file.FullName} - Invalid image!");
-                        await File.WriteAllTextAsync(errFile, $"{DateTime.Now}\tInvalid image!");
-                    }
+                    if (!await ValidateImageAsync(file)) errCount++;
                     await CreateHashFileAsync(md5File, newHash, fileDate);
                 }
 
@@ -322,7 +333,7 @@ namespace FDR.Tools.Library
                 Common.Msg($"All the checked files match...", ConsoleColor.Green);
             return;
 
-            static async Task CopyFileToFolderAsync(string destFolder, string sourceFile, string postFix = "")
+            async Task CopyFileToFolderAsync(string destFolder, string sourceFile, string postFix = "")
             {
                 if (!Directory.Exists(destFolder)) Directory.CreateDirectory(destFolder);
                 var destFile = Path.Combine(destFolder, Path.GetFileNameWithoutExtension(sourceFile) + postFix + Path.GetExtension(sourceFile));
