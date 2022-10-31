@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Newtonsoft.Json;
 using FDR.Tools.Library;
+using System.Collections.Generic;
 
 namespace FDR
 {
@@ -23,87 +24,101 @@ namespace FDR
 
     public class Program
     {
+        private const string param_import = "-import";
+        private const string param_hash = "-hash";
+        private const string param_rehash = "-rehash";
+        private const string param_verify = "-verify";
+        private const string param_diff = "-diff";
+        private const string param_cleanup = "-cleanup";
+        private const string param_verbose = "-verbose";
+        private const string param_auto = "-auto";
+        private const string param_file = "-file";
+        private const string param_reference = "-reference";
+        private const string param_rename = "-rename";
+        private const string param_resize = "-resize";
+        private const string param_config = "-config";
+        private const string param_help = "-help";
         private const ConsoleColor titleColor = ConsoleColor.White;
         private static Operation operation = Operation.Help;
+        private static bool verbose = false;
+        private static bool auto = false;
+        private static bool force = false;
+        private static string folder = "";
+        private static string file = "";
+        private static string reference = "";
+        private static string config = "";
+        private static string function = "";
 
         public static void Main(string[] args)
         {
             var version = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
-            bool verbose = false;
-            bool auto = false;
-            bool force = false;
-            string folder = "";
-            string file = "";
-            string reference = "";
-            string config = "";
-            string function = "";
 
             for (int i = 0; i < args.Length; i++)
             {
                 switch (args[i].ToLower())
                 {
-                    case "-import":
+                    case param_import:
                         operation = Operation.Import;
                         GetParam(ref folder, nameof(folder), true);
                         break;
 
-                    case "-hash":
+                    case param_hash:
                         operation = Operation.Hash;
                         GetParam(ref folder, nameof(folder));
                         break;
 
-                    case "-rehash":
+                    case param_rehash:
                         operation = Operation.Hash;
                         force = true;
                         GetParam(ref folder, nameof(folder));
                         break;
 
-                    case "-verify":
+                    case param_verify:
                         operation = Operation.Verify;
                         GetParam(ref folder, nameof(folder));
                         break;
 
-                    case "-diff":
+                    case param_diff:
                         operation = Operation.Diff;
                         GetParam(ref folder, nameof(folder));
                         break;
 
-                    case "-cleanup":
+                    case param_cleanup:
                         operation = Operation.Cleanup;
                         GetParam(ref folder, nameof(folder));
                         break;
 
-                    case "-verbose":
+                    case param_verbose:
                         verbose = true;
                         break;
 
-                    case "-auto":
+                    case param_auto:
                         auto = true;
                         break;
 
-                    case "-file":
+                    case param_file:
                         GetParam(ref file, nameof(file));
                         break;
 
-                    case "-reference":
+                    case param_reference:
                         GetParam(ref reference, nameof(reference));
                         break;
 
-                    case "-rename":
+                    case param_rename:
                         operation = Operation.Rename;
                         GetParam(ref folder, nameof(folder));
                         break;
 
-                    case "-resize":
+                    case param_resize:
                         operation = Operation.Resize;
                         GetParam(ref folder, nameof(folder));
                         break;
 
-                    case "-config":
+                    case param_config:
                         GetParam(ref config, nameof(config));
                         break;
 
-                    case "-help":
+                    case param_help:
                         operation = Operation.Help;
                         GetParam(ref function, nameof(function), true);
                         break;
@@ -111,18 +126,13 @@ namespace FDR
 
                 void GetParam(ref string param, string paramname, bool optional = false)
                 {
-                    if (args.Length <= i + 1 || !args[i + 1].StartsWith("-"))
+                    if (args.Length <= i + 1 || args[i + 1].StartsWith("-"))
                     {
                         if (!optional)
                         {
                             Common.Msg($"FDR Tools {version} - ERROR", titleColor);
-                            Common.Msg("");
                             Common.Msg($"Missing parameter: {paramname}!", ConsoleColor.Red);
-                            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                                Common.Msg("See help for details: fdr.exe -help");
-                            else
-                                Common.Msg("See help for details: dotnet FDR.dll -help");
-                            Environment.Exit(-1);
+                            OfferHelpAndExit();
                         }
                     }
                     else
@@ -227,6 +237,15 @@ namespace FDR
             }
         }
 
+        private static void OfferHelpAndExit()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                Common.Msg("See help for details: FDR.exe -help");
+            else
+                Common.Msg("See help for details: dotnet FDR.dll -help");
+            Environment.Exit(-1);
+        }
+
         private static void DisplayHelp(string version, string? function = null)
         {
             var func = function?.Trim().ToLower();
@@ -236,29 +255,31 @@ namespace FDR
             {
                 Common.Msg("Usage:");
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                    Common.Msg("    fdr.exe [options]");
+                    Common.Msg("  FDR.exe [options]");
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                    Common.Msg("    dotnet FDR.dll [options]");
+                    Common.Msg("  dotnet FDR.dll [options]");
                 else
                 {
-                    Common.Msg("    dotnet FDR.dll [options]");
-                    Common.Msg("    Unsupported OS version!", ConsoleColor.Red);
+                    Common.Msg("  dotnet FDR.dll [options]");
+                    Common.Msg("  Unsupported OS version!", ConsoleColor.Red);
                 }
                 Common.Msg("");
                 Common.Msg("Where options can be:");
-                Common.Msg("    -help [function]     Generic help (this screen) or optionally help about a given function");
-                Common.Msg("    -import [<folder>]   Import memory card content or optionally the content of a folder");
-                Common.Msg("    -hash <folder>       Create hash of files in a folder");
-                Common.Msg("    -rehash <folder>     Recreate hashes of all files in a folder");
-                Common.Msg("    -verify <folder>     Verify the files in a folder against their saved hash");
-                Common.Msg("    -diff <folder>       Compare the files of a folder to a reference one");
-                Common.Msg("    -reference <folder>  Reference folder for the diff function");
-                Common.Msg("    -cleanup <folder>    Delete unnecessary raw, hash and err files");
-                Common.Msg("    -rename <folder>     Rename image files based on a given configuration");
-                Common.Msg("    -resize <folder>     Resize image files based on a given configuration");
-                Common.Msg("    -config <config>     Named configuration for some functions like renaming and resizing");
-                Common.Msg("    -auto                Start the import automatically");
-                Common.Msg("    -verbose             More detailed output");
+                var help = new Dictionary<string, string>();
+                help.Add($"{param_help} [<{nameof(function)}>]", "Generic help (this screen) or optionally help about a given function");
+                help.Add($"{param_import} [<{nameof(folder)}>]", "Import memory card content or optionally the content of a folder");
+                help.Add($"{param_hash} <{nameof(folder)}>", "Create hash of files in a folder");
+                help.Add($"{param_rehash} <{nameof(folder)}>", "Recreate hashes of all files in a folder");
+                help.Add($"{param_verify} <{nameof(folder)}>", "Verify the files in a folder against their saved hash");
+                help.Add($"{param_diff} <{nameof(folder)}>", "Compare the files of a folder to a reference one");
+                help.Add($"{param_reference} <{nameof(folder)}>", "Reference folder for the diff function");
+                help.Add($"{param_cleanup} <{nameof(folder)}>", "Delete unnecessary raw, hash and err files");
+                help.Add($"{param_rename} <{nameof(folder)}>", "Rename image files based on a given configuration");
+                help.Add($"{param_resize} <{nameof(folder)}>", "Resize image files based on a given configuration");
+                help.Add($"{param_config} <{nameof(config)}>", "Named configuration for some functions like renaming and resizing");
+                help.Add(param_auto, "Start the import automatically");
+                help.Add(param_verbose, "More detailed output");
+                Common.ShowAttributeHelp(help, false);
             }
             else
             {
@@ -281,7 +302,10 @@ namespace FDR
                 else if (func == "resize")
                     Resize.ShowResizeHelp();
                 else
+                {
                     Common.Msg("Invalid function: " + func, ConsoleColor.Red);
+                    OfferHelpAndExit();
+                }
             }
         }
 
