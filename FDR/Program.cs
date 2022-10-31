@@ -44,26 +44,92 @@ namespace FDR
                 {
                     case "-import":
                         operation = Operation.Import;
-                        if (args.Length > i + 1 && !args[i + 1].StartsWith("-"))
-                            folder = args[i + 1];
+                        GetParam(ref folder, nameof(folder), true);
                         break;
-                    case "-hash": operation = Operation.Hash; folder = args[i + 1]; break;
-                    case "-rehash": operation = Operation.Hash; folder = args[i + 1]; force = true; break;
-                    case "-verify": operation = Operation.Verify; folder = args[i + 1]; break;
-                    case "-diff": operation = Operation.Diff; folder = args[i + 1]; break;
-                    case "-cleanup": operation = Operation.Cleanup; folder = args[i + 1]; break;
-                    case "-verbose": verbose = true; break;
-                    case "-auto": auto = true; break;
-                    case "-file": file = args[i + 1]; break;
-                    case "-reference": reference = args[i + 1]; break;
-                    case "-rename": operation = Operation.Rename; folder = args[i + 1]; break;
-                    case "-resize": operation = Operation.Resize; folder = args[i + 1]; break;
-                    case "-config": config = args[i + 1]; break;
+
+                    case "-hash":
+                        operation = Operation.Hash;
+                        GetParam(ref folder, nameof(folder));
+                        break;
+
+                    case "-rehash":
+                        operation = Operation.Hash;
+                        force = true;
+                        GetParam(ref folder, nameof(folder));
+                        break;
+
+                    case "-verify":
+                        operation = Operation.Verify;
+                        GetParam(ref folder, nameof(folder));
+                        break;
+
+                    case "-diff":
+                        operation = Operation.Diff;
+                        GetParam(ref folder, nameof(folder));
+                        break;
+
+                    case "-cleanup":
+                        operation = Operation.Cleanup;
+                        GetParam(ref folder, nameof(folder));
+                        break;
+
+                    case "-verbose":
+                        verbose = true;
+                        break;
+
+                    case "-auto":
+                        auto = true;
+                        break;
+
+                    case "-file":
+                        GetParam(ref file, nameof(file));
+                        break;
+
+                    case "-reference":
+                        GetParam(ref reference, nameof(reference));
+                        break;
+
+                    case "-rename":
+                        operation = Operation.Rename;
+                        GetParam(ref folder, nameof(folder));
+                        break;
+
+                    case "-resize":
+                        operation = Operation.Resize;
+                        GetParam(ref folder, nameof(folder));
+                        break;
+
+                    case "-config":
+                        GetParam(ref config, nameof(config));
+                        break;
+
                     case "-help":
                         operation = Operation.Help;
-                        if (args.Length > i + 1 && !args[i + 1].StartsWith("-"))
-                            function = args[i + 1];
+                        GetParam(ref function, nameof(function), true);
                         break;
+                }
+
+                void GetParam(ref string param, string paramname, bool optional = false)
+                {
+                    if (args.Length <= i + 1 || !args[i + 1].StartsWith("-"))
+                    {
+                        if (!optional)
+                        {
+                            Common.Msg($"FDR Tools {version} - ERROR", titleColor);
+                            Common.Msg("");
+                            Common.Msg($"Missing parameter: {paramname}!", ConsoleColor.Red);
+                            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                                Common.Msg("See help for details: fdr.exe -help");
+                            else
+                                Common.Msg("See help for details: dotnet FDR.dll -help");
+                            Environment.Exit(-1);
+                        }
+                    }
+                    else
+                    {
+                        param = args[i + 1];
+                        i++;
+                    }
                 }
             }
 
