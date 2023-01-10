@@ -48,12 +48,7 @@ namespace FDR.Tools.Library
 
             public void CleanupRawFiles()
             {
-                var rawOptions = new EnumerationOptions
-                {
-                    MatchCasing = MatchCasing.CaseInsensitive,
-                    RecurseSubdirectories = true
-                };
-                var files = Folder.EnumerateFiles("*.CR?", rawOptions);
+                var files = Common.EnumerateFiles(Folder, "*.CR?|*.DNG", true);
 
                 var jpgOptions = new EnumerationOptions
                 {

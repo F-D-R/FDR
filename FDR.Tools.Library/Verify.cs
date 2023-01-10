@@ -9,7 +9,7 @@ namespace FDR.Tools.Library
 {
     public static class Verify
     {
-        private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.CRW|*.JPG|*.TIF|*.MP4|*.AVI|*.MOV";
+        private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.CRW|*.DNG|*.JPG|*.TIF|*.MP4|*.AVI|*.MOV";
 
         internal static string ComputeHash(FileInfo file)
         {

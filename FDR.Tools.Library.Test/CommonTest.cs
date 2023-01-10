@@ -21,6 +21,7 @@ namespace FDR.Tools.Library.Test
         [TestCase(".CR3", false)]
         [TestCase(".CR2", false)]
         [TestCase(".CRW", false)]
+        [TestCase(".DNG", false)]
         [TestCase(".JPG", true)]
         [TestCase(".JPEG", true)]
         [TestCase(".TIF", true)]

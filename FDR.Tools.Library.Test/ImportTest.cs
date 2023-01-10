@@ -27,9 +27,9 @@ namespace FDR.Tools.Library.Test
         private const string appConfigJson = @"
 {
   ""RenameConfigs"": {
-    ""yymmdd_ccc"": { ""FileFilter"": ""*.CR3|*.CR2|*.CRW"", ""FileNamePattern"": ""{cdate:yyMMdd}_{counter:3}"", ""AdditionalFileTypes"": [ "".JPG"" ], ""Recursive"": false, ""StopOnError"": true } },
+    ""yymmdd_ccc"": { ""FileFilter"": ""*.CR3|*.CR2|*.CRW|*.DNG"", ""FileNamePattern"": ""{cdate:yyMMdd}_{counter:3}"", ""AdditionalFileTypes"": [ "".JPG"" ], ""Recursive"": false, ""StopOnError"": true } },
   ""MoveConfigs"": {
-    ""raw"": { ""FileFilter"": ""*.CR3|*.CR2|*.CRW"", ""RelativeFolder"": ""RAW"" } },
+    ""raw"": { ""FileFilter"": ""*.CR3|*.CR2|*.CRW|*.DNG"", ""RelativeFolder"": ""RAW"" } },
   ""ImportConfigs"": {
     ""import1"": {
       ""Name"": ""import1"",
@@ -170,7 +170,8 @@ namespace FDR.Tools.Library.Test
             files.Add(new DateTime(2022, 01, 01), source1, "01.crw", dest1, "01.crw");
             files.Add(new DateTime(2022, 01, 01), source1, "02.cr2", dest1, "02.cr2");
             files.Add(new DateTime(2022, 01, 01), source1, "03.cr3", dest1, "03.cr3");
-            files.Add(new DateTime(2022, 01, 01), source1, "04.jpg", dest1, "04.jpg");
+            files.Add(new DateTime(2022, 01, 01), source1, "04.dng", dest1, "04.dng");
+            files.Add(new DateTime(2022, 01, 01), source1, "05.jpg", dest1, "05.jpg");
             files.CreateFiles();
 
             var count = files.Where(f => f.SourceFolder != f.DestFolder).Count();
@@ -190,11 +191,12 @@ namespace FDR.Tools.Library.Test
             files.Add(dest1, "01.crw", raw1, "01.crw");
             files.Add(dest1, "02.cr2", raw1, "02.cr2");
             files.Add(dest1, "03.cr3", raw1, "03.cr3");
-            files.Add(dest1, "04.jpg", dest1, "04.jpg");
+            files.Add(dest1, "04.dng", raw1, "04.dng");
+            files.Add(dest1, "05.jpg", dest1, "05.jpg");
             files.CreateFiles();
 
             var config = new MoveConfig();
-            config.FileFilter = "*.CR3|*.CR2|*.CRW";
+            config.FileFilter = "*.CR3|*.CR2|*.CRW|*.DNG";
             config.RelativeFolder = "RAW";
 
             Import.MoveFilesInFolder(new DirectoryInfo(dest1), config);
@@ -211,12 +213,14 @@ namespace FDR.Tools.Library.Test
             appConfig.ImportConfigs.ToList().ForEach(ic => ic.Value.DestRoot = destinationRoot);
             appConfig.Validate();
 
-            files.Add(new DateTime(2022, 1, 1, 13, 59, 3), source1, "aaa.cr3", raw1, "220101_003.cr3");
-            files.Add(new DateTime(2022, 1, 1, 13, 59, 3), source1, "aaa.jpg", dest1, "220101_003.jpg");
-            files.Add(new DateTime(2022, 1, 1, 13, 59, 2), source1, "bbb.cr2", raw1, "220101_002.cr2");
-            files.Add(new DateTime(2022, 1, 1, 13, 59, 2), source1, "bbb.jpg", dest1, "220101_002.jpg");
-            files.Add(new DateTime(2022, 1, 1, 13, 59, 1), source1, "ccc.crw", raw1, "220101_001.crw");
-            files.Add(new DateTime(2022, 1, 1, 13, 59, 1), source1, "ccc.jpg", dest1, "220101_001.jpg");
+            files.Add(new DateTime(2022, 1, 1, 13, 59, 4), source1, "aaa.cr3", raw1, "220101_004.cr3");
+            files.Add(new DateTime(2022, 1, 1, 13, 59, 4), source1, "aaa.jpg", dest1, "220101_004.jpg");
+            files.Add(new DateTime(2022, 1, 1, 13, 59, 3), source1, "bbb.cr2", raw1, "220101_003.cr2");
+            files.Add(new DateTime(2022, 1, 1, 13, 59, 3), source1, "bbb.jpg", dest1, "220101_003.jpg");
+            files.Add(new DateTime(2022, 1, 1, 13, 59, 2), source1, "ccc.crw", raw1, "220101_002.crw");
+            files.Add(new DateTime(2022, 1, 1, 13, 59, 2), source1, "ccc.jpg", dest1, "220101_002.jpg");
+            files.Add(new DateTime(2022, 1, 1, 13, 59, 1), source1, "ddd.dng", raw1, "220101_001.dng");
+            files.Add(new DateTime(2022, 1, 1, 13, 59, 1), source1, "ddd.jpg", dest1, "220101_001.jpg");
             files.CreateFiles();
 
             Directory.Delete(dest1, true);
@@ -226,12 +230,14 @@ namespace FDR.Tools.Library.Test
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
 
 
-            files.Add(new DateTime(2022, 2, 2, 13, 59, 3), source2, "aaa.cr3", raw2, "220202_003.cr3");
-            files.Add(new DateTime(2022, 2, 2, 13, 59, 3), source2, "aaa.jpg", dest2, "220202_003.jpg");
-            files.Add(new DateTime(2022, 2, 2, 13, 59, 2), source2, "bbb.cr2", raw2, "220202_002.cr2");
-            files.Add(new DateTime(2022, 2, 2, 13, 59, 2), source2, "bbb.jpg", dest2, "220202_002.jpg");
-            files.Add(new DateTime(2022, 2, 2, 13, 59, 1), source2, "ccc.crw", raw2, "220202_001.crw");
-            files.Add(new DateTime(2022, 2, 2, 13, 59, 1), source2, "ccc.jpg", dest2, "220202_001.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 4), source2, "aaa.cr3", raw2, "220202_004.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 4), source2, "aaa.jpg", dest2, "220202_004.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 3), source2, "bbb.cr2", raw2, "220202_003.cr2");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 3), source2, "bbb.jpg", dest2, "220202_003.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 2), source2, "ccc.crw", raw2, "220202_002.crw");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 2), source2, "ccc.jpg", dest2, "220202_002.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 1), source2, "ddd.dng", raw2, "220202_001.dng");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 1), source2, "ddd.jpg", dest2, "220202_001.jpg");
             files.CreateFiles();
 
             Directory.Delete(dest2, true);

@@ -108,13 +108,13 @@ namespace FDR.Tools.Library
             return files.OrderBy(f => f.CreationTimeUtc).ToList();
         }
 
-        public static IEnumerable<FileInfo> EnumerateFiles(DirectoryInfo folder, string filter)
+        public static IEnumerable<FileInfo> EnumerateFiles(DirectoryInfo folder, string filter, bool recursive = true)
         {
             if (string.IsNullOrWhiteSpace(filter)) throw new ArgumentNullException("filter");
             if (folder == null) throw new ArgumentNullException("folder");
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
-            var options = new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true };
+            var options = new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = recursive };
             foreach (var tmpfilter in filter.Split('|'))
                 foreach (var fi in folder.EnumerateFiles(tmpfilter, options))
                     yield return fi;
