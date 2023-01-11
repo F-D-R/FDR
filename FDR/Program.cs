@@ -25,6 +25,7 @@ namespace FDR
     public class Program
     {
         private const string param_import = "-import";
+        private const string param_noactions = "-noactions";
         private const string param_hash = "-hash";
         private const string param_rehash = "-rehash";
         private const string param_verify = "-verify";
@@ -40,9 +41,11 @@ namespace FDR
         private const string param_help = "-help";
         private const ConsoleColor titleColor = ConsoleColor.White;
         private static Operation operation = Operation.Help;
+        private static string version = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
         private static bool verbose = false;
         private static bool auto = false;
         private static bool force = false;
+        private static bool noactions = false;
         private static string folder = "";
         private static string file = "";
         private static string reference = "";
@@ -51,8 +54,6 @@ namespace FDR
 
         public static void Main(string[] args)
         {
-            var version = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
-
             for (int i = 0; i < args.Length; i++)
             {
                 switch (args[i].ToLower())
@@ -94,6 +95,10 @@ namespace FDR
 
                     case param_auto:
                         auto = true;
+                        break;
+
+                    case param_noactions:
+                        noactions = true;
                         break;
 
                     case param_file:
@@ -159,7 +164,7 @@ namespace FDR
                                 Common.Msg("There are no import configurations!", ConsoleColor.Red);
                                 return;
                             }
-                            Import.ImportWizard(appConfig.ImportConfigs, string.IsNullOrWhiteSpace(folder) ? null : new DirectoryInfo(Path.GetFullPath(folder)), auto);
+                            Import.ImportWizard(appConfig.ImportConfigs, string.IsNullOrWhiteSpace(folder) ? null : new DirectoryInfo(Path.GetFullPath(folder)), auto, noactions);
                             break;
 
                         case Operation.Hash:
@@ -278,6 +283,7 @@ namespace FDR
                 help.Add($"{param_resize} <{nameof(folder)}>", "Resize image files based on a given configuration");
                 help.Add($"{param_config} <{nameof(config)}>", "Named configuration for some functions like renaming and resizing");
                 help.Add(param_auto, "Start the import automatically");
+                help.Add(param_noactions, "Skip the actions during import to enable importing from multiple sources");
                 help.Add(param_verbose, "More detailed output");
                 Common.ShowAttributeHelp(help, false);
             }

@@ -342,7 +342,7 @@ namespace FDR.Tools.Library
             Trace.Unindent();
         }
 
-        public static void ImportWizard(Dictionary<string, ImportConfig> configs, DirectoryInfo? folder = null, bool auto = false)
+        public static void ImportWizard(Dictionary<string, ImportConfig> configs, DirectoryInfo? folder = null, bool auto = false, bool noactions = false)
         {
             if (configs == null) throw new ArgumentNullException(nameof(configs));
             if (configs.Count == 0) throw new ArgumentNullException("Import configurations cannot be empty!");
@@ -354,6 +354,7 @@ namespace FDR.Tools.Library
             if (selectedSourceInfo == null || selectedSourceInfo.DirectoryInfo == null) return;
             var config = SelectImportConfig(configs, selectedSourceInfo);
             if (config == null) return;
+            if (noactions) config.Actions?.Clear();
             PrintImportConfiguration(config);
 
             ImportFiles(selectedSourceInfo.DirectoryInfo, config);

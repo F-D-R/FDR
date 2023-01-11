@@ -56,6 +56,14 @@ namespace FDR.Tools.Library.Test
                 File.SetLastWriteTimeUtc(f.GetSourcePath(), f.Created);
             });
         }
+
+        public void DeleteSourceFiles()
+        {
+            this.ToList().ForEach(f =>
+            {
+                if (File.Exists(f.GetSourcePath())) File.Delete(f.GetSourcePath());
+            });
+        }
     }
 
     internal static class Helper
