@@ -139,6 +139,54 @@ namespace FDR.Tools.Library.Test
         }
 
         [Test]
+        public void RenameFilesInFolderWithAutoCounterLength1()
+        {
+            var config = new RenameConfig();
+            config.Should().NotBeNull();
+            config.FileFilter = "*.*";
+            config.FilenamePattern = "{mdate:yyMMdd}_{counter:auto}";
+            config.StopOnError = false;
+
+            files.Add(new DateTime(2000, 1, 1, 0, 0, 1), tempFolderPath, "a.cr3", tempFolderPath, "000101_1.cr3");
+            files.Add(new DateTime(2000, 1, 1, 0, 0, 2), tempFolderPath, "b.cr3", tempFolderPath, "000101_2.cr3");
+            files.Add(new DateTime(2000, 1, 1, 0, 0, 3), tempFolderPath, "c.cr3", tempFolderPath, "000101_3.cr3");
+            files.Add(new DateTime(2000, 1, 1, 0, 0, 4), tempFolderPath, "d.cr3", tempFolderPath, "000101_4.cr3");
+            files.CreateFiles();
+
+            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+        }
+
+        [Test]
+        public void RenameFilesInFolderWithAutoCounterLength2()
+        {
+            var config = new RenameConfig();
+            config.Should().NotBeNull();
+            config.FileFilter = "*.*";
+            config.FilenamePattern = "{mdate:yyMMdd}_{counter:auto}";
+            config.StopOnError = false;
+
+            files.Add(new DateTime(2000, 1, 1, 0, 0, 1), tempFolderPath, "a.cr3", tempFolderPath, "000101_01.cr3");
+            files.Add(new DateTime(2000, 1, 1, 0, 0, 2), tempFolderPath, "b.cr3", tempFolderPath, "000101_02.cr3");
+            files.Add(new DateTime(2000, 1, 1, 0, 0, 3), tempFolderPath, "c.cr3", tempFolderPath, "000101_03.cr3");
+            files.Add(new DateTime(2000, 1, 1, 0, 0, 4), tempFolderPath, "d.cr3", tempFolderPath, "000101_04.cr3");
+            files.Add(new DateTime(2000, 1, 1, 0, 0, 5), tempFolderPath, "e.cr3", tempFolderPath, "000101_05.cr3");
+            files.Add(new DateTime(2000, 1, 1, 0, 0, 6), tempFolderPath, "f.cr3", tempFolderPath, "000101_06.cr3");
+            files.Add(new DateTime(2000, 1, 1, 0, 0, 7), tempFolderPath, "g.cr3", tempFolderPath, "000101_07.cr3");
+            files.Add(new DateTime(2000, 1, 1, 0, 0, 8), tempFolderPath, "h.cr3", tempFolderPath, "000101_08.cr3");
+            files.Add(new DateTime(2000, 1, 1, 0, 0, 9), tempFolderPath, "i.cr3", tempFolderPath, "000101_09.cr3");
+            files.Add(new DateTime(2000, 1, 1, 0, 0, 10), tempFolderPath, "j.cr3", tempFolderPath, "000101_10.cr3");
+            files.Add(new DateTime(2000, 1, 1, 0, 0, 11), tempFolderPath, "k.cr3", tempFolderPath, "000101_11.cr3");
+            files.Add(new DateTime(2000, 1, 1, 0, 0, 12), tempFolderPath, "l.cr3", tempFolderPath, "000101_12.cr3");
+            files.CreateFiles();
+
+            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+        }
+
+        [Test]
         public void RenameFolderTests()
         {
             var config = new RenameConfig() { FilenamePattern = "{pfolder}" };
