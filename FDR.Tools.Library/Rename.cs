@@ -51,7 +51,7 @@ namespace FDR.Tools.Library
             list.Add($"{{{MDATE}[:format]}}", "Modify date with optional date format");
             list.Add($"{{{EDATE}[:format]}}", $"EXIF date (={SDATE}) with optional date format");
             list.Add($"{{{SDATE}[:format]}}", $"Shooting date (={EDATE}) with optional date format");
-            list.Add($"{{{COUNTER}[:digits]}}", "File counter with optional number of digits starting with 1");
+            list.Add($"{{{COUNTER}[:digits]}}", "File counter with optional number of digits starting with 1 or 'auto'");
             return list;
         }
 
@@ -304,6 +304,8 @@ namespace FDR.Tools.Library
 
             var files = Common.GetFiles(folder, filter, config.Recursive).OrderBy(f => f.GetExifDate()).ToList();
             int fileCount = files.Count;
+
+            config.FilenamePattern = config.FilenamePattern?.Replace($"{{{COUNTER}:auto}}", $"{{{COUNTER}:" + fileCount.ToString().Length + "}");
 
             int counter = 1;
             Common.Progress(0);
