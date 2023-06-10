@@ -26,6 +26,7 @@ namespace FDR
     {
         private const string param_import = "-import";
         private const string param_noactions = "-noactions";
+        private const string param_force = "-force";
         private const string param_hash = "-hash";
         private const string param_rehash = "-rehash";
         private const string param_verify = "-verify";
@@ -101,6 +102,10 @@ namespace FDR
                         noactions = true;
                         break;
 
+                    case param_force:
+                        force = true;
+                        break;
+
                     case param_file:
                         GetParam(ref file, nameof(file));
                         break;
@@ -164,7 +169,7 @@ namespace FDR
                                 Common.Msg("There are no import configurations!", ConsoleColor.Red);
                                 return;
                             }
-                            Import.ImportWizard(appConfig.ImportConfigs, string.IsNullOrWhiteSpace(folder) ? null : new DirectoryInfo(Path.GetFullPath(folder)), auto, noactions);
+                            Import.ImportWizard(appConfig.ImportConfigs, string.IsNullOrWhiteSpace(folder) ? null : new DirectoryInfo(Path.GetFullPath(folder)), auto, noactions, force);
                             break;
 
                         case Operation.Hash:
@@ -284,6 +289,7 @@ namespace FDR
                 help.Add($"{param_config} <{nameof(config)}>", "Named configuration for some functions like renaming and resizing");
                 help.Add(param_auto, "Start the import automatically");
                 help.Add(param_noactions, "Skip the actions during import to enable importing from multiple sources");
+                help.Add(param_force, "Force importing existing folders");
                 help.Add(param_verbose, "More detailed output");
                 Common.ShowAttributeHelp(help, false);
             }

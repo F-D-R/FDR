@@ -225,7 +225,7 @@ namespace FDR.Tools.Library.Test
 
             Directory.Delete(dest1, true);
             var import1 = appConfig.ImportConfigs["import1"];
-            Import.ImportFiles(new DirectoryInfo(source1), import1);
+            Import.ImportFiles(new DirectoryInfo(source1), import1, false);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
         }
@@ -252,7 +252,7 @@ namespace FDR.Tools.Library.Test
             Directory.Delete(dest1, true);
             var import1 = appConfig.ImportConfigs["import1"];
             import1.Actions?.Clear();
-            Import.ImportFiles(new DirectoryInfo(source1), import1);
+            Import.ImportFiles(new DirectoryInfo(source1), import1, false);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
         }
@@ -278,7 +278,7 @@ namespace FDR.Tools.Library.Test
 
             Directory.Delete(dest2, true);
             var import2 = appConfig.ImportConfigs["import2"];
-            Import.ImportFiles(new DirectoryInfo(source2), import2);
+            Import.ImportFiles(new DirectoryInfo(source2), import2, false);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
         }
@@ -305,7 +305,7 @@ namespace FDR.Tools.Library.Test
             Directory.Delete(dest2, true);
             var import2 = appConfig.ImportConfigs["import2"];
             import2.Actions?.Clear();
-            Import.ImportFiles(new DirectoryInfo(source2), import2);
+            Import.ImportFiles(new DirectoryInfo(source2), import2, false);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
         }

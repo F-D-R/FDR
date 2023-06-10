@@ -135,7 +135,7 @@ namespace FDR.Tools.Library
             Trace.Unindent();
         }
 
-        public static void ImportFiles(DirectoryInfo source, ImportConfig config)
+        public static void ImportFiles(DirectoryInfo source, ImportConfig config, bool force)
         {
             if (config == null) throw new ArgumentNullException("config");
             config.Validate();
@@ -158,7 +158,7 @@ namespace FDR.Tools.Library
                 var rootFolder = Path.GetDirectoryName(destFolder);
                 var folderName = Path.GetFileName(destFolder);
 
-                if (Directory.Exists(rootFolder))
+                if (!force && Directory.Exists(rootFolder))
                 {
                     var childFolders = Directory.GetDirectories(rootFolder, folderName + "*");
                     if (childFolders.Length > 0)
@@ -342,7 +342,7 @@ namespace FDR.Tools.Library
             Trace.Unindent();
         }
 
-        public static void ImportWizard(Dictionary<string, ImportConfig> configs, DirectoryInfo? folder = null, bool auto = false, bool noactions = false)
+        public static void ImportWizard(Dictionary<string, ImportConfig> configs, DirectoryInfo? folder = null, bool auto = false, bool noactions = false, bool force = false)
         {
             if (configs == null) throw new ArgumentNullException(nameof(configs));
             if (configs.Count == 0) throw new ArgumentNullException("Import configurations cannot be empty!");
@@ -357,7 +357,7 @@ namespace FDR.Tools.Library
             if (noactions) config.Actions?.Clear();
             PrintImportConfiguration(config);
 
-            ImportFiles(selectedSourceInfo.DirectoryInfo, config);
+            ImportFiles(selectedSourceInfo.DirectoryInfo, config, force);
 
             Common.Msg("                        ");
             Common.Msg("Successfully finished...", ConsoleColor.Green);
