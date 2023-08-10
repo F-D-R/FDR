@@ -2,22 +2,27 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FDR.Tools.Library
 {
     public static class Raw
     {
-        public static void CleanupFolder(DirectoryInfo folder)
+        public static void CleanupFolder(DirectoryInfo folder, CancellationToken token)
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             Common.Msg($"Cleaning up folder {folder}");
 
             var worker = new CleanupWorker(folder);
-            worker.CleanupErrorFiles();
-            worker.CleanupHashFiles();
-            worker.CleanupRawFiles();
+            try
+            {
+                worker.CleanupErrorFiles(token);
+                worker.CleanupHashFiles(token);
+                worker.CleanupRawFiles(token);
+            }
+            catch (OperationCanceledException) { }
 
             var time = Common.GetTimeString(stopwatch);
             Common.Msg($"Cleanup of {folder} folder succeeded: {worker.RawCount} raw, {worker.HashCount} hash and {worker.ErrCount} error files were deleted. ({time})", ConsoleColor.Green);
@@ -46,7 +51,7 @@ namespace FDR.Tools.Library
 
             public void IncrementErrCount() { lock (this) errCount++; }
 
-            public void CleanupRawFiles()
+            public void CleanupRawFiles(CancellationToken token)
             {
                 var files = Common.EnumerateFiles(Folder, "*.CR?|*.DNG", true);
 
@@ -61,7 +66,8 @@ namespace FDR.Tools.Library
 
                 ParallelOptions parallelOptions = new()
                 {
-                    MaxDegreeOfParallelism = 4
+                    MaxDegreeOfParallelism = 4, 
+                    CancellationToken = token
                 };
 
                 Parallel.ForEach(files, parallelOptions, (file, token) =>
@@ -121,7 +127,7 @@ namespace FDR.Tools.Library
                 }
             }
 
-            public void CleanupHashFiles()
+            public void CleanupHashFiles(CancellationToken token)
             {
                 var options = new EnumerationOptions
                 {
@@ -136,7 +142,8 @@ namespace FDR.Tools.Library
 
                 ParallelOptions parallelOptions = new()
                 {
-                    MaxDegreeOfParallelism = 4
+                    MaxDegreeOfParallelism = 4,
+                    CancellationToken = token
                 };
 
                 Parallel.ForEach(files, parallelOptions, (file, token) =>
@@ -163,7 +170,7 @@ namespace FDR.Tools.Library
                 }
             }
 
-            public void CleanupErrorFiles()
+            public void CleanupErrorFiles(CancellationToken token)
             {
                 var options = new EnumerationOptions
                 {
@@ -178,7 +185,8 @@ namespace FDR.Tools.Library
 
                 ParallelOptions parallelOptions = new()
                 {
-                    MaxDegreeOfParallelism = 4
+                    MaxDegreeOfParallelism = 4,
+                    CancellationToken = token
                 };
 
                 Parallel.ForEach(files, parallelOptions, (file, token) =>

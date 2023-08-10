@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -26,7 +27,7 @@ namespace FDR.Tools.Library
 
         public string? Config { get; set; }
 
-        public void Do(DirectoryInfo folder)
+        public void Do(DirectoryInfo folder, CancellationToken token)
         {
             Validate();
 
@@ -59,7 +60,7 @@ namespace FDR.Tools.Library
                     break;
 
                 case ActionType.cleanup:
-                    Raw.CleanupFolder(folder);
+                    Raw.CleanupFolder(folder, token);
                     break;
 
                 default:

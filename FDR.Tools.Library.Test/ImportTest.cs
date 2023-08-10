@@ -4,6 +4,7 @@ using NUnit.Framework;
 using FluentAssertions;
 using System.Linq;
 using Newtonsoft.Json;
+using System.Threading;
 
 namespace FDR.Tools.Library.Test
 {
@@ -23,7 +24,10 @@ namespace FDR.Tools.Library.Test
         private string raw1;
         private string raw2;
 
+        private CancellationToken token = new();
+
         private const int importConfigCount = 4;
+        private const int renameConfigCount = 1;
         private const string appConfigJson = @"
 {
   ""RenameConfigs"": {
@@ -225,7 +229,7 @@ namespace FDR.Tools.Library.Test
 
             Directory.Delete(dest1, true);
             var import1 = appConfig.ImportConfigs["import1"];
-            Import.ImportFiles(new DirectoryInfo(source1), import1, false);
+            Import.ImportFiles(new DirectoryInfo(source1), import1, false, token);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
         }
@@ -252,7 +256,7 @@ namespace FDR.Tools.Library.Test
             Directory.Delete(dest1, true);
             var import1 = appConfig.ImportConfigs["import1"];
             import1.Actions?.Clear();
-            Import.ImportFiles(new DirectoryInfo(source1), import1, false);
+            Import.ImportFiles(new DirectoryInfo(source1), import1, false, token);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
         }
@@ -278,7 +282,7 @@ namespace FDR.Tools.Library.Test
 
             Directory.Delete(dest2, true);
             var import2 = appConfig.ImportConfigs["import2"];
-            Import.ImportFiles(new DirectoryInfo(source2), import2, false);
+            Import.ImportFiles(new DirectoryInfo(source2), import2, false, token);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
         }
@@ -305,7 +309,107 @@ namespace FDR.Tools.Library.Test
             Directory.Delete(dest2, true);
             var import2 = appConfig.ImportConfigs["import2"];
             import2.Actions?.Clear();
-            Import.ImportFiles(new DirectoryInfo(source2), import2, false);
+            Import.ImportFiles(new DirectoryInfo(source2), import2, false, token);
+
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+        }
+
+        [Test]
+        public void ImportMultipleDaysInReverseOrder()
+        {
+            var appConfig = JsonConvert.DeserializeObject<AppConfig>(appConfigJson);
+            appConfig.Should().NotBeNull();
+            appConfig.RenameConfigs.Should().HaveCount(renameConfigCount);
+            appConfig.RenameConfigs["yymmdd_ccc"].Should().NotBeNull();
+            appConfig.RenameConfigs["yymmdd_ccc"].FilenamePattern = "{cdate:yyMMdd}_{counter:auto}";
+            appConfig.ImportConfigs.Should().HaveCount(importConfigCount);
+            appConfig.ImportConfigs.ToList().ForEach(ic => ic.Value.DestRoot = destinationRoot);
+            appConfig.Validate();
+
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 14), source1, "aaa.cr3", raw2, "220202_12.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 14), source1, "aaa.jpg", dest2, "220202_12.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 13), source1, "bbb.cr3", raw2, "220202_11.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 13), source1, "bbb.jpg", dest2, "220202_11.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 12), source1, "ccc.cr3", raw2, "220202_10.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 12), source1, "ccc.jpg", dest2, "220202_10.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 11), source1, "ddd.cr3", raw2, "220202_09.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 11), source1, "ddd.jpg", dest2, "220202_09.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 10), source1, "eee.cr3", raw2, "220202_08.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 10), source1, "eee.jpg", dest2, "220202_08.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 9), source1, "fff.cr3", raw2, "220202_07.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 9), source1, "fff.jpg", dest2, "220202_07.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 8), source1, "ggg.cr3", raw2, "220202_06.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 8), source1, "ggg.jpg", dest2, "220202_06.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 7), source1, "hhh.cr3", raw2, "220202_05.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 7), source1, "hhh.jpg", dest2, "220202_05.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 6), source1, "iii.cr3", raw2, "220202_04.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 6), source1, "iii.jpg", dest2, "220202_04.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 5), source1, "jjj.cr3", raw2, "220202_03.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 5), source1, "jjj.jpg", dest2, "220202_03.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 4), source1, "kkk.cr3", raw2, "220202_02.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 4), source1, "kkk.jpg", dest2, "220202_02.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 3), source1, "lll.cr2", raw2, "220202_01.cr2");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 3), source1, "lll.jpg", dest2, "220202_01.jpg");
+            files.Add(new DateTime(2022, 1, 1, 13, 59, 2), source1, "mmm.crw", raw1, "220101_2.crw");
+            files.Add(new DateTime(2022, 1, 1, 13, 59, 2), source1, "mmm.jpg", dest1, "220101_2.jpg");
+            files.Add(new DateTime(2022, 1, 1, 13, 59, 1), source1, "nnn.dng", raw1, "220101_1.dng");
+            files.Add(new DateTime(2022, 1, 1, 13, 59, 1), source1, "nnn.jpg", dest1, "220101_1.jpg");
+            files.CreateFiles();
+
+            Directory.Delete(dest1, true);
+            Directory.Delete(dest2, true);
+            var import1 = appConfig.ImportConfigs["import1"];
+            Import.ImportFiles(new DirectoryInfo(source1), import1, false, token);
+
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+        }
+
+        [Test]
+        public void ImportMultipleDaysInDirectOrder()
+        {
+            var appConfig = JsonConvert.DeserializeObject<AppConfig>(appConfigJson);
+            appConfig.Should().NotBeNull();
+            appConfig.RenameConfigs.Should().HaveCount(renameConfigCount);
+            appConfig.RenameConfigs["yymmdd_ccc"].Should().NotBeNull();
+            appConfig.RenameConfigs["yymmdd_ccc"].FilenamePattern = "{cdate:yyMMdd}_{counter:auto}";
+            appConfig.ImportConfigs.Should().HaveCount(importConfigCount);
+            appConfig.ImportConfigs.ToList().ForEach(ic => ic.Value.DestRoot = destinationRoot);
+            appConfig.Validate();
+
+            files.Add(new DateTime(2022, 1, 1, 13, 59, 1), source1, "aaa.dng", raw1, "220101_1.dng");
+            files.Add(new DateTime(2022, 1, 1, 13, 59, 1), source1, "aaa.jpg", dest1, "220101_1.jpg");
+            files.Add(new DateTime(2022, 1, 1, 13, 59, 2), source1, "bbb.crw", raw1, "220101_2.crw");
+            files.Add(new DateTime(2022, 1, 1, 13, 59, 2), source1, "bbb.jpg", dest1, "220101_2.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 3), source1, "ccc.cr2", raw2, "220202_01.cr2");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 3), source1, "ccc.jpg", dest2, "220202_01.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 4), source1, "ddd.cr3", raw2, "220202_02.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 4), source1, "ddd.jpg", dest2, "220202_02.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 5), source1, "eee.cr3", raw2, "220202_03.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 5), source1, "eee.jpg", dest2, "220202_03.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 6), source1, "fff.cr3", raw2, "220202_04.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 6), source1, "fff.jpg", dest2, "220202_04.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 7), source1, "ggg.cr3", raw2, "220202_05.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 7), source1, "ggg.jpg", dest2, "220202_05.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 8), source1, "hhh.cr3", raw2, "220202_06.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 8), source1, "hhh.jpg", dest2, "220202_06.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 9), source1, "iii.cr3", raw2, "220202_07.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 9), source1, "iii.jpg", dest2, "220202_07.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 10), source1, "jjj.cr3", raw2, "220202_08.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 10), source1, "jjj.jpg", dest2, "220202_08.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 11), source1, "kkk.cr3", raw2, "220202_09.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 11), source1, "kkk.jpg", dest2, "220202_09.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 12), source1, "lll.cr3", raw2, "220202_10.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 12), source1, "lll.jpg", dest2, "220202_10.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 13), source1, "mmm.cr3", raw2, "220202_11.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 13), source1, "mmm.jpg", dest2, "220202_11.jpg");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 14), source1, "nnn.cr3", raw2, "220202_12.cr3");
+            files.Add(new DateTime(2022, 2, 2, 13, 59, 14), source1, "nnn.jpg", dest2, "220202_12.jpg");
+            files.CreateFiles();
+
+            Directory.Delete(dest1, true);
+            Directory.Delete(dest2, true);
+            var import1 = appConfig.ImportConfigs["import1"];
+            Import.ImportFiles(new DirectoryInfo(source1), import1, false, token);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
         }

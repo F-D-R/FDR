@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using NUnit.Framework;
 using FluentAssertions;
+using System.Threading;
 
 namespace FDR.Tools.Library.Test
 {
@@ -9,6 +10,7 @@ namespace FDR.Tools.Library.Test
     {
         private string rawFolderPath;
         private string panoramaFolderPath;
+        private CancellationToken token = new();
 
         [OneTimeSetUp]
         public override void OneTimeSetUp()
@@ -122,7 +124,7 @@ namespace FDR.Tools.Library.Test
 
             files.CreateFiles();
 
-            Raw.CleanupFolder(tempFolder);
+            Raw.CleanupFolder(tempFolder, token);
 
             files.ForEach(f => File.Exists(f.GetPath()).Should().Be(f.Keep, f.Name));
         }
@@ -192,7 +194,7 @@ namespace FDR.Tools.Library.Test
 
             files.CreateFiles();
 
-            Raw.CleanupFolder(tempFolder);
+            Raw.CleanupFolder(tempFolder, token);
 
             files.ForEach(f => File.Exists(f.GetPath()).Should().Be(f.Keep, f.Name));
         }

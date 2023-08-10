@@ -135,7 +135,7 @@ namespace FDR.Tools.Library
             Trace.Unindent();
         }
 
-        public static void ImportFiles(DirectoryInfo source, ImportConfig config, bool force)
+        public static void ImportFiles(DirectoryInfo source, ImportConfig config, bool force, CancellationToken token)
         {
             if (config == null) throw new ArgumentNullException("config");
             config.Validate();
@@ -198,7 +198,7 @@ namespace FDR.Tools.Library
             if (config.Actions != null)
                 foreach (var fn in folderNames)
                     foreach (var a in config.Actions)
-                        a.Do(new DirectoryInfo(fn));
+                        a.Do(new DirectoryInfo(fn), token);
         }
 
         internal static ImportConfig? FindConfig(DirectoryInfo sourceFolder, Dictionary<string, ImportConfig> configs)
@@ -342,7 +342,7 @@ namespace FDR.Tools.Library
             Trace.Unindent();
         }
 
-        public static void ImportWizard(Dictionary<string, ImportConfig> configs, DirectoryInfo? folder = null, bool auto = false, bool noactions = false, bool force = false)
+        public static void ImportWizard(Dictionary<string, ImportConfig> configs, DirectoryInfo? folder = null, bool auto = false, bool noactions = false, bool force = false, CancellationToken token = new ())
         {
             if (configs == null) throw new ArgumentNullException(nameof(configs));
             if (configs.Count == 0) throw new ArgumentNullException("Import configurations cannot be empty!");
@@ -357,7 +357,7 @@ namespace FDR.Tools.Library
             if (noactions) config.Actions?.Clear();
             PrintImportConfiguration(config);
 
-            ImportFiles(selectedSourceInfo.DirectoryInfo, config, force);
+            ImportFiles(selectedSourceInfo.DirectoryInfo, config, force, token);
 
             Common.Msg("                        ");
             Common.Msg("Successfully finished...", ConsoleColor.Green);

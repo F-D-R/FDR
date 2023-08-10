@@ -7,6 +7,7 @@ using System.Text;
 using Newtonsoft.Json;
 using FDR.Tools.Library;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace FDR
 {
@@ -52,9 +53,25 @@ namespace FDR
         private static string reference = "";
         private static string config = "";
         private static string function = "";
+        private static readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
+        private static CancellationToken token; // = new();
+
 
         public static void Main(string[] args)
         {
+            //AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+            //AppDomain.CurrentDomain.DomainUnload += OnDomainUnload;
+
+            token = tokenSource.Token;
+
+            Console.CancelKeyPress += (s, e) =>
+            {
+                //Common.Msg("CancelKeyPress...", ConsoleColor.Red);
+                tokenSource.Cancel();
+                Thread.Sleep(500);
+            };
+
+
             for (int i = 0; i < args.Length; i++)
             {
                 switch (args[i].ToLower())
@@ -194,7 +211,7 @@ namespace FDR
                         case Operation.Cleanup:
                             Common.Msg($"FDR Tools {version} - Cleanup", titleColor);
                             if (!Common.IsFolderValid(folder)) return;
-                            Raw.CleanupFolder(new DirectoryInfo(Path.GetFullPath(folder)));
+                            Raw.CleanupFolder(new DirectoryInfo(Path.GetFullPath(folder)), token);
                             break;
 
                         case Operation.Rename:
@@ -246,6 +263,16 @@ namespace FDR
                 }
             }
         }
+
+        private static void OnProcessExit(object? sender, EventArgs e)
+        {
+            Common.Msg($"OnProcessExit...", titleColor);
+        }
+
+        //private static void OnDomainUnload(object? sender, EventArgs e)
+        //{
+        //    Common.Msg($"OnDomainUnload...", titleColor);
+        //}
 
         private static void OfferHelpAndExit()
         {

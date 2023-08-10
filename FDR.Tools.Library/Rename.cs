@@ -305,7 +305,8 @@ namespace FDR.Tools.Library
             var files = Common.GetFiles(folder, filter, config.Recursive).OrderBy(f => f.GetExifDate()).ToList();
             int fileCount = files.Count;
 
-            config.FilenamePattern = config.FilenamePattern?.Replace($"{{{COUNTER}:auto}}", $"{{{COUNTER}:" + fileCount.ToString().Length + "}");
+            var originalPattern = config.FilenamePattern;
+            config.FilenamePattern = originalPattern?.Replace($"{{{COUNTER}:auto}}", $"{{{COUNTER}:" + fileCount.ToString().Length + "}");
 
             int counter = 1;
             Common.Progress(0);
@@ -322,6 +323,7 @@ namespace FDR.Tools.Library
                 counter++;
             }
 
+            config.FilenamePattern = originalPattern;
             Trace.Unindent();
         }
     }

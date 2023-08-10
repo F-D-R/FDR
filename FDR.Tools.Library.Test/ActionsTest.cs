@@ -2,6 +2,7 @@
 using System.IO;
 using NUnit.Framework;
 using FluentAssertions;
+using System.Threading;
 
 namespace FDR.Tools.Library.Test
 {
@@ -9,6 +10,7 @@ namespace FDR.Tools.Library.Test
     public class ActionsTest : TempFolderTestBase
     {
         private string rawFolderPath;
+        private CancellationToken token = new();
 
         [OneTimeSetUp]
         public override void OneTimeSetUp()
@@ -67,7 +69,7 @@ namespace FDR.Tools.Library.Test
             files.Add(rawFolderPath, ".dest_002.cr3.md5");
             files.Add(rawFolderPath, ".dest_001.dng.md5");
 
-            actions.ForEach(a => a.Do(tempFolder));
+            actions.ForEach(a => a.Do(tempFolder, token));
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.DestName));
         }
