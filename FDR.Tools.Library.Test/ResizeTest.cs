@@ -75,7 +75,8 @@ namespace FDR.Tools.Library.Test
             else
             {
                 exifProfile.Should().NotBeNull();
-                var exif = exifProfile.GetValue<string>(ExifTag.DateTimeOriginal);
+                IExifValue<string> exif;
+                exifProfile.TryGetValue<string>(ExifTag.DateTimeOriginal, out exif).Should().BeTrue();
                 exif.Should().NotBeNull();
             }
 

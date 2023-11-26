@@ -169,8 +169,10 @@ namespace FDR.Tools.Library
         {
             try
             {
-                IImageInfo imageInfo = Image.Identify(file.FullName);
-                var dateString = imageInfo.Metadata?.ExifProfile?.GetValue<string>(ExifTag.DateTimeOriginal)?.ToString();
+                ImageInfo imageInfo = Image.Identify(file.FullName);
+                IExifValue<string>? dateExif = null;
+                if (imageInfo.Metadata?.ExifProfile?.TryGetValue<string>(ExifTag.DateTimeOriginal, out dateExif) == false) return defaultDateUtc;
+                string? dateString = dateExif?.Value;
                 if (string.IsNullOrWhiteSpace(dateString)) return defaultDateUtc;
                 return DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", null);
             }
