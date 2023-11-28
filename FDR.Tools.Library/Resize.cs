@@ -108,7 +108,7 @@ namespace FDR.Tools.Library
 
             int counter = 1;
             Common.Progress(0);
-            foreach (var file in files.OrderBy(f => f.CreationTimeUtc).ToList())
+            foreach (var file in files.OrderBy(f => f.FullName).ToList())
             {
                 try
                 {
