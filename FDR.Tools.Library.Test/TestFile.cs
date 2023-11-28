@@ -10,11 +10,13 @@ namespace FDR.Tools.Library.Test
 {
     public class TestFile
     {
-        public TestFile() { Created = DateTime.Now; }
+        public TestFile() { Created = DateTime.Now; Modified = Created; Exif = Created; }
 
         public bool Keep = true;
         public bool Create = true;
         public DateTime Created;
+        public DateTime Modified;
+        public DateTime Exif;
         public string SourceFolder;
         public string SourceName;
         public string DestFolder;
@@ -31,19 +33,24 @@ namespace FDR.Tools.Library.Test
 
     public class TestFiles : List<TestFile>
     {
-        public void Add(string sourceFolder, string sourceName, string destFolder, string destName)
-        {
-            base.Add(new TestFile() { Keep = true, Create = true, SourceFolder = sourceFolder, SourceName = sourceName, DestFolder = destFolder, DestName = destName });
-        }
-
-        public void Add(DateTime created, string sourceFolder, string sourceName, string destFolder, string destName)
-        {
-            base.Add(new TestFile() { Keep = true, Create = true, Created = created, SourceFolder = sourceFolder, SourceName = sourceName, DestFolder = destFolder, DestName = destName });
-        }
-
         public void Add(string folder, string name, bool keep = true)
         {
             base.Add(new TestFile() { Keep = keep, Create = true, SourceFolder = folder, DestFolder = folder, SourceName = name, DestName = name });
+        }
+
+        public void Add(string sourceFolder, string sourceName, string destFolder, string destName, DateTime? created = null, DateTime? modified = null, DateTime? exif = null)
+        {
+            var tf = new TestFile();
+            tf.Keep = true;
+            tf.Create = true;
+            tf.SourceFolder = sourceFolder;
+            tf.SourceName = sourceName;
+            tf.DestFolder = destFolder;
+            tf.DestName = destName;
+            if (created != null) tf.Created = created.Value;
+            if (modified != null) tf.Modified = modified.Value;
+            if (exif != null) tf.Exif = exif.Value;
+            base.Add(tf);
         }
 
         public void CreateFiles()
@@ -52,8 +59,8 @@ namespace FDR.Tools.Library.Test
             {
                 if (!Directory.Exists(f.SourceFolder)) Directory.CreateDirectory(f.SourceFolder);
                 File.WriteAllText(f.GetSourcePath(), "");
-                File.SetCreationTimeUtc(f.GetSourcePath(), f.Created);
-                File.SetLastWriteTimeUtc(f.GetSourcePath(), f.Created);
+                File.SetCreationTime(f.GetSourcePath(), f.Created);
+                File.SetLastWriteTime(f.GetSourcePath(), f.Modified);
             });
         }
 

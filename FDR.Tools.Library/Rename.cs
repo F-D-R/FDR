@@ -165,20 +165,20 @@ namespace FDR.Tools.Library
             return result;
         }
 
-        public static DateTime GetExifDate(this FileInfo file, DateTime defaultDateUtc)
+        public static DateTime GetExifDate(this FileInfo file, DateTime defaultDate)
         {
             try
             {
                 ImageInfo imageInfo = Image.Identify(file.FullName);
                 IExifValue<string>? dateExif = null;
-                if (imageInfo.Metadata?.ExifProfile?.TryGetValue<string>(ExifTag.DateTimeOriginal, out dateExif) == false) return defaultDateUtc;
+                if (imageInfo.Metadata?.ExifProfile?.TryGetValue(ExifTag.DateTimeOriginal, out dateExif) == false) return defaultDate;
                 string? dateString = dateExif?.Value;
-                if (string.IsNullOrWhiteSpace(dateString)) return defaultDateUtc;
+                if (string.IsNullOrWhiteSpace(dateString)) return defaultDate;
                 return DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", null);
             }
             catch (Exception)
             {
-                return defaultDateUtc;
+                return defaultDate;
             }
         }
 

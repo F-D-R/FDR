@@ -41,14 +41,14 @@ namespace FDR.Tools.Library.Test
             actions.Add(new Action() { Type = ActionType.rehash });
             actions.Should().HaveCount(6);
 
-            files.Add(new DateTime(2022, 1, 4), tempFolderPath, "01.jpg", tempFolderPath, "dest_004.jpg");
-            files.Add(new DateTime(2022, 1, 3), tempFolderPath, "02.jpg", tempFolderPath, "dest_003.jpg");
-            files.Add(new DateTime(2022, 1, 2), tempFolderPath, "03.jpg", tempFolderPath, "dest_002.jpg");
-            files.Add(new DateTime(2022, 1, 1), tempFolderPath, "04.jpg", tempFolderPath, "dest_001.jpg");
-            files.Add(new DateTime(2022, 1, 4), tempFolderPath, "01.crw", rawFolderPath, "dest_004.crw");
-            files.Add(new DateTime(2022, 1, 3), tempFolderPath, "02.cr2", rawFolderPath, "dest_003.cr2");
-            files.Add(new DateTime(2022, 1, 2), tempFolderPath, "03.cr3", rawFolderPath, "dest_002.cr3");
-            files.Add(new DateTime(2022, 1, 1), tempFolderPath, "04.dng", rawFolderPath, "dest_001.dng");
+            files.Add(tempFolderPath, "01.jpg", tempFolderPath, "dest_004.jpg", new DateTime(2022, 1, 4));
+            files.Add(tempFolderPath, "02.jpg", tempFolderPath, "dest_003.jpg", new DateTime(2022, 1, 3));
+            files.Add(tempFolderPath, "03.jpg", tempFolderPath, "dest_002.jpg", new DateTime(2022, 1, 2));
+            files.Add(tempFolderPath, "04.jpg", tempFolderPath, "dest_001.jpg", new DateTime(2022, 1, 1));
+            files.Add(tempFolderPath, "01.crw", rawFolderPath, "dest_004.crw", new DateTime(2022, 1, 4));
+            files.Add(tempFolderPath, "02.cr2", rawFolderPath, "dest_003.cr2", new DateTime(2022, 1, 3));
+            files.Add(tempFolderPath, "03.cr3", rawFolderPath, "dest_002.cr3", new DateTime(2022, 1, 2));
+            files.Add(tempFolderPath, "04.dng", rawFolderPath, "dest_001.dng", new DateTime(2022, 1, 1));
             files.CreateFiles();
 
             files.Add(tempFolderPath, ".01.jpg.md5", false);
