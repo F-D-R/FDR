@@ -153,21 +153,57 @@ namespace FDR.Tools.Library
             File.SetLastAccessTimeUtc(destFilePath, File.GetLastAccessTimeUtc(sourceFilePath));
         }
 
-        public static DateTime GetExifDate(this FileInfo file, DateTime defaultDate)
+        public static bool GetExifDate(ExifProfile? exif, out DateTime? date)
         {
+            date = null;
+            if (exif == null) return false;
+
             try
             {
-                ImageInfo imageInfo = Image.Identify(file.FullName);
                 IExifValue<string>? dateExif = null;
-                if (imageInfo.Metadata?.ExifProfile?.TryGetValue(ExifTag.DateTimeOriginal, out dateExif) == false) return defaultDate;
-                string? dateString = dateExif?.Value;
-                if (string.IsNullOrWhiteSpace(dateString)) return defaultDate;
-                return DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", null);
+                if (exif.TryGetValue(ExifTag.DateTimeOriginal, out dateExif)
+                    || exif.TryGetValue(ExifTag.DateTime, out dateExif)
+                    || exif.TryGetValue(ExifTag.DateTimeDigitized, out dateExif))
+                {
+                    string? dateString = dateExif?.Value;
+                    if (string.IsNullOrWhiteSpace(dateString)) return false;
+
+                    date = DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", null);
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public static DateTime GetExifDate(this FileInfo file, DateTime defaultDate)
+        {
+            ImageInfo imageInfo;
+            try
+            {
+                imageInfo = Image.Identify(file.FullName);
+                if (imageInfo == null) return defaultDate;
             }
             catch (Exception)
             {
                 return defaultDate;
             }
+
+            DateTime? date;
+            if (GetExifDate(imageInfo.Metadata?.ExifProfile, out date) && date !=null) return date.Value;
+
+            if (imageInfo.FrameMetadataCollection != null)
+            {
+                foreach (var fmeta in imageInfo.FrameMetadataCollection)
+                {
+                    if (GetExifDate(fmeta?.ExifProfile, out date) && date != null) return date.Value;
+                }
+            }
+
+            return defaultDate;
         }
 
         public static DateTime GetExifDate(this FileInfo file)
