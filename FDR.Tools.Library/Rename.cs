@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 
 namespace FDR.Tools.Library
 {
@@ -149,7 +147,7 @@ namespace FDR.Tools.Library
                     case SDATE:
                         if (file != null)
                         {
-                            var date = GetExifDate(file);
+                            var date = Common.GetExifDate(file);
                             result = result.Replace(match.Value, date.ToString(arg), StringComparison.InvariantCultureIgnoreCase);
                         }
                         break;
@@ -163,28 +161,6 @@ namespace FDR.Tools.Library
             }
 
             return result;
-        }
-
-        public static DateTime GetExifDate(this FileInfo file, DateTime defaultDate)
-        {
-            try
-            {
-                ImageInfo imageInfo = Image.Identify(file.FullName);
-                IExifValue<string>? dateExif = null;
-                if (imageInfo.Metadata?.ExifProfile?.TryGetValue(ExifTag.DateTimeOriginal, out dateExif) == false) return defaultDate;
-                string? dateString = dateExif?.Value;
-                if (string.IsNullOrWhiteSpace(dateString)) return defaultDate;
-                return DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", null);
-            }
-            catch (Exception)
-            {
-                return defaultDate;
-            }
-        }
-
-        public static DateTime GetExifDate(this FileInfo file)
-        {
-            return GetExifDate(file, file.CreationTime < file.LastWriteTime ? file.CreationTime : file.LastWriteTime);
         }
 
         public static void RenameFolder(DirectoryInfo folder, string? pattern)
@@ -304,7 +280,7 @@ namespace FDR.Tools.Library
             Common.Msg($"Renaming {filter} files in {folder.FullName}");
             Trace.Indent();
 
-            var files = Common.GetFiles(folder, filter, config.Recursive).OrderBy(f => f.GetExifDate()).ToList();
+            var files = Common.GetFiles(folder, filter, config.Recursive).OrderBy(f => f, new Common.FileDateComparer()).ToList();
             int fileCount = files.Count;
 
             var originalPattern = config.FilenamePattern;

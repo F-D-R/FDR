@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using SixLabors.ImageSharp.Metadata.Profiles.Exif;
+using SixLabors.ImageSharp;
 
 namespace FDR.Tools.Library
 {
@@ -150,5 +152,51 @@ namespace FDR.Tools.Library
             File.SetLastWriteTimeUtc(destFilePath, File.GetLastWriteTimeUtc(sourceFilePath));
             File.SetLastAccessTimeUtc(destFilePath, File.GetLastAccessTimeUtc(sourceFilePath));
         }
+
+        public static DateTime GetExifDate(this FileInfo file, DateTime defaultDate)
+        {
+            try
+            {
+                ImageInfo imageInfo = Image.Identify(file.FullName);
+                IExifValue<string>? dateExif = null;
+                if (imageInfo.Metadata?.ExifProfile?.TryGetValue(ExifTag.DateTimeOriginal, out dateExif) == false) return defaultDate;
+                string? dateString = dateExif?.Value;
+                if (string.IsNullOrWhiteSpace(dateString)) return defaultDate;
+                return DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", null);
+            }
+            catch (Exception)
+            {
+                return defaultDate;
+            }
+        }
+
+        public static DateTime GetExifDate(this FileInfo file)
+        {
+            return GetExifDate(file, file.CreationTime < file.LastWriteTime ? file.CreationTime : file.LastWriteTime);
+        }
+
+        public class FileDateComparer : Comparer<FileInfo>
+        {
+            private Dictionary<string, DateTime> dates = new Dictionary<string, DateTime>();
+
+            public override int Compare(FileInfo? x, FileInfo? y)
+            {
+                if (x == null || y == null) return 0;
+
+                DateTime dateX, dateY;
+                if (!dates.TryGetValue(x.FullName, out dateX))
+                {
+                    dateX = x.GetExifDate();
+                    dates[x.FullName] = dateX;
+                }
+                if (!dates.TryGetValue(y.FullName, out dateY))
+                {
+                    dateY = y.GetExifDate();
+                    dates[y.FullName] = dateY;
+                }
+                return DateTime.Compare(dateX, dateY);
+            }
+        }
+
     }
 }
