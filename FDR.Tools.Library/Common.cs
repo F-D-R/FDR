@@ -11,6 +11,18 @@ namespace FDR.Tools.Library
 {
     public static class Common
     {
+        private static FileDateComparer? comparer;
+
+        public static FileDateComparer FileComparer
+        {
+            get
+            {
+                comparer ??= new FileDateComparer();
+                return comparer;
+            }
+            set { comparer = value; }
+        }
+
         public static void Msg(string msg, ConsoleColor color = ConsoleColor.White, bool newline = true)
         {
             Console.BackgroundColor = ConsoleColor.Black;

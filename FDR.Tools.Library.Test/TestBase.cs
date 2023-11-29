@@ -32,6 +32,7 @@ namespace FDR.Tools.Library.Test
         [TearDown]
         public virtual void TearDown()
         {
+            Common.FileComparer = null;
         }
     }
 }

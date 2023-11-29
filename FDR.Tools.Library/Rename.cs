@@ -280,7 +280,7 @@ namespace FDR.Tools.Library
             Common.Msg($"Renaming {filter} files in {folder.FullName}");
             Trace.Indent();
 
-            var files = Common.GetFiles(folder, filter, config.Recursive).OrderBy(f => f, new Common.FileDateComparer()).ToList();
+            var files = Common.GetFiles(folder, filter, config.Recursive).OrderBy(f => f, Common.FileComparer).ToList();
             int fileCount = files.Count;
 
             var originalPattern = config.FilenamePattern;
