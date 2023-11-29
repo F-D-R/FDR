@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -225,7 +226,7 @@ namespace FDR.Tools.Library
 
         public class FileDateComparer : Comparer<FileInfo>
         {
-            private Dictionary<string, DateTime> dates = new Dictionary<string, DateTime>();
+            private ConcurrentDictionary<string, DateTime> dates = new ConcurrentDictionary<string, DateTime>();
 
             public override int Compare(FileInfo? x, FileInfo? y)
             {
