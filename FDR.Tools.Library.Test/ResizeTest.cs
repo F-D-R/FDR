@@ -41,9 +41,12 @@ namespace FDR.Tools.Library.Test
         [TestCase(ResizeMethod.stretch, 50, 50, 50, 50, true)]
         public void ResizeFileTests(ResizeMethod method, int width, int height, int newWidth, int newHeight, bool clearMetadata)
         {
-            var filePath = Path.Combine(tempFolderPath, Guid.NewGuid().ToString() + ".jpg");
             var newName = Guid.NewGuid().ToString();
-            var newPath = Path.Combine(tempFolderPath, newName + ".jpg");
+
+            files.Add(tempFolderPath, Guid.NewGuid().ToString() + ".jpg", tempFolderPath, newName + ".jpg", null, null, null, 200, 100);
+
+            files.CreateFiles();
+            files.ForEach(f => File.Exists(f.GetSourcePath()).Should().BeTrue(f.Name));
 
             var config = new ResizeConfig();
             config.Should().NotBeNull();
@@ -55,17 +58,16 @@ namespace FDR.Tools.Library.Test
             System.Action validate = () => config.Validate();
             validate.Should().NotThrow();
 
-            Helper.CreateJpgFile(filePath, 200, 100);
-            File.Exists(filePath).Should().BeTrue();
-            var file = new FileInfo(filePath);
+            var file = new FileInfo(files[0].GetSourcePath());
             file.Should().NotBeNull();
 
             int counter = 1;
             int percent = 0;
             Resize.ResizeFile(file, counter, config, percent);
-            File.Exists(newPath).Should().BeTrue();
 
-            var info = Image.Identify(newPath);
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+
+            var info = Image.Identify(files[0].GetDestPath());
             info.Should().NotBeNull();
             info.Width.Should().Be(newWidth, $"Width should be {newWidth}");
             info.Height.Should().Be(newHeight, $"Height should be {newHeight}");
@@ -79,9 +81,6 @@ namespace FDR.Tools.Library.Test
                 exifProfile.TryGetValue<string>(ExifTag.DateTimeOriginal, out exif).Should().BeTrue();
                 exif.Should().NotBeNull();
             }
-
-            File.Delete(filePath);
-            File.Delete(newPath);
         }
 
         [Test]
@@ -89,10 +88,12 @@ namespace FDR.Tools.Library.Test
         {
             var name1 = Guid.NewGuid().ToString();
             var name2 = Guid.NewGuid().ToString();
-            var filePath1 = Path.Combine(tempFolderPath, name1 + ".jpg");
-            var filePath2 = Path.Combine(tempFolderPath, name2 + ".jpg");
-            var newPath1 = Path.Combine(tempFolderPath, name1 + "_resized.jpg");
-            var newPath2 = Path.Combine(tempFolderPath, name2 + "_resized.jpg");
+
+            files.Add(tempFolderPath, name1 + ".jpg", tempFolderPath, name1 + "_resized.jpg", null, null, null, 200, 100);
+            files.Add(tempFolderPath, name2 + ".jpg", tempFolderPath, name2 + "_resized.jpg", null, null, null, 300, 400);
+
+            files.CreateFiles();
+            files.ForEach(f => File.Exists(f.GetSourcePath()).Should().BeTrue(f.Name));
 
             var config = new ResizeConfig();
             config.Should().NotBeNull();
@@ -105,36 +106,17 @@ namespace FDR.Tools.Library.Test
             config.ClearMetadata = true;
             validate.Should().NotThrow();
 
-            Helper.CreateJpgFile(filePath1, 200, 100);
-            File.Exists(filePath1).Should().BeTrue();
-            var file1 = new FileInfo(filePath1);
-            file1.Should().NotBeNull();
-
-            Helper.CreateJpgFile(filePath2, 300, 400);
-            File.Exists(filePath2).Should().BeTrue();
-            var file2 = new FileInfo(filePath2);
-            file2.Should().NotBeNull();
-
             Resize.ResizeFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            File.Exists(newPath1).Should().BeTrue();
-            var info1 = Image.Identify(newPath1);
-            info1.Should().NotBeNull();
-            info1.Width.Should().Be(50);
-            info1.Height.Should().Be(50);
-            info1.Metadata.ExifProfile.Should().BeNull();
-
-            File.Exists(newPath2).Should().BeTrue();
-            var info2 = Image.Identify(newPath2);
-            info2.Should().NotBeNull();
-            info2.Width.Should().Be(50);
-            info2.Height.Should().Be(50);
-            info2.Metadata.ExifProfile.Should().BeNull();
-
-            File.Delete(filePath1);
-            File.Delete(filePath2);
-            File.Delete(newPath1);
-            File.Delete(newPath2);
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.ForEach(f =>
+            {
+                var info = Image.Identify(f.GetDestPath());
+                info.Should().NotBeNull();
+                info.Width.Should().Be(50);
+                info.Height.Should().Be(50);
+                info.Metadata.ExifProfile.Should().BeNull();
+            });
         }
 
         [Test]
@@ -143,8 +125,11 @@ namespace FDR.Tools.Library.Test
             var name1 = Guid.NewGuid().ToString();
             var name2 = Guid.NewGuid().ToString();
 
-            files.Add(tempFolderPath, name1 + ".jpg", tempFolderPath + "/resized2", name1 + ".jpg");
-            files.Add(tempFolderPath, name2 + ".jpg", tempFolderPath + "/resized2", name2 + ".jpg");
+            files.Add(tempFolderPath, name1 + ".jpg", tempFolderPath + "/resized2", name1 + ".jpg", null, null, null, 200, 100);
+            files.Add(tempFolderPath, name2 + ".jpg", tempFolderPath + "/resized2", name2 + ".jpg", null, null, null, 300, 400);
+
+            files.CreateFiles();
+            files.ForEach(f => File.Exists(f.GetSourcePath()).Should().BeTrue(f.Name));
 
             var config = new ResizeConfig();
             config.Should().NotBeNull();
@@ -158,27 +143,17 @@ namespace FDR.Tools.Library.Test
             config.ClearMetadata = true;
             validate.Should().NotThrow();
 
-            Helper.CreateJpgFile(files[0].GetSourcePath(), 200, 100);
-            File.Exists(files[0].GetSourcePath()).Should().BeTrue();
-
-            Helper.CreateJpgFile(files[1].GetSourcePath(), 300, 400);
-            File.Exists(files[1].GetSourcePath()).Should().BeTrue();
-
             Resize.ResizeFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            File.Exists(files[0].GetDestPath()).Should().BeTrue();
-            var info1 = Image.Identify(files[0].GetDestPath());
-            info1.Should().NotBeNull();
-            info1.Width.Should().Be(50);
-            info1.Height.Should().Be(50);
-            info1.Metadata.ExifProfile.Should().BeNull();
-
-            File.Exists(files[1].GetDestPath()).Should().BeTrue();
-            var info2 = Image.Identify(files[1].GetDestPath());
-            info2.Should().NotBeNull();
-            info2.Width.Should().Be(50);
-            info2.Height.Should().Be(50);
-            info2.Metadata.ExifProfile.Should().BeNull();
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.ForEach(f =>
+            {
+                var info = Image.Identify(f.GetDestPath());
+                info.Should().NotBeNull();
+                info.Width.Should().Be(50);
+                info.Height.Should().Be(50);
+                info.Metadata.ExifProfile.Should().BeNull();
+            });
         }
 
         [Test]
@@ -187,42 +162,34 @@ namespace FDR.Tools.Library.Test
             var name1 = Guid.NewGuid().ToString();
             var name2 = Guid.NewGuid().ToString();
 
-            files.Add(tempFolderPath, name1 + ".jpg", tempFolderPath + "/resized3", name1 + "_small.jpg");
-            files.Add(tempFolderPath, name2 + ".jpg", tempFolderPath + "/resized3", name2 + "_small.jpg");
+            files.Add(tempFolderPath, name1 + ".jpg", tempFolderPath + "/resized3", name1 + "_small.jpg", null, null, null, 200, 100);
+            files.Add(tempFolderPath, name2 + ".jpg", tempFolderPath + "/resized3", name2 + "_small.jpg", null, null, null, 300, 400);
+
+            files.CreateFiles();
+            files.ForEach(f => File.Exists(f.GetSourcePath()).Should().BeTrue(f.Name));
 
             var config = new ResizeConfig();
             config.Should().NotBeNull();
             System.Action validate = () => config.Validate();
             config.FileFilter = "*.jpg";
             config.FilenamePattern = "resized3/{name}_small";
-            //config.RelativeFolder = "resized1";
             config.ResizeMethod = ResizeMethod.stretch;
             config.MaxWidth = 50;
             config.MaxHeight = 50;
             config.ClearMetadata = true;
             validate.Should().NotThrow();
 
-            Helper.CreateJpgFile(files[0].GetSourcePath(), 200, 100);
-            File.Exists(files[0].GetSourcePath()).Should().BeTrue();
-
-            Helper.CreateJpgFile(files[1].GetSourcePath(), 300, 400);
-            File.Exists(files[1].GetSourcePath()).Should().BeTrue();
-
             Resize.ResizeFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            File.Exists(files[0].GetDestPath()).Should().BeTrue();
-            var info1 = Image.Identify(files[0].GetDestPath());
-            info1.Should().NotBeNull();
-            info1.Width.Should().Be(50);
-            info1.Height.Should().Be(50);
-            info1.Metadata.ExifProfile.Should().BeNull();
-
-            File.Exists(files[1].GetDestPath()).Should().BeTrue();
-            var info2 = Image.Identify(files[1].GetDestPath());
-            info2.Should().NotBeNull();
-            info2.Width.Should().Be(50);
-            info2.Height.Should().Be(50);
-            info2.Metadata.ExifProfile.Should().BeNull();
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.ForEach(f =>
+            {
+                var info = Image.Identify(f.GetDestPath());
+                info.Should().NotBeNull();
+                info.Width.Should().Be(50);
+                info.Height.Should().Be(50);
+                info.Metadata.ExifProfile.Should().BeNull();
+            });
         }
     }
 }

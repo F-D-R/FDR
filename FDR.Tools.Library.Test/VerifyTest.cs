@@ -105,9 +105,11 @@ namespace FDR.Tools.Library.Test
             Task<bool>.Run(() => Verify.IsValidImageAsync(filePath)).Result.Should().BeFalse();
             Task<bool>.Run(() => Verify.IsValidImageAsync(new FileInfo(filePath))).Result.Should().BeFalse();
 
-            var jpgPath = Path.Combine(tempFolderPath, Guid.NewGuid().ToString() + ".jpg");
-            Helper.CreateJpgFile(jpgPath);
-            File.Exists(jpgPath).Should().BeTrue();
+            string name = Guid.NewGuid().ToString() + ".jpg";
+            var jpgPath = Path.Combine(tempFolderPath, name);
+            files.Add(tempFolderPath, name, true);
+            files.CreateFiles();
+            files.ForEach(f => File.Exists(f.GetSourcePath()).Should().BeTrue(f.Name));
 
             Verify.IsValidImage(jpgPath).Should().BeTrue();
             Verify.IsValidImage(new FileInfo(jpgPath)).Should().BeTrue();
@@ -124,9 +126,11 @@ namespace FDR.Tools.Library.Test
             Verify.ValidateImage(new FileInfo(filePath)).Should().BeFalse();
             Task<bool>.Run(() => Verify.ValidateImageAsync(new FileInfo(filePath))).Result.Should().BeFalse();
 
-            var jpgPath = Path.Combine(tempFolderPath, Guid.NewGuid().ToString() + ".jpg");
-            Helper.CreateJpgFile(jpgPath);
-            File.Exists(jpgPath).Should().BeTrue();
+            string name = Guid.NewGuid().ToString() + ".jpg";
+            var jpgPath = Path.Combine(tempFolderPath, name);
+            files.Add(tempFolderPath, name, true);
+            files.CreateFiles();
+            files.ForEach(f => File.Exists(f.GetSourcePath()).Should().BeTrue(f.Name));
 
             Verify.ValidateImage(new FileInfo(jpgPath)).Should().BeTrue();
             Task<bool>.Run(() => Verify.ValidateImageAsync(new FileInfo(jpgPath))).Result.Should().BeTrue();
