@@ -143,6 +143,52 @@ namespace FDR.Tools.Library.Test
         }
 
         [Test]
+        public void RenameFilesInFolderWithYoungerAdditionalMatchingFileFilter()
+        {
+            var config = new RenameConfig();
+            config.Should().NotBeNull();
+            config.FileFilter = "*.*";
+            config.FilenamePattern = "{cdate:yyMMdd}_{counter:2}";
+            config.AdditionalFileTypes.Add("SE1");
+            config.AdditionalFileTypes.Add(" *.SE2 ");
+
+            files.Add(tempFolderPath, "2.pr2", tempFolderPath, "000304_01.pr2", new DateTime(2000, 3, 4));
+            files.Add(tempFolderPath, "1.pr1", tempFolderPath, "010204_02.pr1", new DateTime(2001, 2, 4));
+            files.Add(tempFolderPath, "1.se1", tempFolderPath, "010204_02.se1", new DateTime(2001, 2, 6));
+            files.Add(tempFolderPath, "1.se2", tempFolderPath, "010204_02.se2", new DateTime(2001, 2, 5));
+            files.CreateFiles();
+
+            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+        }
+
+        //TODO: FAILS!
+        [Test]
+        [Ignore("Always fails until rename order reworked.")]
+        public void RenameFilesInFolderWithOlderAdditionalMatchingFileFilter()
+        {
+            var config = new RenameConfig();
+            config.Should().NotBeNull();
+            config.FileFilter = "*.*";
+            config.FilenamePattern = "{cdate:yyMMdd}_{counter:2}";
+            config.AdditionalFileTypes.Add("SE1");
+            config.AdditionalFileTypes.Add(" *.SE2 ");
+
+            files.Add(tempFolderPath, "2.pr2", tempFolderPath, "000304_01.pr2", new DateTime(2000, 3, 4));
+            files.Add(tempFolderPath, "1.pr1", tempFolderPath, "010204_02.pr1", new DateTime(2001, 2, 4));
+            files.Add(tempFolderPath, "1.se1", tempFolderPath, "010204_02.se1", new DateTime(2001, 2, 3));
+            files.Add(tempFolderPath, "1.se2", tempFolderPath, "010204_02.se2", new DateTime(2001, 2, 2));
+            files.CreateFiles();
+
+            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+        }
+
+        [Test]
         public void RenameFilesInFolderWithAutoCounterLength1()
         {
             var config = new RenameConfig();
