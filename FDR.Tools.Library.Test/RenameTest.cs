@@ -14,18 +14,19 @@ namespace FDR.Tools.Library.Test
         {
             var config = new RenameConfig();
             config.Should().NotBeNull();
-            config.FileFilter = "*.CR3|*.CR2";
+            config.FileFilter = "*.PR*";
             config.FilenamePattern = "{cdate:yyMMdd}_{counter:2}";
 
-            files.Add(tempFolderPath, "ccc.cr3", tempFolderPath, "020304_02.cr3", new DateTime(2002, 3, 4));
-            files.Add(tempFolderPath, "bbb.cr2", tempFolderPath, "010204_01.cr2", new DateTime(2001, 2, 4));
-            files.Add(tempFolderPath, "bbb.jpg", tempFolderPath, "bbb.jpg");
-            files.Add(tempFolderPath, "aaa.txt", tempFolderPath, "aaa.txt");
+            files.Add(tempFolderPath, "3.pr2", tempFolderPath, "020304_02.pr2", new DateTime(2002, 3, 4));
+            files.Add(tempFolderPath, "2.pr1", tempFolderPath, "010204_01.pr1", new DateTime(2001, 2, 4));
+            files.Add(tempFolderPath, "2.ot1", tempFolderPath, "2.ot1");
+            files.Add(tempFolderPath, "1.ot2", tempFolderPath, "1.ot2");
             files.CreateFiles();
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
         }
 
         [Test]
@@ -33,19 +34,20 @@ namespace FDR.Tools.Library.Test
         {
             var config = new RenameConfig();
             config.Should().NotBeNull();
-            config.FileFilter = "*.CR3|*.CR2";
+            config.FileFilter = "*.PR1|*.PR2";
             config.FilenamePattern = "child1/{cdate:yyMMdd}_{counter:2}";
             var childFolderPath = Path.Combine(tempFolderPath, "child1");
 
-            files.Add(tempFolderPath, "ccc.cr3", childFolderPath, "020304_02.cr3", new DateTime(2002, 3, 4));
-            files.Add(tempFolderPath, "bbb.cr2", childFolderPath, "010204_01.cr2", new DateTime(2001, 2, 4));
-            files.Add(tempFolderPath, "bbb.jpg", tempFolderPath, "bbb.jpg");
-            files.Add(tempFolderPath, "aaa.txt", tempFolderPath, "aaa.txt");
+            files.Add(tempFolderPath, "3.pr2", childFolderPath, "020304_02.pr2", new DateTime(2002, 3, 4));
+            files.Add(tempFolderPath, "2.pr1", childFolderPath, "010204_01.pr1", new DateTime(2001, 2, 4));
+            files.Add(tempFolderPath, "2.ot2", tempFolderPath, "2.ot2");
+            files.Add(tempFolderPath, "1.ot1", tempFolderPath, "1.ot1");
             files.CreateFiles();
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
         }
 
         [Test]
@@ -53,21 +55,22 @@ namespace FDR.Tools.Library.Test
         {
             var config = new RenameConfig();
             config.Should().NotBeNull();
-            config.FileFilter = "*.CR3|*.CR2";
+            config.FileFilter = "*.PR*";
             config.FilenamePattern = "{cdate:yyMMdd}_{counter:2}";
-            config.AdditionalFileTypes.Add("JPG");
-            config.AdditionalFileTypes.Add(" *.PNG ");
+            config.AdditionalFileTypes.Add("SE1");
+            config.AdditionalFileTypes.Add(" *.SE2 ");
 
-            files.Add(tempFolderPath, "ccc.cr3", tempFolderPath, "020304_02.cr3", new DateTime(2002, 3, 4));
-            files.Add(tempFolderPath, "bbb.cr2", tempFolderPath, "010204_01.cr2", new DateTime(2001, 2, 4));
-            files.Add(tempFolderPath, "bbb.jpg", tempFolderPath, "010204_01.jpg");
-            files.Add(tempFolderPath, "bbb.png", tempFolderPath, "010204_01.png");
-            files.Add(tempFolderPath, "aaa.txt", tempFolderPath, "aaa.txt");
+            files.Add(tempFolderPath, "3.pr3", tempFolderPath, "020304_02.pr3", new DateTime(2002, 3, 4));
+            files.Add(tempFolderPath, "2.pr2", tempFolderPath, "010204_01.pr2", new DateTime(2001, 2, 4));
+            files.Add(tempFolderPath, "2.se1", tempFolderPath, "010204_01.se1");
+            files.Add(tempFolderPath, "2.se2", tempFolderPath, "010204_01.se2");
+            files.Add(tempFolderPath, "1.oth", tempFolderPath, "1.oth");
             files.CreateFiles();
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
         }
 
         [Test]
@@ -75,22 +78,23 @@ namespace FDR.Tools.Library.Test
         {
             var config = new RenameConfig();
             config.Should().NotBeNull();
-            config.FileFilter = "*.CR3|*.CR2";
+            config.FileFilter = "*.PR*";
             config.FilenamePattern = "child2/{cdate:yyMMdd}_{counter:2}";
-            config.AdditionalFileTypes.Add("JPG");
-            config.AdditionalFileTypes.Add(" *.PNG ");
+            config.AdditionalFileTypes.Add("SE1");
+            config.AdditionalFileTypes.Add(" *.SE2 ");
             var childFolderPath = Path.Combine(tempFolderPath, "child2");
 
-            files.Add(tempFolderPath, "ccc.cr3", childFolderPath, "020304_02.cr3", new DateTime(2002, 3, 4));
-            files.Add(tempFolderPath, "bbb.cr2", childFolderPath, "010204_01.cr2", new DateTime(2001, 2, 4));
-            files.Add(tempFolderPath, "bbb.jpg", childFolderPath, "010204_01.jpg");
-            files.Add(tempFolderPath, "bbb.png", childFolderPath, "010204_01.png");
-            files.Add(tempFolderPath, "aaa.txt", tempFolderPath, "aaa.txt");
+            files.Add(tempFolderPath, "3.pr3", childFolderPath, "020304_02.pr3", new DateTime(2002, 3, 4));
+            files.Add(tempFolderPath, "2.pr2", childFolderPath, "010204_01.pr2", new DateTime(2001, 2, 4));
+            files.Add(tempFolderPath, "2.se1", childFolderPath, "010204_01.se1");
+            files.Add(tempFolderPath, "2.se2", childFolderPath, "010204_01.se2");
+            files.Add(tempFolderPath, "1.oth", tempFolderPath, "1.oth");
             files.CreateFiles();
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
         }
 
         [Test]
@@ -100,42 +104,42 @@ namespace FDR.Tools.Library.Test
             config.Should().NotBeNull();
             config.FileFilter = "*.*";
             config.FilenamePattern = "{cdate:yyMMdd}_{counter:2}";
-            config.AdditionalFileTypes.Add("JPG");
-            config.AdditionalFileTypes.Add(" *.PNG ");
-            config.StopOnError = false;
+            config.AdditionalFileTypes.Add("SE1");
+            config.AdditionalFileTypes.Add(" *.SE2 ");
 
-            files.Add(tempFolderPath, "ccc.cr3", tempFolderPath, "000304_01.cr3", new DateTime(2000, 3, 4));
-            files.Add(tempFolderPath, "bbb.cr2", tempFolderPath, "010204_02.cr2", new DateTime(2001, 2, 4));
-            files.Add(tempFolderPath, "bbb.jpg", tempFolderPath, "010204_02.jpg");
-            files.Add(tempFolderPath, "bbb.png", tempFolderPath, "010204_02.png");
+            files.Add(tempFolderPath, "2.pr2", tempFolderPath, "000304_01.pr2", new DateTime(2000, 3, 4));
+            files.Add(tempFolderPath, "1.pr1", tempFolderPath, "010204_02.pr1", new DateTime(2001, 2, 4));
+            files.Add(tempFolderPath, "1.se1", tempFolderPath, "010204_02.se1");
+            files.Add(tempFolderPath, "1.se2", tempFolderPath, "010204_02.se2");
             files.CreateFiles();
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
         }
 
         [Test]
-        public void RenameFilesInFolderWithAdditionalMatchingFileFilterPlusJpg()
+        public void RenameFilesInFolderWithAdditionalMatchingFileFilterPlus()
         {
             var config = new RenameConfig();
             config.Should().NotBeNull();
             config.FileFilter = "*.*";
             config.FilenamePattern = "{cdate:yyMMdd}_{counter:2}";
-            config.AdditionalFileTypes.Add("JPG");
-            config.AdditionalFileTypes.Add(" *.PNG ");
-            config.StopOnError = false;
+            config.AdditionalFileTypes.Add("SE1");
+            config.AdditionalFileTypes.Add(" *.SE2 ");
 
-            files.Add(tempFolderPath, "ccc.cr3", tempFolderPath, "000304_01.cr3", new DateTime(2000, 3, 4));
-            files.Add(tempFolderPath, "bbb.cr2", tempFolderPath, "010204_02.cr2", new DateTime(2001, 2, 4));
-            files.Add(tempFolderPath, "bbb.jpg", tempFolderPath, "010204_02.jpg");
-            files.Add(tempFolderPath, "bbb.png", tempFolderPath, "010204_02.png");
-            files.Add(tempFolderPath, "ddd.jpg", tempFolderPath, "020405_03.jpg", new DateTime(2002, 4, 5));
+            files.Add(tempFolderPath, "3.pr1", tempFolderPath, "010204_02.pr1", new DateTime(2001, 2, 4));
+            files.Add(tempFolderPath, "3.se1", tempFolderPath, "010204_02.se1");
+            files.Add(tempFolderPath, "3.se2", tempFolderPath, "010204_02.se2");
+            files.Add(tempFolderPath, "2.se1", tempFolderPath, "020405_03.se1", new DateTime(2002, 4, 5));
+            files.Add(tempFolderPath, "1.pr2", tempFolderPath, "000304_01.pr2", new DateTime(2000, 3, 4));
             files.CreateFiles();
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
         }
 
         [Test]
@@ -145,17 +149,17 @@ namespace FDR.Tools.Library.Test
             config.Should().NotBeNull();
             config.FileFilter = "*.*";
             config.FilenamePattern = "{cdate:yyMMdd}_{counter:auto}";
-            config.StopOnError = false;
 
-            files.Add(tempFolderPath, "a.cr3", tempFolderPath, "000101_1.cr3", new DateTime(2000, 1, 1, 0, 0, 1));
-            files.Add(tempFolderPath, "b.cr3", tempFolderPath, "000101_2.cr3", new DateTime(2000, 1, 1, 0, 0, 2));
-            files.Add(tempFolderPath, "c.cr3", tempFolderPath, "000101_3.cr3", new DateTime(2000, 1, 1, 0, 0, 3));
-            files.Add(tempFolderPath, "d.cr3", tempFolderPath, "000101_4.cr3", new DateTime(2000, 1, 1, 0, 0, 4));
+            files.Add(tempFolderPath, "4.pri", tempFolderPath, "000101_1.pri", new DateTime(2000, 1, 1, 0, 0, 1));
+            files.Add(tempFolderPath, "3.pri", tempFolderPath, "000101_2.pri", new DateTime(2000, 1, 1, 0, 0, 2));
+            files.Add(tempFolderPath, "2.pri", tempFolderPath, "000101_3.pri", new DateTime(2000, 1, 1, 0, 0, 3));
+            files.Add(tempFolderPath, "1.pri", tempFolderPath, "000101_4.pri", new DateTime(2000, 1, 1, 0, 0, 4));
             files.CreateFiles();
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
         }
 
         [Test]
@@ -165,25 +169,54 @@ namespace FDR.Tools.Library.Test
             config.Should().NotBeNull();
             config.FileFilter = "*.*";
             config.FilenamePattern = "{cdate:yyMMdd}_{counter:auto}";
-            config.StopOnError = false;
 
-            files.Add(tempFolderPath, "a.cr3", tempFolderPath, "000101_01.cr3", new DateTime(2000, 1, 1, 0, 0, 1));
-            files.Add(tempFolderPath, "b.cr3", tempFolderPath, "000101_02.cr3", new DateTime(2000, 1, 1, 0, 0, 2));
-            files.Add(tempFolderPath, "c.cr3", tempFolderPath, "000101_03.cr3", new DateTime(2000, 1, 1, 0, 0, 3));
-            files.Add(tempFolderPath, "d.cr3", tempFolderPath, "000101_04.cr3", new DateTime(2000, 1, 1, 0, 0, 4));
-            files.Add(tempFolderPath, "e.cr3", tempFolderPath, "000101_05.cr3", new DateTime(2000, 1, 1, 0, 0, 5));
-            files.Add(tempFolderPath, "f.cr3", tempFolderPath, "000101_06.cr3", new DateTime(2000, 1, 1, 0, 0, 6));
-            files.Add(tempFolderPath, "g.cr3", tempFolderPath, "000101_07.cr3", new DateTime(2000, 1, 1, 0, 0, 7));
-            files.Add(tempFolderPath, "h.cr3", tempFolderPath, "000101_08.cr3", new DateTime(2000, 1, 1, 0, 0, 8));
-            files.Add(tempFolderPath, "i.cr3", tempFolderPath, "000101_09.cr3", new DateTime(2000, 1, 1, 0, 0, 9));
-            files.Add(tempFolderPath, "j.cr3", tempFolderPath, "000101_10.cr3", new DateTime(2000, 1, 1, 0, 0, 10));
-            files.Add(tempFolderPath, "k.cr3", tempFolderPath, "000101_11.cr3", new DateTime(2000, 1, 1, 0, 0, 11));
-            files.Add(tempFolderPath, "l.cr3", tempFolderPath, "000101_12.cr3", new DateTime(2000, 1, 1, 0, 0, 12));
+            files.Add(tempFolderPath, "12.pri", tempFolderPath, "000101_01.pri", new DateTime(2000, 1, 1, 0, 0, 1));
+            files.Add(tempFolderPath, "11.pri", tempFolderPath, "000101_02.pri", new DateTime(2000, 1, 1, 0, 0, 2));
+            files.Add(tempFolderPath, "10.pri", tempFolderPath, "000101_03.pri", new DateTime(2000, 1, 1, 0, 0, 3));
+            files.Add(tempFolderPath, "09.pri", tempFolderPath, "000101_04.pri", new DateTime(2000, 1, 1, 0, 0, 4));
+            files.Add(tempFolderPath, "08.pri", tempFolderPath, "000101_05.pri", new DateTime(2000, 1, 1, 0, 0, 5));
+            files.Add(tempFolderPath, "07.pri", tempFolderPath, "000101_06.pri", new DateTime(2000, 1, 1, 0, 0, 6));
+            files.Add(tempFolderPath, "06.pri", tempFolderPath, "000101_07.pri", new DateTime(2000, 1, 1, 0, 0, 7));
+            files.Add(tempFolderPath, "05.pri", tempFolderPath, "000101_08.pri", new DateTime(2000, 1, 1, 0, 0, 8));
+            files.Add(tempFolderPath, "04.pri", tempFolderPath, "000101_09.pri", new DateTime(2000, 1, 1, 0, 0, 9));
+            files.Add(tempFolderPath, "03.pri", tempFolderPath, "000101_10.pri", new DateTime(2000, 1, 1, 0, 0, 10));
+            files.Add(tempFolderPath, "02.pri", tempFolderPath, "000101_11.pri", new DateTime(2000, 1, 1, 0, 0, 11));
+            files.Add(tempFolderPath, "01.pri", tempFolderPath, "000101_12.pri", new DateTime(2000, 1, 1, 0, 0, 12));
             files.CreateFiles();
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+        }
+
+        [Test]
+        public void RenameFilesInFolderWithSameDate()
+        {
+            var config = new RenameConfig();
+            config.Should().NotBeNull();
+            config.FileFilter = "*.*";
+            config.FilenamePattern = "{cdate:yyMMdd}_{counter:auto}";
+
+            var date = new DateTime(2000, 1, 1, 0, 0, 0);
+            files.Add(tempFolderPath, "04.pri", tempFolderPath, "000101_04.pri", date, date, date);
+            files.Add(tempFolderPath, "11.pri", tempFolderPath, "000101_11.pri", date, date, date);
+            files.Add(tempFolderPath, "03.pri", tempFolderPath, "000101_03.pri", date, date, date);
+            files.Add(tempFolderPath, "02.pri", tempFolderPath, "000101_02.pri", date, date, date);
+            files.Add(tempFolderPath, "01.pri", tempFolderPath, "000101_01.pri", date, date, date);
+            files.Add(tempFolderPath, "05.pri", tempFolderPath, "000101_05.pri", date, date, date);
+            files.Add(tempFolderPath, "06.pri", tempFolderPath, "000101_06.pri", date, date, date);
+            files.Add(tempFolderPath, "07.pri", tempFolderPath, "000101_07.pri", date, date, date);
+            files.Add(tempFolderPath, "08.pri", tempFolderPath, "000101_08.pri", date, date, date);
+            files.Add(tempFolderPath, "12.pri", tempFolderPath, "000101_12.pri", date, date, date);
+            files.Add(tempFolderPath, "09.pri", tempFolderPath, "000101_09.pri", date, date, date);
+            files.Add(tempFolderPath, "10.pri", tempFolderPath, "000101_10.pri", date, date, date);
+            files.CreateFiles();
+
+            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
         }
 
         [Test]

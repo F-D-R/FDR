@@ -204,11 +204,11 @@ namespace FDR.Tools.Library
             return Path.Combine(path, newName + extension);
         }
 
-        public static void RenameFile(FileInfo file, RenameConfig config, int counter = 1, int progressPercent = 0)
+        public static void RenameFile(FileInfo file, RenameConfig config, ref int counter, int progressPercent)
         {
             if (config == null) throw new ArgumentNullException("config");
             if (file == null) throw new ArgumentNullException("file");
-            if (!file.Exists) throw new FileNotFoundException("File doesn't exist!", file.FullName);
+            if (!File.Exists(file.FullName)) return;
 
             var sourcePath = Path.GetDirectoryName(file.FullName)??"";
             var origName = file.Name;
@@ -231,6 +231,7 @@ namespace FDR.Tools.Library
                 Trace.WriteLine($"Moving file {file.FullName} to {newFullName}");
 #endif
                 file.MoveTo(newFullName);
+                counter++;
             }
             else
                 Trace.WriteLine($"{origName} matches the new name...");
@@ -280,7 +281,7 @@ namespace FDR.Tools.Library
             Common.Msg($"Renaming {filter} files in {folder.FullName}");
             Trace.Indent();
 
-            var files = Common.GetFiles(folder, filter, config.Recursive).OrderBy(f => f, Common.FileComparer).ToList();
+            var files = Common.GetFiles(folder, filter, config.Recursive).OrderBy(f => f, Common.FileComparer).ThenBy(f => f.Name).ToList();
             int fileCount = files.Count;
 
             var originalPattern = config.FilenamePattern;
@@ -292,13 +293,12 @@ namespace FDR.Tools.Library
             {
                 try
                 {
-                    RenameFile(file, config, counter, 100 * counter / fileCount);
+                    RenameFile(file, config, ref counter, 100 * counter / fileCount);
                 }
                 catch (IOException)
                 {
                     if (config.StopOnError) throw;
                 }
-                counter++;
             }
 
             config.FilenamePattern = originalPattern;

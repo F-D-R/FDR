@@ -123,13 +123,12 @@ namespace FDR.Tools.Library
             {
                 try
                 {
-                    Rename.RenameFile(file, config.GetNewRenameConfig(), counter, 100 * counter / fileCount);
+                    Rename.RenameFile(file, config.GetNewRenameConfig(), ref counter, 100 * counter / fileCount);
                 }
                 catch (IOException)
                 {
                     if (config.StopOnError) throw;
                 }
-                counter++;
             }
 
             Trace.Unindent();

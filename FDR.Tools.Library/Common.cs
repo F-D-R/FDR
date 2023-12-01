@@ -120,7 +120,7 @@ namespace FDR.Tools.Library
             foreach (var tmpfilter in filter.Split('|'))
                 files.AddRange(folder.GetFiles(tmpfilter, options));
 
-            return files.OrderBy(f => f.CreationTimeUtc).ToList();
+            return files.OrderBy(f => f.FullName).ToList();
         }
 
         public static IEnumerable<FileInfo> EnumerateFiles(DirectoryInfo folder, string filter, bool recursive = true)
