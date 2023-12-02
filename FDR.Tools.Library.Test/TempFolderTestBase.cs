@@ -14,13 +14,13 @@ namespace FDR.Tools.Library.Test
         {
             base.OneTimeSetUp();
             tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            Directory.CreateDirectory(tempFolderPath);
             tempFolder = new DirectoryInfo(tempFolderPath);
+            tempFolder.Create();
         }
 
         public override void OneTimeTearDown()
         {
-            if (Directory.Exists(tempFolderPath)) Directory.Delete(tempFolderPath, true);
+            if (tempFolder.Exists) tempFolder.Delete(true);
             base.OneTimeTearDown();
         }
 
@@ -32,7 +32,7 @@ namespace FDR.Tools.Library.Test
 
         public override void TearDown()
         {
-            if (Directory.Exists(tempFolderPath)) Directory.GetFiles(tempFolderPath, "*", SearchOption.AllDirectories).ToList().ForEach(fn => File.Delete(fn));
+            if (tempFolder.Exists) tempFolder.GetFiles("*", SearchOption.AllDirectories).ToList().ForEach(f => f.Delete());
             base.TearDown();
         }
     }
