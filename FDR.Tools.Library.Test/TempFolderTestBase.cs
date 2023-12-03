@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -16,6 +17,12 @@ namespace FDR.Tools.Library.Test
             tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             tempFolder = new DirectoryInfo(tempFolderPath);
             tempFolder.Create();
+
+            try
+            {
+                Process.Start("fsutil.exe", $"file setCaseSensitiveInfo \"{tempFolderPath}\" enable").WaitForExit(10000);
+            }
+            catch (Exception) { }
         }
 
         public override void OneTimeTearDown()
