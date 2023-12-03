@@ -204,67 +204,72 @@ namespace FDR.Tools.Library
             return Path.Combine(path, newName + extension);
         }
 
+        private static List<FileInfo>? GetSameNamedFiles(FileInfo file)
+        {
+            var sourceFolder = Path.GetDirectoryName(file.FullName);
+            var origNameWoExt = Path.GetFileNameWithoutExtension(file.FullName);
+            return Common.GetFiles(file.Directory!, origNameWoExt + ".*", false).ToList();
+        }
+
         public static void RenameFile(FileInfo file, RenameConfig config, ref int counter, int progressPercent)
         {
             if (config == null) throw new ArgumentNullException("config");
             if (file == null) throw new ArgumentNullException("file");
-            if (!File.Exists(file.FullName)) return;
+            if (!File.Exists(file.FullName)) return;    //file.Exists wouldn't work here!
 
-            var sourcePath = Path.GetDirectoryName(file.FullName)??"";
             var origName = file.Name;
-            var origNameWithoutExtension = Path.GetFileNameWithoutExtension(origName);
             var newFullName = CalculateFileName(file, config, counter);
-            var destPath = Path.GetDirectoryName(newFullName)??"";
             var newName = Path.GetFileName(newFullName);
+            var destPath = Path.GetDirectoryName(newFullName);
 
-            if (string.Compare(file.FullName, newFullName, false) != 0)
+            var destFolder = Path.GetDirectoryName(newFullName);
+            if (destFolder != null && !Directory.Exists(destFolder))
             {
-                var folder = Path.GetDirectoryName(newFullName);
-                if (folder != null && !Directory.Exists(folder))
-                {
-                    Trace.WriteLine($"Creating destination folder {folder}");
-                    Directory.CreateDirectory(folder);
-                }
-#if RELEASE
-                Trace.WriteLine($"Moving file {origName} to {newName}");
-#else
-                Trace.WriteLine($"Moving file {file.FullName} to {newFullName}");
-#endif
-                file.MoveTo(newFullName);
-                counter++;
+                Trace.WriteLine($"Creating destination folder {destFolder}");
+                Directory.CreateDirectory(destFolder);
+            }
+
+            if (string.Compare(file.FullName, newFullName, false) == 0)
+            {
+                Trace.WriteLine($"{file.FullName} matches the new name...");
             }
             else
-                Trace.WriteLine($"{origName} matches the new name...");
+            {
+                List<FileInfo>? files = null;
+                if (config.AdditionalFiles)
+                    files = GetSameNamedFiles(file);
+                else
+                    files = new List<FileInfo>() { file };
+
+                //Get the oldest file and rename all according to that
+                if (files != null && files.Count > 0)
+                {
+                    var oldestFile = files.OrderBy(f => f.GetExifDate()).First();
+                    newFullName = CalculateFileName(oldestFile, config, counter);
+                    newName = Path.GetFileNameWithoutExtension(newFullName);
+
+                    files.ForEach(f => Rename(f.FullName, Path.Combine(destPath??"", newName + ((config.ExtensionCase == CharacterCasing.lower) ? f.Extension.ToLower() : (config.ExtensionCase == CharacterCasing.upper) ? f.Extension.ToUpper() : f.Extension))));
+                }
+
+                counter++;
+            }
 
             Common.Progress(progressPercent);
 
-            if (config.AdditionalFileTypes == null) return;
-            foreach (var type in config.AdditionalFileTypes)
-            {
-                var ext = '.' + type.Trim().TrimStart('*').TrimStart('.');
-                origName = origNameWithoutExtension + ext;
-                var origPath = Path.Combine(sourcePath, origName);
-                if (File.Exists(origPath))
-                {
-                    if (config.ExtensionCase == CharacterCasing.lower)
-                        ext = ext.ToLower();
-                    else if (config.ExtensionCase == CharacterCasing.upper)
-                        ext = ext.ToUpper();
 
-                    newName = Path.GetFileNameWithoutExtension(newFullName) + ext;
-                    var newPath = Path.Combine(destPath, newName);
-                    if (string.Compare(origName, newName, false) != 0)
-                    {
+            void Rename(string sourcePath, string destPath)
+            {
+                if (string.Compare(sourcePath, destPath, false) != 0)
+                {
 #if RELEASE
-                        Trace.WriteLine($"Moving file {origName} to {newName}");
+                    Trace.WriteLine($"Moving file {Path.GetFileName(sourcePath)} to {Path.GetFileName(destPath)}");
 #else
-                        Trace.WriteLine($"Moving file {origPath} to {newPath}");
+                    Trace.WriteLine($"Moving file {sourcePath} to {destPath}");
 #endif
-                        File.Move(origPath, newPath);
-                    }
-                    else
-                        Trace.WriteLine($"{origName} matches the new name...");
+                    File.Move(sourcePath, destPath);
                 }
+                else
+                    Trace.WriteLine($"{Path.GetFileName(sourcePath)} matches the new name...");
             }
         }
 

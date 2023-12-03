@@ -28,38 +28,38 @@ namespace FDR.Tools.Library.Test
 
         private const int importConfigCount = 4;
         private const int renameConfigCount = 1;
-        private const string appConfigJson = @"
+        private const string appConfigJson = """
 {
-  ""RenameConfigs"": {
-    ""yymmdd_ccc"": { ""FileFilter"": ""*.CR3|*.CR2|*.CRW|*.DNG"", ""FileNamePattern"": ""{cdate:yyMMdd}_{counter:3}"", ""AdditionalFileTypes"": [ "".JPG"" ], ""Recursive"": false, ""StopOnError"": true } },
-  ""MoveConfigs"": {
-    ""raw"": { ""FileFilter"": ""*.CR3|*.CR2|*.CRW|*.DNG"", ""RelativeFolder"": ""RAW"" } },
-  ""ImportConfigs"": {
-    ""import1"": {
-      ""Name"": ""import1"",
-      ""DestStructure"": ""date"",
-      ""DateFormat"": ""yyyyMMdd"",
-      ""Rules"": [ { ""Type"": ""contains_folder"", ""Param"": ""???CANON"" }, { ""Type"": ""contains_folder"", ""Param"": ""CANONMSC"" } ],
-      ""Actions"": [ { ""Type"": ""rename"", ""Config"": ""yymmdd_ccc"" }, { ""Type"": ""move"", ""Config"": ""raw"" } ]
+  "RenameConfigs": {
+    "yymmdd_ccc": { "FileFilter": "*.*", "FileNamePattern": "{cdate:yyMMdd}_{counter:3}", "Recursive": false, "StopOnError": true } },
+  "MoveConfigs": {
+    "raw": { "FileFilter": "*.CR3|*.CR2|*.CRW|*.DNG", "RelativeFolder": "RAW" } },
+  "ImportConfigs": {
+    "import1": {
+      "Name": "import1",
+      "DestStructure": "date",
+      "DateFormat": "yyyyMMdd",
+      "Rules": [ { "Type": "contains_folder", "Param": "???CANON" }, { "Type": "contains_folder", "Param": "CANONMSC" } ],
+      "Actions": [ { "Type": "rename", "Config": "yymmdd_ccc" }, { "Type": "move", "Config": "raw" } ]
     },
-    ""import2"": {
-      ""Name"": ""import2"",
-      ""DestStructure"": ""date"",
-      ""DateFormat"": ""yyyyMMdd"",
-      ""Rules"": [ { ""Type"": ""contains_folder"", ""Param"": ""pictures"" } ],
-      ""Actions"": [ { ""Type"": ""rename"", ""Config"": ""yymmdd_ccc"" }, { ""Type"": ""move"", ""Config"": ""raw"" } ]
+    "import2": {
+      "Name": "import2",
+      "DestStructure": "date",
+      "DateFormat": "yyyyMMdd",
+      "Rules": [ { "Type": "contains_folder", "Param": "pictures" } ],
+      "Actions": [ { "Type": "rename", "Config": "yymmdd_ccc" }, { "Type": "move", "Config": "raw" } ]
     },
-    ""import3"": {
-      ""Name"": ""import3"",
-      ""Rules"": [ { ""Type"": ""contains_file"", ""Param"": ""dummy"" } ]
+    "import3": {
+      "Name": "import3",
+      "Rules": [ { "Type": "contains_file", "Param": "dummy" } ]
     },
-    ""import4"": {
-      ""Name"": ""import4"",
-      ""Rules"": [ { ""Type"": ""volume_label"", ""Param"": ""dummy"" } ]
+    "import4": {
+      "Name": "import4",
+      "Rules": [ { "Type": "volume_label", "Param": "dummy" } ]
     }
   }
 }
-";
+""";
 
 
         [SetUp]

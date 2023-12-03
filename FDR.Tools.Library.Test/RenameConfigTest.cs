@@ -33,22 +33,6 @@ namespace FDR.Tools.Library.Test
 
             config.FilenamePattern = "{name}";
             validate.Should().NotThrow();
-
-            config.AdditionalFileTypes.Clear();
-            validate.Should().NotThrow();
-
-            config.AdditionalFileTypes.Clear();
-            config.AdditionalFileTypes.Add("");
-            validate.Should().Throw<InvalidDataException>("Empty item");
-
-            config.AdditionalFileTypes.Clear();
-            config.AdditionalFileTypes.Add(" *. ");
-            validate.Should().Throw<InvalidDataException>("Doesn't contain extension");
-
-            config.AdditionalFileTypes.Clear();
-            config.AdditionalFileTypes.Add("JPG");
-            config.AdditionalFileTypes.Add(" *.PNG ");
-            validate.Should().NotThrow();
         }
     }
 }

@@ -19,7 +19,7 @@ namespace FDR.Tools.Library
         {
             var attributes = new Dictionary<string, string>();
             attributes.Add(nameof(FileFilter), "Filter condition for the files to process. Wildcards (*?) are supported. Multiple filters can be defined separated with pipes. Example: \"*.CR3|*.CR2\"");
-            attributes.Add(nameof(AdditionalFileTypes), "List of file types (extensions) which should be renamed together with the originally filtered files. Example: { \"JPG\", \"XMP\" }");
+            attributes.Add(nameof(AdditionalFiles), " Defines if additional files with the same name should be renamed too (true) or not (false). Default is true.");
             attributes.Add(nameof(FilenamePattern), "The name pattern to rename the files to. It can contain static text parts and placeholders described below. Example: \"{mdate:yyMMdd}_{counter:3}s\"");
             attributes.Add(nameof(FilenameCase), $"The character case of the new filename. Possible values: \"{nameof(CharacterCasing.unchanged)}\", \"{nameof(CharacterCasing.lower)}\", \"{nameof(CharacterCasing.upper)}\". Default is {nameof(CharacterCasing.unchanged)}.");
             attributes.Add(nameof(ExtensionCase), $"The character case of the new file's extension. Possible values: \"{nameof(CharacterCasing.unchanged)}\", \"{nameof(CharacterCasing.lower)}\", \"{nameof(CharacterCasing.upper)}\". Default is {nameof(CharacterCasing.lower)}.");
@@ -43,7 +43,7 @@ namespace FDR.Tools.Library
             set { filter = value; }
         }
 
-        public List<string> AdditionalFileTypes { get; } = new List<string>();
+        public virtual bool AdditionalFiles { get; set; } = true;
 
         public bool Recursive { get; set; } = false;
 
@@ -70,11 +70,6 @@ namespace FDR.Tools.Library
                     break;
                 default:
                     throw new InvalidDataException("Invalid ExtensionCase!");
-            }
-            foreach (var type in AdditionalFileTypes)
-            {
-                if (type == null) throw new InvalidDataException("Additional file type cannot be null!");
-                if (string.IsNullOrWhiteSpace(type.Trim().TrimStart('*').TrimStart('.'))) throw new InvalidDataException("Additional file type cannot be empty!");
             }
         }
     }

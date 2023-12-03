@@ -166,10 +166,9 @@ namespace FDR.Tools.Library
             File.SetLastAccessTimeUtc(destFilePath, File.GetLastAccessTimeUtc(sourceFilePath));
         }
 
-        public static bool GetExifDate(ExifProfile? exif, out DateTime? date)
+        public static DateTime? GetExifDate(ExifProfile? exif)
         {
-            date = null;
-            if (exif == null) return false;
+            if (exif == null) return null;
 
             try
             {
@@ -179,17 +178,44 @@ namespace FDR.Tools.Library
                     || exif.TryGetValue(ExifTag.DateTimeDigitized, out dateExif))
                 {
                     string? dateString = dateExif?.Value;
-                    if (string.IsNullOrWhiteSpace(dateString)) return false;
+                    if (string.IsNullOrWhiteSpace(dateString)) return null;
 
-                    date = DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", null);
-                    return true;
+                    return DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", null);
                 }
-                return false;
+                return null;
             }
             catch (Exception)
             {
-                return false;
+                return null;
             }
+        }
+
+        public static DateTime? GetExifDateOnly(this FileInfo file)
+        {
+            ImageInfo imageInfo;
+            try
+            {
+                imageInfo = Image.Identify(file.FullName);
+                if (imageInfo == null) return null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+            DateTime? date = GetExifDate(imageInfo.Metadata?.ExifProfile);
+            if (date !=null) return date.Value;
+
+            if (imageInfo.FrameMetadataCollection != null)
+            {
+                foreach (var fmeta in imageInfo.FrameMetadataCollection)
+                {
+                    date = GetExifDate(fmeta?.ExifProfile);
+                    if (date != null) return date.Value;
+                }
+            }
+
+            return null;
         }
 
         public static DateTime GetExifDate(this FileInfo file, DateTime defaultDate)
@@ -205,14 +231,15 @@ namespace FDR.Tools.Library
                 return defaultDate;
             }
 
-            DateTime? date;
-            if (GetExifDate(imageInfo.Metadata?.ExifProfile, out date) && date !=null) return date.Value;
+            DateTime? date = GetExifDate(imageInfo.Metadata?.ExifProfile);
+            if (date !=null) return date.Value;
 
             if (imageInfo.FrameMetadataCollection != null)
             {
                 foreach (var fmeta in imageInfo.FrameMetadataCollection)
                 {
-                    if (GetExifDate(fmeta?.ExifProfile, out date) && date != null) return date.Value;
+                    date = GetExifDate(fmeta?.ExifProfile);
+                    if (date != null) return date.Value;
                 }
             }
 

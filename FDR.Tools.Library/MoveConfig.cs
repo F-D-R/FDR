@@ -22,12 +22,14 @@ namespace FDR.Tools.Library
 
         public string? RelativeFolder { get; set; }
 
+        public override bool AdditionalFiles { get; set; } = false;
+
         public RenameConfig GetNewRenameConfig()
         {
             var config = new RenameConfig();
             config.AppConfig = AppConfig;
             config.FileFilter = FileFilter;
-            config.AdditionalFileTypes.AddRange(AdditionalFileTypes);
+            config.AdditionalFiles = AdditionalFiles;
             if (string.IsNullOrWhiteSpace(RelativeFolder))
                 config.FilenamePattern = FilenamePattern;
             else

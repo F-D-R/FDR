@@ -26,7 +26,7 @@ namespace FDR.Tools.Library.Test
         {
             var appConfig = new AppConfig();
             appConfig.Should().NotBeNull();
-            appConfig.RenameConfigs.Add("rename", new RenameConfig() { FileFilter = "*.CR3|*.CR2|*.CRW|*.DNG", FilenamePattern = "dest_{counter:3}", AdditionalFileTypes = { ".JPG" } });
+            appConfig.RenameConfigs.Add("rename", new RenameConfig() { FileFilter = "*.CR3|*.CR2|*.CRW|*.DNG", FilenamePattern = "dest_{counter:3}" });
             appConfig.RenameConfigs.Should().HaveCount(1);
             appConfig.MoveConfigs.Add("move", new MoveConfig() { FileFilter = "*.CR3|*.CR2|*.CRW|*.DNG", RelativeFolder = "RAW" });
             appConfig.MoveConfigs.Should().HaveCount(1);
