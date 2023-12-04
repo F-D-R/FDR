@@ -249,9 +249,8 @@ namespace FDR.Tools.Library
                     newName = Path.GetFileNameWithoutExtension(newFullName);
 
                     files.ForEach(f => Rename(f.FullName, Path.Combine(destPath??"", newName + ((config.ExtensionCase == CharacterCasing.lower) ? f.Extension.ToLower() : (config.ExtensionCase == CharacterCasing.upper) ? f.Extension.ToUpper() : f.Extension))));
+                    counter++;
                 }
-
-                counter++;
             }
 
             Common.Progress(progressPercent);
