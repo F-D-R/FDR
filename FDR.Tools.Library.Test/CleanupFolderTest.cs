@@ -126,7 +126,7 @@ namespace FDR.Tools.Library.Test
 
             Raw.CleanupFolder(tempFolder, token);
 
-            files.ForEach(f => File.Exists(f.GetPath()).Should().Be(f.Keep, f.Name));
+            files.ValidateExistance();
         }
 
         [Test]
@@ -196,7 +196,7 @@ namespace FDR.Tools.Library.Test
 
             Raw.CleanupFolder(tempFolder, token);
 
-            files.ForEach(f => File.Exists(f.GetPath()).Should().Be(f.Keep, f.Name));
+            files.ValidateExistance();
         }
     }
 }

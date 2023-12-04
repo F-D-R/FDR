@@ -186,7 +186,7 @@ namespace FDR.Tools.Library.Test
                 Import.CopyFile(destinationRoot, new FileInfo(f.GetSourcePath()), FolderStructure.date, "yyyyMMdd", 100 * i / count);
             }
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -205,7 +205,7 @@ namespace FDR.Tools.Library.Test
 
             Import.MoveFilesInFolder(new DirectoryInfo(dest1), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -231,7 +231,7 @@ namespace FDR.Tools.Library.Test
             var import1 = appConfig.ImportConfigs["import1"];
             Import.ImportFiles(new DirectoryInfo(source1), import1, false, token);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -258,7 +258,7 @@ namespace FDR.Tools.Library.Test
             import1.Actions?.Clear();
             Import.ImportFiles(new DirectoryInfo(source1), import1, false, token);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -284,7 +284,7 @@ namespace FDR.Tools.Library.Test
             var import2 = appConfig.ImportConfigs["import2"];
             Import.ImportFiles(new DirectoryInfo(source2), import2, false, token);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -311,7 +311,7 @@ namespace FDR.Tools.Library.Test
             import2.Actions?.Clear();
             Import.ImportFiles(new DirectoryInfo(source2), import2, false, token);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -361,7 +361,7 @@ namespace FDR.Tools.Library.Test
             var import1 = appConfig.ImportConfigs["import1"];
             Import.ImportFiles(new DirectoryInfo(source1), import1, false, token);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -411,7 +411,7 @@ namespace FDR.Tools.Library.Test
             var import1 = appConfig.ImportConfigs["import1"];
             Import.ImportFiles(new DirectoryInfo(source1), import1, false, token);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.Validate();
         }
     }
 }

@@ -41,7 +41,7 @@ namespace FDR.Tools.Library.Test
 
             Import.MoveFilesInFolder(sourceFolder, config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -59,7 +59,7 @@ namespace FDR.Tools.Library.Test
 
             Import.MoveFilesInFolder(sourceFolder, config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -77,7 +77,7 @@ namespace FDR.Tools.Library.Test
 
             Import.MoveFilesInFolder(sourceFolder, config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -95,7 +95,7 @@ namespace FDR.Tools.Library.Test
 
             Import.MoveFilesInFolder(sourceFolder, config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -114,7 +114,7 @@ namespace FDR.Tools.Library.Test
 
             Import.MoveFilesInFolder(sourceFolder, config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -133,7 +133,7 @@ namespace FDR.Tools.Library.Test
 
             Import.MoveFilesInFolder(sourceFolder, config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.Validate();
         }
     }
 }

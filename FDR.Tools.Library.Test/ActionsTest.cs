@@ -71,7 +71,7 @@ namespace FDR.Tools.Library.Test
 
             actions.ForEach(a => a.Do(tempFolder, token));
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.DestName));
+            files.ValidateExistance();
         }
     }
 }

@@ -109,7 +109,7 @@ namespace FDR.Tools.Library.Test
             var jpgPath = Path.Combine(tempFolderPath, name);
             files.Add(tempFolderPath, name, true);
             files.CreateFiles();
-            files.ForEach(f => File.Exists(f.GetSourcePath()).Should().BeTrue(f.Name));
+            files.ValidateSource();
 
             Verify.IsValidImage(jpgPath).Should().BeTrue();
             Verify.IsValidImage(new FileInfo(jpgPath)).Should().BeTrue();
@@ -130,7 +130,7 @@ namespace FDR.Tools.Library.Test
             var jpgPath = Path.Combine(tempFolderPath, name);
             files.Add(tempFolderPath, name, true);
             files.CreateFiles();
-            files.ForEach(f => File.Exists(f.GetSourcePath()).Should().BeTrue(f.Name));
+            files.ValidateSource();
 
             Verify.ValidateImage(new FileInfo(jpgPath)).Should().BeTrue();
             Task<bool>.Run(() => Verify.ValidateImageAsync(new FileInfo(jpgPath))).Result.Should().BeTrue();

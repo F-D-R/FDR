@@ -22,8 +22,7 @@ namespace FDR.Tools.Library.Test
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -39,8 +38,7 @@ namespace FDR.Tools.Library.Test
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -58,8 +56,7 @@ namespace FDR.Tools.Library.Test
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -77,8 +74,7 @@ namespace FDR.Tools.Library.Test
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -97,8 +93,7 @@ namespace FDR.Tools.Library.Test
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -118,8 +113,7 @@ namespace FDR.Tools.Library.Test
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -139,8 +133,7 @@ namespace FDR.Tools.Library.Test
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -161,8 +154,7 @@ namespace FDR.Tools.Library.Test
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -182,8 +174,7 @@ namespace FDR.Tools.Library.Test
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -203,8 +194,7 @@ namespace FDR.Tools.Library.Test
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -223,8 +213,7 @@ namespace FDR.Tools.Library.Test
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -244,8 +233,7 @@ namespace FDR.Tools.Library.Test
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -264,8 +252,7 @@ namespace FDR.Tools.Library.Test
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -284,8 +271,7 @@ namespace FDR.Tools.Library.Test
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -304,8 +290,7 @@ namespace FDR.Tools.Library.Test
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -332,8 +317,7 @@ namespace FDR.Tools.Library.Test
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -361,8 +345,7 @@ namespace FDR.Tools.Library.Test
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+            files.Validate();
         }
 
         [Test]
@@ -384,8 +367,7 @@ namespace FDR.Tools.Library.Test
 
             Rename.RenameFolder(folder, config);
 
-            Directory.Exists(folderPath).Should().BeFalse();
-            Directory.Exists(Path.Combine(parentPath, Path.GetDirectoryName(parentPath))).Should().BeTrue();
+            files.Validate();
         }
     }
 }

@@ -5,6 +5,7 @@ using System.IO;
 using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
+using FluentAssertions;
 
 namespace FDR.Tools.Library.Test
 {
@@ -97,6 +98,39 @@ namespace FDR.Tools.Library.Test
             {
                 if (File.Exists(f.GetSourcePath())) File.Delete(f.GetSourcePath());
             });
+        }
+
+        public void ValidateSource()
+        {
+            this.ForEach(f => File.Exists(f.GetSourcePath()).Should().BeTrue(f.Name));
+        }
+
+        public void ValidateExistance()
+        {
+            this.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+        }
+
+        public void ValidateContent()
+        {
+            this.Where(f => string.Compare(Path.GetExtension(f.GetSourcePath()), ".jpg") != 0).ToList().ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+        }
+
+        public void ValidateImageSize(int width, int height)
+        {
+            this.ForEach(f =>
+            {
+                var info = Image.Identify(f.GetDestPath());
+                info.Should().NotBeNull();
+                info.Width.Should().Be(width);
+                info.Height.Should().Be(height);
+                info.Metadata.ExifProfile.Should().BeNull();
+            });
+        }
+
+        public void Validate()
+        {
+            ValidateExistance();
+            ValidateContent();
         }
     }
 }

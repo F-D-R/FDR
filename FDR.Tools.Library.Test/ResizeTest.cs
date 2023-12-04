@@ -5,6 +5,7 @@ using FluentAssertions;
 using NUnit.Framework.Internal;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Metadata.Profiles.Exif;
+using System.Runtime.CompilerServices;
 
 namespace FDR.Tools.Library.Test
 {
@@ -108,15 +109,8 @@ namespace FDR.Tools.Library.Test
 
             Resize.ResizeFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f =>
-            {
-                var info = Image.Identify(f.GetDestPath());
-                info.Should().NotBeNull();
-                info.Width.Should().Be(50);
-                info.Height.Should().Be(50);
-                info.Metadata.ExifProfile.Should().BeNull();
-            });
+            files.Validate();
+            files.ValidateImageSize(50, 50);
         }
 
         [Test]
@@ -145,15 +139,8 @@ namespace FDR.Tools.Library.Test
 
             Resize.ResizeFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f =>
-            {
-                var info = Image.Identify(f.GetDestPath());
-                info.Should().NotBeNull();
-                info.Width.Should().Be(50);
-                info.Height.Should().Be(50);
-                info.Metadata.ExifProfile.Should().BeNull();
-            });
+            files.Validate();
+            files.ValidateImageSize(50, 50);
         }
 
         [Test]
@@ -181,15 +168,8 @@ namespace FDR.Tools.Library.Test
 
             Resize.ResizeFilesInFolder(new DirectoryInfo(tempFolderPath), config);
 
-            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
-            files.ForEach(f =>
-            {
-                var info = Image.Identify(f.GetDestPath());
-                info.Should().NotBeNull();
-                info.Width.Should().Be(50);
-                info.Height.Should().Be(50);
-                info.Metadata.ExifProfile.Should().BeNull();
-            });
+            files.Validate();
+            files.ValidateImageSize(50, 50);
         }
     }
 }
