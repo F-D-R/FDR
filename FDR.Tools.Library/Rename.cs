@@ -220,7 +220,7 @@ namespace FDR.Tools.Library
             var origName = file.Name;
             var newFullName = CalculateFileName(file, config, counter);
             var newName = Path.GetFileName(newFullName);
-            var destPath = Path.GetDirectoryName(newFullName);
+            string destDir = Path.GetDirectoryName(newFullName)??"";
 
             var destFolder = Path.GetDirectoryName(newFullName);
             if (destFolder != null && !Directory.Exists(destFolder))
@@ -248,27 +248,37 @@ namespace FDR.Tools.Library
                     newFullName = CalculateFileName(oldestFile, config, counter);
                     newName = Path.GetFileNameWithoutExtension(newFullName);
 
-                    files.ForEach(f => Rename(f.FullName, Path.Combine(destPath??"", newName + ((config.ExtensionCase == CharacterCasing.lower) ? f.Extension.ToLower() : (config.ExtensionCase == CharacterCasing.upper) ? f.Extension.ToUpper() : f.Extension))));
+                    files.ForEach(f => Rename(f, destDir, newName));
+
                     counter++;
                 }
             }
 
             Common.Progress(progressPercent);
+            return;
 
-
-            void Rename(string sourcePath, string destPath)
+            void Rename(FileInfo file, string destDir, string newName)
             {
-                if (string.Compare(sourcePath, destPath, false) != 0)
+                var ext = file.Extension;
+                if (config.ExtensionCase == CharacterCasing.lower)
+                    ext = ext.ToLower();
+                if (config.ExtensionCase == CharacterCasing.upper)
+                    ext = ext.ToUpper();
+
+                var destFile = newName + ext;
+                var destPath = Path.Combine(destDir, destFile);
+
+                if (string.Compare(file.FullName, destPath, false) != 0)
                 {
 #if RELEASE
-                    Trace.WriteLine($"Moving file {Path.GetFileName(sourcePath)} to {Path.GetFileName(destPath)}");
+                    Trace.WriteLine($"Moving file {file.Name} to {destFile}");
 #else
-                    Trace.WriteLine($"Moving file {sourcePath} to {destPath}");
+                    Trace.WriteLine($"Moving file {file.FullName} to {destPath}");
 #endif
-                    File.Move(sourcePath, destPath);
+                    File.Move(file.FullName, destPath);
                 }
                 else
-                    Trace.WriteLine($"{Path.GetFileName(sourcePath)} matches the new name...");
+                    Trace.WriteLine($"{file.Name} matches the new name...");
             }
         }
 
