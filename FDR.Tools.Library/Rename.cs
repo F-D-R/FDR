@@ -206,9 +206,7 @@ namespace FDR.Tools.Library
 
         private static List<FileInfo>? GetSameNamedFiles(FileInfo file)
         {
-            var sourceFolder = Path.GetDirectoryName(file.FullName);
-            var origNameWoExt = Path.GetFileNameWithoutExtension(file.FullName);
-            return Common.GetFiles(file.Directory!, origNameWoExt + ".*", false).ToList();
+            return Common.GetFiles(file.Directory!, Path.GetFileNameWithoutExtension(file.FullName) + ".*", false).ToList();
         }
 
         public static void RenameFile(FileInfo file, RenameConfig config, ref int counter, int progressPercent)
