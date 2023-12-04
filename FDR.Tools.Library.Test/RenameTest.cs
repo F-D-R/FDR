@@ -166,6 +166,48 @@ namespace FDR.Tools.Library.Test
         }
 
         [Test]
+        public void RenameFilesInFolderAdditionalFilesTrue()
+        {
+            var config = new RenameConfig();
+            config.Should().NotBeNull();
+            config.FileFilter = "*.PR*";
+            config.AdditionalFiles = true;
+            config.FilenamePattern = "{cdate:yyMMdd}_{counter:2}";
+
+            files.Add(tempFolderPath, "1.pr1", tempFolderPath, "010101_01.pr1", new DateTime(2001, 1, 1));
+            files.Add(tempFolderPath, "1.se1", tempFolderPath, "010101_01.se1");
+            files.Add(tempFolderPath, "2.pr2", tempFolderPath, "020202_02.pr2", new DateTime(2002, 2, 2));
+            files.Add(tempFolderPath, "2.se2", tempFolderPath, "020202_02.se2");
+            files.CreateFiles();
+
+            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+        }
+
+        [Test]
+        public void RenameFilesInFolderAdditionalFilesFalse()
+        {
+            var config = new RenameConfig();
+            config.Should().NotBeNull();
+            config.FileFilter = "*.PR*";
+            config.AdditionalFiles = false;
+            config.FilenamePattern = "{cdate:yyMMdd}_{counter:2}";
+
+            files.Add(tempFolderPath, "1.pr1", tempFolderPath, "010101_01.pr1", new DateTime(2001, 1, 1));
+            files.Add(tempFolderPath, "1.se1", tempFolderPath, "1.se1");
+            files.Add(tempFolderPath, "2.pr2", tempFolderPath, "020202_02.pr2", new DateTime(2002, 2, 2));
+            files.Add(tempFolderPath, "2.se2", tempFolderPath, "2.se2");
+            files.CreateFiles();
+
+            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+
+            files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
+            files.ForEach(f => File.ReadAllText(f.GetDestPath()).Should().Be(f.GetSourcePath(), f.Name));
+        }
+
+        [Test]
         public void RenameFilesInFolderWithAdditionalMatchingFileFilter()
         {
             var config = new RenameConfig();
