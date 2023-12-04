@@ -120,10 +120,10 @@ namespace FDR.Tools.Library.Test
             this.ForEach(f =>
             {
                 var info = Image.Identify(f.GetDestPath());
-                info.Should().NotBeNull();
-                info.Width.Should().Be(width);
-                info.Height.Should().Be(height);
-                info.Metadata.ExifProfile.Should().BeNull();
+                info.Should().NotBeNull(f.Name);
+                info.Width.Should().Be(width, f.Name);
+                info.Height.Should().Be(height, f.Name);
+                info.Metadata.ExifProfile.Should().BeNull(f.Name);
             });
         }
 
