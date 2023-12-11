@@ -220,13 +220,6 @@ namespace FDR.Tools.Library
             var newName = Path.GetFileName(newFullName);
             string destDir = Path.GetDirectoryName(newFullName)??"";
 
-            var destFolder = Path.GetDirectoryName(newFullName);
-            if (destFolder != null && !Directory.Exists(destFolder))
-            {
-                Trace.WriteLine($"Creating destination folder {destFolder}");
-                Directory.CreateDirectory(destFolder);
-            }
-
             if (string.Compare(file.FullName, newFullName, false) == 0)
             {
                 Trace.WriteLine($"{file.FullName} matches the new name...");
@@ -268,6 +261,13 @@ namespace FDR.Tools.Library
 
                 if (string.Compare(file.FullName, destPath, false) != 0)
                 {
+                    var destFolder = Path.GetDirectoryName(destPath);
+                    if (destFolder != null && !Directory.Exists(destFolder))
+                    {
+                        Trace.WriteLine($"Creating destination folder {destFolder}");
+                        Directory.CreateDirectory(destFolder);
+                    }
+
 #if RELEASE
                     Trace.WriteLine($"Moving file {file.Name} to {destFile}");
 #else
