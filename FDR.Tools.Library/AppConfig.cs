@@ -1,5 +1,9 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using System.IO;
+using System.Reflection;
+using System.Text;
 
 namespace FDR.Tools.Library
 {
@@ -10,6 +14,16 @@ namespace FDR.Tools.Library
 
     public sealed class AppConfig : IValidatable
     {
+        public static AppConfig Load()
+        {
+            var appPath = Assembly.GetExecutingAssembly().Location;
+            var configPath = Path.Combine(Path.GetDirectoryName(appPath)!, "appsettings.json");
+            var appConfig = JsonConvert.DeserializeObject<AppConfig>(File.ReadAllText(configPath, Encoding.UTF8));
+            if (appConfig == null) appConfig = new AppConfig();
+            appConfig.Validate();
+            return appConfig;
+        }
+
         public AppConfig()
         {
             RenameConfigs = new RenameConfigs(this);

@@ -3,8 +3,6 @@ using System.IO;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
-using Newtonsoft.Json;
 using FDR.Tools.Library;
 using System.Collections.Generic;
 using System.Threading;
@@ -180,7 +178,7 @@ namespace FDR
                     {
                         case Operation.Import:
                             Common.Msg($"FDR Tools {version} - Import", titleColor);
-                            appConfig = LoadAppConfig();
+                            appConfig = AppConfig.Load();
                             if (appConfig.ImportConfigs == null)
                             {
                                 Common.Msg("There are no import configurations!", ConsoleColor.Red);
@@ -222,7 +220,7 @@ namespace FDR
                                 Common.Msg("Rename configuration is not defined!", ConsoleColor.Red);
                                 return;
                             }
-                            appConfig = LoadAppConfig();
+                            appConfig = AppConfig.Load();
                             RenameConfig? renameConfig;
                             if (!appConfig.RenameConfigs.TryGetValue(config, out renameConfig))
                             {
@@ -240,7 +238,7 @@ namespace FDR
                                 Common.Msg("Resize configuration is not defined!", ConsoleColor.Red);
                                 return;
                             }
-                            appConfig = LoadAppConfig();
+                            appConfig = AppConfig.Load();
                             ResizeConfig? resizeConfig;
                             if (!appConfig.ResizeConfigs.TryGetValue(config, out resizeConfig))
                             {
@@ -346,16 +344,6 @@ namespace FDR
                     OfferHelpAndExit();
                 }
             }
-        }
-
-        private static AppConfig LoadAppConfig()
-        {
-            var appPath = Assembly.GetExecutingAssembly().Location;
-            var configPath = Path.Combine(Path.GetDirectoryName(appPath)!, "appsettings.json");
-            var appConfig = JsonConvert.DeserializeObject<AppConfig>(File.ReadAllText(configPath, Encoding.UTF8));
-            if (appConfig == null) appConfig = new AppConfig();
-            appConfig.Validate();
-            return appConfig;
         }
     }
 }
