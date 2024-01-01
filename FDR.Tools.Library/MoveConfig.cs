@@ -26,18 +26,17 @@ namespace FDR.Tools.Library
 
         public RenameConfig GetNewRenameConfig()
         {
-            var config = new RenameConfig();
-            config.AppConfig = AppConfig;
-            config.FileFilter = FileFilter;
-            config.AdditionalFiles = AdditionalFiles;
-            if (string.IsNullOrWhiteSpace(RelativeFolder))
-                config.FilenamePattern = FilenamePattern;
-            else
-                config.FilenamePattern = RelativeFolder + "/" + FilenamePattern;
-            config.FilenameCase = FilenameCase;
-            config.ExtensionCase = ExtensionCase;
-            config.Recursive = Recursive;
-            config.StopOnError = StopOnError;
+            var config = new RenameConfig
+            {
+                AppConfig = AppConfig,
+                FileFilter = FileFilter,
+                AdditionalFiles = AdditionalFiles,
+                FilenamePattern = string.IsNullOrWhiteSpace(RelativeFolder) ? FilenamePattern : RelativeFolder + "/" + FilenamePattern,
+                FilenameCase = FilenameCase,
+                ExtensionCase = ExtensionCase,
+                Recursive = Recursive,
+                StopOnError = StopOnError
+            };
             return config;
         }
 
