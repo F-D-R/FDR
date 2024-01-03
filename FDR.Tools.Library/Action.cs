@@ -35,19 +35,19 @@ namespace FDR.Tools.Library
             {
                 case ActionType.rename:
                     RenameConfig? renameConfig;
-                    if (AppConfig == null || !AppConfig.RenameConfigs.TryGetValue(Config??"", out renameConfig)) throw new ArgumentOutOfRangeException();
+                    if (AppConfig == null || !AppConfig.RenameConfigs.TryGetValue(Config??"", out renameConfig)) throw new ArgumentOutOfRangeException(nameof(Config));
                     Rename.RenameFilesInFolder(folder, renameConfig);
                     break;
 
                 case ActionType.move:
                     MoveConfig? moveConfig;
-                    if (AppConfig == null || !AppConfig.MoveConfigs.TryGetValue(Config??"", out moveConfig)) throw new ArgumentOutOfRangeException();
+                    if (AppConfig == null || !AppConfig.MoveConfigs.TryGetValue(Config??"", out moveConfig)) throw new ArgumentOutOfRangeException(nameof(Config));
                     Import.MoveFilesInFolder(folder, moveConfig);
                     break;
 
                 case ActionType.resize:
                     ResizeConfig? resizeConfig;
-                    if (AppConfig == null || !AppConfig.ResizeConfigs.TryGetValue(Config??"", out resizeConfig)) throw new ArgumentOutOfRangeException();
+                    if (AppConfig == null || !AppConfig.ResizeConfigs.TryGetValue(Config??"", out resizeConfig)) throw new ArgumentOutOfRangeException(nameof(Config));
                     Resize.ResizeFilesInFolder(folder, resizeConfig);
                     break;
 
