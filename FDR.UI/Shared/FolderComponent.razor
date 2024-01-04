@@ -1,12 +1,12 @@
 ﻿@using System.ComponentModel.DataAnnotations;
 
-<div class="w-100">
-    <label class="form-label w-100">
-        <strong>Folder:</strong><br>
+<div class="row mb-3">
+    <label class="col-sm-3 col-form-label" for="Folder"><strong>Folder:</strong></label>
+    <div class="col-sm-8">
         <div class="input-group mb-3">
-            <InputText class="form-control" @bind-Value="@Folder" /> <button class="btn btn-outline-secondary" type="button" @onclick="@SelectFolder">...</button>
+            <InputText class="form-control" id="Folder" @bind-Value="@Folder" /> <button class="btn btn-outline-secondary" type="button" @onclick="@SelectFolder">...</button>
         </div>
-    </label>
+    </div>
 </div>
 
 
