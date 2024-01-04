@@ -5,7 +5,6 @@ using FluentAssertions;
 using NUnit.Framework.Internal;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Metadata.Profiles.Exif;
-using System.Runtime.CompilerServices;
 
 namespace FDR.Tools.Library.Test
 {
@@ -62,9 +61,9 @@ namespace FDR.Tools.Library.Test
             var file = new FileInfo(files[0].GetSourcePath());
             file.Should().NotBeNull();
 
-            int counter = 1;
-            int percent = 0;
-            Resize.ResizeFile(file, counter, config, percent);
+            //Resize.ResizeFileAsync(file, files[0].GetDestPath(), config);
+            Resize.ResizeFileAsync(file, files[0].GetDestPath(), config).Wait();
+            //Task.Run(async () => await Resize.ResizeFileAsync(file, files[0].GetDestPath(), config)).Wait();
 
             files.ForEach(f => File.Exists(f.GetDestPath()).Should().Be(f.Keep, f.Name));
 

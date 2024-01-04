@@ -40,6 +40,11 @@ namespace FDR.Tools.Library
             return config;
         }
 
+        public new MoveConfig Clone()
+        {
+            return (MoveConfig)MemberwiseClone();
+        }
+
         public override void Validate()
         {
             base.Validate();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -9,10 +10,10 @@ namespace FDR.Tools.Library
     [JsonConverter(typeof(StringEnumConverter))]
     public enum ResizeMethod
     {
-        fit_in,
-        max_width,
-        max_height,
-        stretch
+        fit_in = 0,
+        max_width = 1,
+        max_height = 2,
+        stretch = 3
     }
 
     public class ResizeConfig : MoveConfig
@@ -30,7 +31,11 @@ namespace FDR.Tools.Library
 
         private const string DEFAULT_FILTER = "*.JPG";
         private const int DEFAULT_QUALITY = 90;
+        private const string INVALID_RESIZE_METHOD = "Invalid resize method!";
+        private const string JPG_QUALITY_ERROR = "JPG quality must be between 0 and 100!";
 
+        [Required]
+        [Range(0, 3, ErrorMessage = INVALID_RESIZE_METHOD)]
         public ResizeMethod ResizeMethod { get; set; } = ResizeMethod.fit_in;
 
         public int MaxWidth { get; set; }
@@ -41,6 +46,7 @@ namespace FDR.Tools.Library
 
         private int jpgQuality = DEFAULT_QUALITY;
 
+        [Range(0, 100, ErrorMessage = JPG_QUALITY_ERROR)]
         public int JpgQuality
         {
             get { return Math.Max(0, Math.Min(100, jpgQuality)); }
@@ -53,13 +59,18 @@ namespace FDR.Tools.Library
             set { filter = value; }
         }
 
+        public new ResizeConfig Clone()
+        {
+            return (ResizeConfig)MemberwiseClone();
+        }
+
         public override void Validate()
         {
             base.Validate();
 
-            if (MaxWidth <= 0) throw new InvalidDataException("Maximum width should be more than zero!");
-            if (MaxHeight <= 0) throw new InvalidDataException("Maximum height should be more than zero!");
-            if (JpgQuality < 0 || JpgQuality > 100) throw new InvalidDataException("JPG Quality must be between 0 and 100!");
+            if (MaxWidth <= 0) throw new InvalidDataException("Maximum width must be more than zero!");
+            if (MaxHeight <= 0) throw new InvalidDataException("Maximum height must be more than zero!");
+            if (JpgQuality < 0 || JpgQuality > 100) throw new InvalidDataException(JPG_QUALITY_ERROR);
             switch (ResizeMethod)
             {
                 case ResizeMethod.fit_in:
@@ -68,7 +79,7 @@ namespace FDR.Tools.Library
                 case ResizeMethod.stretch:
                     break;
                 default:
-                    throw new InvalidDataException("Invalid ResizeMethod!");
+                    throw new InvalidDataException(INVALID_RESIZE_METHOD);
             }
         }
     }

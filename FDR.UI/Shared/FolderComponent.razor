@@ -1,0 +1,37 @@
+﻿@using System.ComponentModel.DataAnnotations;
+
+<div class="w-100">
+    <label class="form-label w-100">
+        <strong>Folder:</strong><br>
+        <div class="input-group mb-3">
+            <InputText class="form-control" @bind-Value="@Folder" /> <button class="btn btn-outline-secondary" type="button" @onclick="@SelectFolder">...</button>
+        </div>
+    </label>
+</div>
+
+
+@code {
+
+    [Required]
+    public string? Folder { get; set; }
+
+    // private class ModelClass
+    // {
+    //     public bool Verbose { get; set; } = false;
+
+    //     [Required]
+    //     public string? Folder { get; set; }
+    // }
+
+    // private ModelClass Model { get; set; } = new ModelClass();
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+    private void SelectFolder()
+    {
+
+    }
+}

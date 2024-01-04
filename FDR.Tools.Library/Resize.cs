@@ -5,6 +5,7 @@ using System.Linq;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Formats.Jpeg;
+using System.Threading.Tasks;
 
 namespace FDR.Tools.Library
 {
@@ -20,19 +21,14 @@ namespace FDR.Tools.Library
             Rename.ShowFilenamePatternHelp();
         }
 
-        public static void ResizeFile(FileInfo file, int counter, ResizeConfig config, int progressPercent)
+        public static async Task ResizeFileAsync(FileInfo file, string destFullName, ResizeConfig config)
         {
-            if (config == null) throw new ArgumentNullException("config");
+            if (config == null) throw new ArgumentNullException(nameof(config));
             config.Validate();
-            if (file == null) throw new ArgumentNullException("file");
+            if (file == null) throw new ArgumentNullException(nameof(file));
             if (!file.Exists) throw new FileNotFoundException("File doesn't exist!", file.FullName);
 
-            var path = Path.GetDirectoryName(file.FullName)??"";
-            var newFullName = Rename.CalculateFileName(file, config.GetNewRenameConfig(), counter);
-            if (string.Compare(Path.GetExtension(newFullName), ".jpg", true) != 0)
-                newFullName = Path.Combine(path, Path.GetFileNameWithoutExtension(newFullName) + ".jpg");
-
-            var destFolder = Path.GetDirectoryName(newFullName);
+            var destFolder = Path.GetDirectoryName(destFullName);
             if (destFolder != null && !Directory.Exists(destFolder))
             {
                 Trace.WriteLine($"Creating destination folder {destFolder}");
@@ -40,16 +36,15 @@ namespace FDR.Tools.Library
             }
 
 #if RELEASE
-            Trace.WriteLine($"Resizing file {file.Name} to {Path.GetFileName(newFullName)}");
+            Trace.WriteLine($"Resizing file {file.Name} to {Path.GetFileName(destFullName)}");
 #else
             Trace.WriteLine($"Resizing file {file.FullName} to {newFullName}");
 #endif
-            Common.Progress(progressPercent);
 
             int maxWidth = config.MaxWidth;
             int maxHeight = config.MaxHeight;
 
-            using (Image image = Image.Load(file.FullName))
+            using (Image image = await Image.LoadAsync(file.FullName))
             {
                 ResizeMode resizeMode = ResizeMode.Max;
                 bool resize = true;
@@ -78,7 +73,7 @@ namespace FDR.Tools.Library
                 if (config.ClearMetadata) ClearMetadata(image);
 
                 var encoder = new JpegEncoder() { Quality = config.JpgQuality };
-                image.Save(newFullName, encoder);
+                await image.SaveAsync(destFullName, encoder);
             }
 
             void ClearMetadata(Image image)
@@ -112,7 +107,16 @@ namespace FDR.Tools.Library
             {
                 try
                 {
-                    ResizeFile(file, counter, config, 100 * counter / fileCount);
+                    var path = Path.GetDirectoryName(file.FullName)??"";
+                    var newFullName = Rename.CalculateFileName(file, config.GetNewRenameConfig(), counter);
+                    if (string.Compare(Path.GetExtension(newFullName), ".jpg", true) != 0)
+                        newFullName = Path.Combine(path, Path.GetFileNameWithoutExtension(newFullName) + ".jpg");
+
+                    //ResizeFileAsync(file, newFullName, config);
+                    ResizeFileAsync(file, newFullName, config).Wait();
+                    //Task.Run(async () => await Resize.ResizeFileAsync(file, newFullName, config)).Wait();
+
+                    Common.Progress(100 * counter / fileCount);
                 }
                 catch (IOException)
                 {

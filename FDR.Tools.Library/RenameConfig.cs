@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System.ComponentModel.DataAnnotations;
 
 namespace FDR.Tools.Library
 {
     [JsonConverter(typeof(StringEnumConverter))]
     public enum CharacterCasing
     {
-        upper,
-        lower,
-        unchanged
+        upper = 0,
+        lower = 1,
+        unchanged = 2
     }
 
     public class RenameConfig : ConfigPartBase
@@ -29,11 +30,19 @@ namespace FDR.Tools.Library
         }
 
         private const string DEFAULT_FILTER = "*.*";
+        private const string FILENAME_PATTERN_ERROR = "Renaming filename pattern cannot be empty!";
+        private const string INVALID_FILENAME_CASE = "Invalid filename case!";
+        private const string INVALID_EXTENSION_CASE = "Invalid extension case!";
 
+        [Required(ErrorMessage = FILENAME_PATTERN_ERROR)]
         public string? FilenamePattern { get; set; } = "{name}";
 
+        [Required]
+        [Range(0, 2, ErrorMessage = INVALID_FILENAME_CASE)]
         public CharacterCasing FilenameCase { get; set; } = CharacterCasing.unchanged;
 
+        [Required]
+        [Range(0, 2, ErrorMessage = INVALID_EXTENSION_CASE)]
         public CharacterCasing ExtensionCase { get; set; } = CharacterCasing.lower;
 
         protected string? filter;
@@ -49,10 +58,17 @@ namespace FDR.Tools.Library
 
         public bool StopOnError { get; set; } = true;
 
+        public RenameConfig Clone()
+        {
+            return (RenameConfig)MemberwiseClone();
+        }
+
         public override void Validate()
         {
             base.Validate();
-            if (string.IsNullOrWhiteSpace(FilenamePattern)) throw new InvalidDataException("Renaming filename pattern cannot be empty!");
+
+            if (string.IsNullOrWhiteSpace(FilenamePattern)) throw new InvalidDataException(FILENAME_PATTERN_ERROR);
+
             switch (FilenameCase)
             {
                 case CharacterCasing.unchanged:
@@ -60,8 +76,9 @@ namespace FDR.Tools.Library
                 case CharacterCasing.upper:
                     break;
                 default:
-                    throw new InvalidDataException("Invalid FilenameCase!");
+                    throw new InvalidDataException(INVALID_FILENAME_CASE);
             }
+
             switch (ExtensionCase)
             {
                 case CharacterCasing.unchanged:
@@ -69,7 +86,7 @@ namespace FDR.Tools.Library
                 case CharacterCasing.upper:
                     break;
                 default:
-                    throw new InvalidDataException("Invalid ExtensionCase!");
+                    throw new InvalidDataException(INVALID_EXTENSION_CASE);
             }
         }
     }

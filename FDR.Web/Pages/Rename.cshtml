@@ -1,0 +1,62 @@
+﻿@page
+@model FDR.Web.Pages.RenameModel
+@{
+    ViewData["Title"] = "Rename";
+}
+<h1>@ViewData["Title"]</h1>
+<hr>
+
+@if (false && HttpMethods.IsPost(Request.Method))
+{
+    <p>
+        @* Selected config: @Html.DisplayFor(m => m.ConfigKey)<br> *@
+        File filter: @Html.DisplayFor(m => m.RenameConfig.FileFilter)<br>
+        Filename pattern: @Html.DisplayFor(m => m.RenameConfig.FilenamePattern)<br>
+        Filename case: @Html.DisplayFor(m => m.RenameConfig.FilenameCase, Html.GetEnumSelectList<FDR.Tools.Library.CharacterCasing>())<br>
+        Extension case: @Html.DisplayFor(m => m.RenameConfig.ExtensionCase, Html.GetEnumSelectList<FDR.Tools.Library.CharacterCasing>())<br>
+        Additional files: @Html.DisplayFor(m => m.RenameConfig.AdditionalFiles)<br>
+        Recursive: @Html.DisplayFor(m => m.RenameConfig.Recursive)<br>
+        Stop on error: @Html.DisplayFor(m => m.RenameConfig.StopOnError)<br>
+        <hr>
+        Verbose output: @Html.DisplayFor(m => m.Verbose)<br>
+        Folder: @Html.DisplayFor(m => m.Folder)<br>
+        @* @if (Model.UploadedFile != null)
+        {
+            @:Uploaded file: @Html.DisplayFor(m => m.UploadedFile!.FileName)<br>
+        } *@
+        <hr>
+        @* Html.TextAreaFor(m => m.Output)<br> *@
+    </p>
+}
+else
+{
+    @using (Html.BeginForm(FormMethod.Post, new { @enctype="multipart/form-data" }))
+    {
+        <div>
+            @if (Model.AppConfig?.RenameConfigs != null)
+            {
+                @Html.LabelFor(m => m.ConfigKey, "Predefined rename config:")
+                @Html.DropDownListFor(m => m.ConfigKey, Model.AppConfig?.RenameConfigs?.Select(d => new SelectListItem(d.Key, d.Key)), "<default>", new { @class="form-control", onchange="location = \"?config=\" + this.value;" })
+            }
+            @Html.LabelFor(m => m.RenameConfig.FileFilter, "File filter:")
+            @Html.TextBoxFor(m => m.RenameConfig.FileFilter, new { @class="form-control" })
+            @Html.LabelFor(m => m.RenameConfig.FilenamePattern, "Filename pattern:")
+            @Html.TextBoxFor(m => m.RenameConfig.FilenamePattern, new { @class="form-control" })
+            @Html.LabelFor(m => m.RenameConfig.FilenameCase, "Filename case:")
+            @Html.DropDownListFor(m => m.RenameConfig.FilenameCase, Html.GetEnumSelectList<FDR.Tools.Library.CharacterCasing>(), new { @class="form-control" })
+            @Html.LabelFor(m => m.RenameConfig.ExtensionCase, "Extension case:")
+            @Html.DropDownListFor(m => m.RenameConfig.ExtensionCase, Html.GetEnumSelectList<FDR.Tools.Library.CharacterCasing>(), new { @class="form-control" })
+            @Html.CheckBoxFor(m => m.RenameConfig.AdditionalFiles) @Html.LabelFor(m => m.RenameConfig.AdditionalFiles, "Additional files")<br>
+            @Html.CheckBoxFor(m => m.RenameConfig.Recursive) @Html.LabelFor(m => m.RenameConfig.Recursive, "Recursive")<br>
+            @Html.CheckBoxFor(m => m.RenameConfig.StopOnError) @Html.LabelFor(m => m.RenameConfig.StopOnError, "Stop on error")<br>
+            <span asp-validation-for="RenameConfig" class="text-danger"></span>
+            <hr>
+            @Html.CheckBoxFor(m => m.Verbose) @Html.LabelFor(m => m.Verbose, "Verbose output")<br>
+            @Html.LabelFor(m => m.Folder, "Folder:")
+            @Html.TextBoxFor(m => m.Folder, new { @class="form-control" })
+            <span asp-validation-for="Folder" class="text-danger"></span>
+            <br>
+            <input type="submit" value="Rename" class="submit"><br>
+        </div>
+    }
+}

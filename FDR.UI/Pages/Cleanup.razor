@@ -1,0 +1,64 @@
+﻿@page "/cleanup"
+@using System.ComponentModel.DataAnnotations;
+
+<PageTitle>Cleanup</PageTitle>
+
+<h1>Cleanup</h1>
+<hr>
+
+
+<EditForm OnValidSubmit="@Submit" Model="@Model">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label" for="Folder"><strong>Folder:</strong></label>
+        <div class="col-sm-8">
+            <div class="input-group mb-3">
+                <InputText class="form-control" id="Folder" @bind-Value="@Model.Folder" /> <button class="btn btn-outline-secondary" type="button" @onclick="@SelectFolder">...</button>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label" for="Verbose">Verbose output:</label>
+        <div class="col-sm-8">
+            <InputCheckbox class="form-check-input" id="Verbose" @bind-Value="@Model.Verbose" />
+        </div>
+    </div>
+    <br>
+    <button class="btn btn-primary" type="submit">Cleanup</button>
+</EditForm>
+<br>
+<p>@Message</p>
+<br>
+<br>
+
+
+@code {
+
+    private class ModelClass
+    {
+        public bool Verbose { get; set; } = false;
+
+        [Required]
+        public string? Folder { get; set; }
+    }
+
+    private ModelClass Model { get; set; } = new ModelClass();
+
+    public string? Message { get; set; }
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+    private void SelectFolder()
+    {
+        Message = "SelectFolder...";
+    }
+
+    private void Submit()
+    {
+        Message = "Submit...";
+    }
+}
