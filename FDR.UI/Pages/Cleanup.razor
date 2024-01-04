@@ -35,12 +35,31 @@
 
 @code {
 
-    private class ModelClass
+    public class ModelClass
     {
         public bool Verbose { get; set; } = false;
 
         [Required]
+        [FolderValidation]
         public string? Folder { get; set; }
+    }
+
+    public class FolderValidationAttribute : ValidationAttribute
+    {
+        protected override ValidationResult IsValid(object? value, ValidationContext context)
+        {
+            if (value == null || value.ToString()?.Length == 0)
+                return new ValidationResult("Folder is required!");
+
+            string? folder = value.ToString();
+            if (string.IsNullOrWhiteSpace(folder))
+                return new ValidationResult("Folder is required!");
+
+            if (!System.IO.Directory.Exists(folder))
+                return new ValidationResult($"Folder '{folder}' doesn't exist!");
+
+            return ValidationResult.Success!;
+        }
     }
 
     private ModelClass Model { get; set; } = new ModelClass();

@@ -26,12 +26,9 @@ namespace FDR.Web.Pages
         public bool Verbose { get; set; } = false;
 
         [Required(ErrorMessage = "Folder is empty!")]
-        [PageRemote(AdditionalFields = "__RequestVerificationToken", HttpMethod = "POST", PageHandler = "CheckFolder", ErrorMessage = "FOLDER DOESN'T EXIST!")]
+        [PageRemote(AdditionalFields = "__RequestVerificationToken", HttpMethod = "POST", PageHandler = "ValidateFolder", ErrorMessage = "FOLDER DOESN'T EXIST!")]
         [BindProperty]
         public string? Folder { get; set; }
-
-        [BindProperty]
-        public IFormFile? UploadedFile { get; set; }
 
         //public StreamReader Output { get; } = new StreamReader(Console.OpenStandardOutput());
 
@@ -47,15 +44,20 @@ namespace FDR.Web.Pages
             ConfigKey = Request.Query["config"];
             if (AppConfig != null && !string.IsNullOrWhiteSpace(ConfigKey))
             {
-                RenameConfig = AppConfig.RenameConfigs.Where(d => string.Equals(d.Key, ConfigKey, StringComparison.OrdinalIgnoreCase)).FirstOrDefault().Value;
+                RenameConfig = AppConfig.RenameConfigs.Where(d => string.Equals(d.Key, ConfigKey, StringComparison.OrdinalIgnoreCase)).FirstOrDefault().Value.Clone();
             }
             if (RenameConfig == null) { RenameConfig = new RenameConfig(); }
         }
 
-        public JsonResult OnPostCheckFolder()
+        public JsonResult OnPostValidateFolder()
         {
             var folder = new DirectoryInfo(Folder!);
             return new JsonResult(folder.Exists);
+        }
+
+        public void OnClickSelectFolder()
+        {
+            //Message = "SelectFolder...";
         }
 
         public void OnPost2()
@@ -100,7 +102,6 @@ namespace FDR.Web.Pages
             Console.WriteLine($"Recursive: {RenameConfig.Recursive}");
             Console.WriteLine($"Stop on error: {RenameConfig.StopOnError}");
             Console.WriteLine($"Verbose output: {Verbose}");
-            Console.WriteLine($"Uploaded file: {UploadedFile?.FileName}");
 
             //Rename.RenameFilesInFolder(new DirectoryInfo(Path.GetFullPath(folder)), RenameConfig);
 
@@ -119,18 +120,20 @@ namespace FDR.Web.Pages
                 Console.WriteLine("RenameModel.OnPostAsync ModelState is NOT valid!!!");
                 return Page();
             }
+
             try { RenameConfig.Validate(); }
             catch (Exception ex)
             {
-                ModelState.AddModelError("RenameConfig", ex.Message);
+                ModelState.AddModelError("RenameConfig", ex.Message ?? "Invalid rename configuration!");
                 return Page();
             }
-            //var folder = new DirectoryInfo(Folder!);
-            //if (!folder.Exists)
-            //{
-            //    ModelState.AddModelError("Folder", "Folder doesn't exist!");
-            //    return Page();
-            //}
+
+            var folder = new DirectoryInfo(Folder!);
+            if (!folder.Exists)
+            {
+                ModelState.AddModelError("Folder", "Folder doesn't exist!");
+                return Page();
+            }
 
             Console.WriteLine("RenameModel.OnPostAsync ModelState is valid...");
 
@@ -144,7 +147,6 @@ namespace FDR.Web.Pages
             Console.WriteLine($"Recursive: {RenameConfig.Recursive}");
             Console.WriteLine($"Stop on error: {RenameConfig.StopOnError}");
             Console.WriteLine($"Verbose output: {Verbose}");
-            Console.WriteLine($"Uploaded file: {UploadedFile?.FileName}");
 
             //_context.Movies.Add(Movie);
             //await _context.SaveChangesAsync();

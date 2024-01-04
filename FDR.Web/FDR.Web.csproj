@@ -9,11 +9,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="jQuery.Ajax.Unobtrusive" Version="2.0.20710" />
+    <PackageReference Include="Microsoft.jQuery.Unobtrusive.Ajax" Version="3.2.6" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\FDR.Tools.Library\FDR.Tools.Library.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\jquery-ajax-unobtrusive\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
