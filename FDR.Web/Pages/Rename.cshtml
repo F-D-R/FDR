@@ -33,38 +33,38 @@ else
             @if (Model.AppConfig?.RenameConfigs != null)
             {
                 <div class="row mb-3">
-                    @Html.LabelFor(m => m.ConfigKey, "Predefined rename config:", new { @class="col-sm-3 col-form-label" })
+                    @Html.LabelFor(m => m.ConfigKey, "Predefined rename config", new { @class="col-sm-3 col-form-label" })
                     <div class="col-sm-8">
                         @Html.DropDownListFor(m => m.ConfigKey, Model.AppConfig?.RenameConfigs?.Select(d => new SelectListItem(d.Key, d.Key)), "<default>", new { @class="form-select", onchange="location = \"?config=\" + this.value;" })
                     </div>
                 </div>
             }
             <div class="row mb-3">
-                @Html.LabelFor(m => m.RenameConfig.FileFilter, "File filter:", new { @class="col-sm-3 col-form-label" })
+                @Html.LabelFor(m => m.RenameConfig.FileFilter, new { @class="col-sm-3 col-form-label" })
                 <div class="col-sm-8">
                     @Html.TextBoxFor(m => m.RenameConfig.FileFilter, new { @class="form-control" })
                 </div>
             </div>
             <div class="row mb-3">
-                @Html.LabelFor(m => m.RenameConfig.FilenamePattern, "Filename pattern:", new { @class="col-sm-3 col-form-label" })
+                @Html.LabelFor(m => m.RenameConfig.FilenamePattern, new { @class="col-sm-3 col-form-label" })
                 <div class="col-sm-8">
                     @Html.TextBoxFor(m => m.RenameConfig.FilenamePattern, new { @class="form-control" })
                 </div>
             </div>
             <div class="row mb-3">
-                @Html.LabelFor(m => m.RenameConfig.FilenameCase, "Filename case:", new { @class="col-sm-3 col-form-label" })
+                @Html.LabelFor(m => m.RenameConfig.FilenameCase, new { @class="col-sm-3 col-form-label" })
                 <div class="col-sm-8">
                     @Html.DropDownListFor(m => m.RenameConfig.FilenameCase, Html.GetEnumSelectList<FDR.Tools.Library.CharacterCasing>(), new { @class="form-select" })
                 </div>
             </div>
             <div class="row mb-3">
-                @Html.LabelFor(m => m.RenameConfig.ExtensionCase, "Extension case:", new { @class="col-sm-3 col-form-label" })
+                @Html.LabelFor(m => m.RenameConfig.ExtensionCase, new { @class="col-sm-3 col-form-label" })
                 <div class="col-sm-8">
                     @Html.DropDownListFor(m => m.RenameConfig.ExtensionCase, Html.GetEnumSelectList<FDR.Tools.Library.CharacterCasing>(), new { @class="form-select" })
                 </div>
             </div>
             <div class="row mb-3">
-                @Html.LabelFor(m => m.RenameConfig.AdditionalFiles, "Additional files:", new { @class="col-sm-3 col-form-label" })
+                @Html.LabelFor(m => m.RenameConfig.AdditionalFiles, new { @class="col-sm-3 col-form-label" })
                 <div class="col-sm-8">
                     @Html.CheckBoxFor(m => m.RenameConfig.AdditionalFiles, new { @class="form-check-input" })
                 </div>
@@ -75,28 +75,28 @@ else
             </div>
             <hr>
             <div class="row mb-3">
-                @Html.LabelFor(m => m.Folder, "Folder:", new { @class="col-sm-3 col-form-label" })
+                @Html.LabelFor(m => m.Folder, new { @class="col-sm-3 col-form-label" })
                 <div class="col-sm-8">
                     <div class="input-group mb-3">
                         @Html.TextBoxFor(m => m.Folder, new { @class="form-control" })
-                        @*<button class="btn btn-outline-secondary" type="button" @onclick="@SelectFolder">...</button>*@
+                        <button class="btn btn-outline-secondary" type="button" asp-page-handler="SelectFolder">...</button>
                     </div>
                 </div>
             </div>
             <div class="row mb-3">
-                @Html.LabelFor(m => m.RenameConfig.Recursive, "Recursive:", new { @class="col-sm-3 col-form-label" })
+                @Html.LabelFor(m => m.RenameConfig.Recursive, new { @class="col-sm-3 col-form-label" })
                 <div class="col-sm-8">
                     @Html.CheckBoxFor(m => m.RenameConfig.Recursive, new { @class="form-check-input" })
                 </div>
             </div>
             <div class="row mb-3">
-                @Html.LabelFor(m => m.RenameConfig.StopOnError, "Stop on error:", new { @class="col-sm-3 col-form-label" })
+                @Html.LabelFor(m => m.RenameConfig.StopOnError, new { @class="col-sm-3 col-form-label" })
                 <div class="col-sm-8">
                     @Html.CheckBoxFor(m => m.RenameConfig.StopOnError, new { @class="form-check-input" })
                 </div>
             </div>
             <div class="row mb-3">
-                @Html.LabelFor(m => m.Verbose, "Verbose output:", new { @class="col-sm-3 col-form-label" })
+                @Html.LabelFor(m => m.Verbose, new { @class="col-sm-3 col-form-label" })
                 <div class="col-sm-8">
                     @Html.CheckBoxFor(m => m.Verbose, new { @class="form-check-input" })
                 </div>
@@ -106,7 +106,7 @@ else
     }
 }
 
-@section scripts{
+@section Scripts{
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <partial name="_ValidationScriptsPartial" />
     <script src="~/lib/jquery-ajax-unobtrusive/dist/jquery.unobtrusive-ajax.min.js"></script>

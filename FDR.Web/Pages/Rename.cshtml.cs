@@ -22,6 +22,7 @@ namespace FDR.Web.Pages
         [BindProperty]
         public RenameConfig RenameConfig { get; set; } = new RenameConfig();
 
+        [Display(Name = "Verbose output")]
         [BindProperty]
         public bool Verbose { get; set; } = false;
 

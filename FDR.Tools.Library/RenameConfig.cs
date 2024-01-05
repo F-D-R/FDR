@@ -34,28 +34,34 @@ namespace FDR.Tools.Library
         private const string INVALID_FILENAME_CASE = "Invalid filename case!";
         private const string INVALID_EXTENSION_CASE = "Invalid extension case!";
 
+        [Display(Name = "Filename pattern")]
         [Required(ErrorMessage = FILENAME_PATTERN_ERROR)]
         public string? FilenamePattern { get; set; } = "{name}";
 
+        [Display(Name = "Filename case")]
         [Required]
         [Range(0, 2, ErrorMessage = INVALID_FILENAME_CASE)]
         public CharacterCasing FilenameCase { get; set; } = CharacterCasing.unchanged;
 
+        [Display(Name = "Extension case")]
         [Required]
         [Range(0, 2, ErrorMessage = INVALID_EXTENSION_CASE)]
         public CharacterCasing ExtensionCase { get; set; } = CharacterCasing.lower;
 
         protected string? filter;
+        [Display(Name = "File filter")]
         public virtual string FileFilter
         {
             get { return !string.IsNullOrWhiteSpace(filter) ? filter : DEFAULT_FILTER; }
             set { filter = value; }
         }
 
+        [Display(Name = "Additional files")]
         public virtual bool AdditionalFiles { get; set; } = true;
 
         public bool Recursive { get; set; } = false;
 
+        [Display(Name = "Stop on errors")]
         public bool StopOnError { get; set; } = true;
 
         public RenameConfig Clone()

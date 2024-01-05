@@ -12,6 +12,7 @@ namespace FDR.Web.Pages
         [BindProperty]
         public string? Folder { get; set; }
 
+        [Display(Name = "Verbose output")]
         [BindProperty]
         public bool Verbose { get; set; } = false;
 
@@ -19,9 +20,11 @@ namespace FDR.Web.Pages
 
         public string? Output { get; set; } = string.Empty;
 
+        private CancellationTokenSource cts = new();
+
         public void OnGet()
         {
-            Console.WriteLine("RenameModel.OnGet...");
+            Console.WriteLine("CleanupModel.OnGet...");
         }
 
         public JsonResult OnPostValidateFolder()
@@ -30,18 +33,23 @@ namespace FDR.Web.Pages
             return new JsonResult(folder.Exists);
         }
 
-        public void OnClickSelectFolder()
+        public void OnPostSelectFolder()
         {
-            //Message = "SelectFolder...";
+            Console.WriteLine("CleanupModel.OnPostSelectFolder...");
+        }
+
+        public void OnClose()
+        {
+            cts.Cancel();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            Console.WriteLine("RenameModel.OnPostAsync...");
+            Console.WriteLine("CleanupModel.OnPostAsync...");
 
             if (!ModelState.IsValid)
             {
-                Console.WriteLine("RenameModel.OnPostAsync ModelState is NOT valid!");
+                Console.WriteLine("CleanupModel.OnPostAsync ModelState is NOT valid!");
                 return Page();
             }
 
@@ -52,15 +60,18 @@ namespace FDR.Web.Pages
                 return Page();
             }
 
-            Console.WriteLine("RenameModel.OnPostAsync ModelState is valid...");
+            Console.WriteLine("CleanupModel.OnPostAsync ModelState is valid...");
 
             Console.WriteLine("");
             Console.WriteLine($"Folder: {Folder}");
             Console.WriteLine($"Verbose output: {Verbose}");
 
-            var sourceFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings.json";
-            var destFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings_copy.json";
-            await Common.CopyFileAsync(sourceFilePath, destFilePath);
+            //var sourceFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings.json";
+            //var destFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings_copy.json";
+            //await Common.CopyFileAsync(sourceFilePath, destFilePath);
+
+            await Process.Start(cts.Token);
+            cts.Token.ThrowIfCancellationRequested();
 
             return RedirectToPage("./Index");
         }
