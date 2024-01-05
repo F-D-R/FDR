@@ -26,7 +26,7 @@ namespace FDR.Web.Pages
         public bool Verbose { get; set; } = false;
 
         [Required(ErrorMessage = "Folder is empty!")]
-        [PageRemote(AdditionalFields = "__RequestVerificationToken", HttpMethod = "POST", PageHandler = "ValidateFolder", ErrorMessage = "FOLDER DOESN'T EXIST!")]
+        [PageRemote(AdditionalFields = "__RequestVerificationToken", HttpMethod = "POST", PageHandler = "ValidateFolder", ErrorMessage = "Folder doesn't exist!")]
         [BindProperty]
         public string? Folder { get; set; }
 
@@ -146,6 +146,7 @@ namespace FDR.Web.Pages
             Console.WriteLine($"Additional files: {RenameConfig.AdditionalFiles}");
             Console.WriteLine($"Recursive: {RenameConfig.Recursive}");
             Console.WriteLine($"Stop on error: {RenameConfig.StopOnError}");
+            Console.WriteLine($"Folder: {Folder}");
             Console.WriteLine($"Verbose output: {Verbose}");
 
             //_context.Movies.Add(Movie);

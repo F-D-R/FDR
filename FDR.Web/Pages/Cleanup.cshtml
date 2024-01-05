@@ -1,0 +1,37 @@
+﻿@page
+@model FDR.Web.Pages.CleanupModel
+@{
+    ViewData["Title"] = "Cleanup";
+}
+<h1>@ViewData["Title"]</h1>
+<hr>
+
+@using (Html.BeginForm(FormMethod.Post))
+{
+    <div>
+        <div asp-validation-summary="All" class="text-danger col-sm-8"></div>
+        <div class="row mb-3">
+            @Html.LabelFor(m => m.Folder, "Folder:", new { @class="col-sm-3 col-form-label" })
+            <div class="col-sm-8">
+                <div class="input-group mb-3">
+                    @Html.TextBoxFor(m => m.Folder, new { @class="form-control" })
+                    @*<button class="btn btn-outline-secondary" type="button" @onclick="@SelectFolder">...</button>*@
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            @Html.LabelFor(m => m.Verbose, "Verbose output:", new { @class="col-sm-3 col-form-label" })
+            <div class="col-sm-8">
+                @Html.CheckBoxFor(m => m.Verbose, new { @class="form-check-input" })
+            </div>
+        </div>
+        <br>
+        <input type="submit" value="Cleanup" class="btn btn-primary"><br>
+    </div>
+}
+
+@section scripts{
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/lib/jquery-ajax-unobtrusive/dist/jquery.unobtrusive-ajax.min.js"></script>
+}
