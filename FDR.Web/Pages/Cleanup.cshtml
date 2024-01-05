@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Cleanup";
 }
+
 <h1>@ViewData["Title"]</h1>
 <hr>
 
@@ -25,7 +26,6 @@
                 @Html.CheckBoxFor(m => m.Verbose, new { @class="form-check-input" })
             </div>
         </div>
-        <br>
         <input type="submit" value="Cleanup" class="btn btn-primary"><br>
     </div>
 }

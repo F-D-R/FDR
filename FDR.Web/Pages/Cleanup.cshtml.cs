@@ -7,15 +7,17 @@ namespace FDR.Web.Pages
 {
     public class CleanupModel : PageModel
     {
-        [BindProperty]
-        public bool Verbose { get; set; } = false;
-
         [Required(ErrorMessage = "Folder is empty!")]
         [PageRemote(AdditionalFields = "__RequestVerificationToken", HttpMethod = "POST", PageHandler = "ValidateFolder", ErrorMessage = "Folder doesn't exist!")]
         [BindProperty]
         public string? Folder { get; set; }
 
+        [BindProperty]
+        public bool Verbose { get; set; } = false;
+
         //public StreamReader Output { get; } = new StreamReader(Console.OpenStandardOutput());
+
+        public string? Output { get; set; } = string.Empty;
 
         public void OnGet()
         {
@@ -39,7 +41,7 @@ namespace FDR.Web.Pages
 
             if (!ModelState.IsValid)
             {
-                Console.WriteLine("RenameModel.OnPostAsync ModelState is NOT valid!!!");
+                Console.WriteLine("RenameModel.OnPostAsync ModelState is NOT valid!");
                 return Page();
             }
 
@@ -56,12 +58,8 @@ namespace FDR.Web.Pages
             Console.WriteLine($"Folder: {Folder}");
             Console.WriteLine($"Verbose output: {Verbose}");
 
-            //_context.Movies.Add(Movie);
-            //await _context.SaveChangesAsync();
-
-            var sourceFilePath = "D:\\GIT\\FDR\\FDR.Web\\bin\\Release\\net7.0\\appsettings.json";
-            var destFilePath = "D:\\GIT\\FDR\\FDR.Web\\bin\\Release\\net7.0\\appsettings_copy.json";
-
+            var sourceFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings.json";
+            var destFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings_copy.json";
             await Common.CopyFileAsync(sourceFilePath, destFilePath);
 
             return RedirectToPage("./Index");

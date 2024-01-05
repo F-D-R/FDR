@@ -149,12 +149,8 @@ namespace FDR.Web.Pages
             Console.WriteLine($"Folder: {Folder}");
             Console.WriteLine($"Verbose output: {Verbose}");
 
-            //_context.Movies.Add(Movie);
-            //await _context.SaveChangesAsync();
-
-            var sourceFilePath = "D:\\GIT\\FDR\\FDR.Web\\bin\\Release\\net7.0\\appsettings.json";
-            var destFilePath = "D:\\GIT\\FDR\\FDR.Web\\bin\\Release\\net7.0\\appsettings_copy.json";
-
+            var sourceFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings.json";
+            var destFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings_copy.json";
             await Common.CopyFileAsync(sourceFilePath, destFilePath);
 
             return RedirectToPage("./Index");
