@@ -12,7 +12,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\FDR.Tools.Library\FDR.Tools.Library.csproj" />
-		<ProjectReference Include="..\FDR.UI\FDR.UI.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
