@@ -8,10 +8,12 @@ namespace FDR.Web.Pages
     public class RenameModel : PageModel
     {
         private readonly IConfiguration Configuration;
+        private readonly WebApplication App;
 
-        public RenameModel(IConfiguration configuration)
+        public RenameModel(IConfiguration configuration, WebApplication app)
         {
             Configuration = configuration;
+            App = app;
         }
 
         public AppConfig? AppConfig { get; set; }
@@ -42,6 +44,8 @@ namespace FDR.Web.Pages
             }
             catch { }
 
+            
+
             ConfigKey = Request.Query["config"];
             if (AppConfig != null && !string.IsNullOrWhiteSpace(ConfigKey))
             {
@@ -56,9 +60,17 @@ namespace FDR.Web.Pages
             return new JsonResult(folder.Exists);
         }
 
-        public void OnClickSelectFolder()
+        public void SelectFolder()
         {
-            //Message = "SelectFolder...";
+            Console.WriteLine("SelectFolder...");
+        }
+        public void OnPostSelectFolder()
+        {
+            Console.WriteLine("OnPostSelectFolder...");
+        }
+        public void OnGetSelectFolder()
+        {
+            Console.WriteLine("OnGetSelectFolder...");
         }
 
         public void OnPost2()

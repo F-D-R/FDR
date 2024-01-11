@@ -70,10 +70,35 @@ namespace FDR.Web.Pages
             //var destFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings_copy.json";
             //await Common.CopyFileAsync(sourceFilePath, destFilePath);
 
-            await Process.Start(cts.Token);
             cts.Token.ThrowIfCancellationRequested();
+            await Process.Start(cts.Token);
 
             return RedirectToPage("./Index");
         }
+    }
+
+    public class OutputResult : ActionResult
+    {
+        private readonly TextWriter _output = Console.Out;
+
+        public override Task ExecuteResultAsync(ActionContext context)
+        {
+            var response = context.HttpContext.Response;
+            response.ContentType = "text/xml";
+            var responseStream = response.BodyWriter.AsStream();
+
+            //document.Open(response.OutputStream, FormatType.Html, XHTMLValidationType.Transitional);
+
+
+            return new Task(() => { });
+            //return Task.CompletedTask;
+        }
+
+        //public override void ExecuteResult(ActionContext context)
+        //{
+        //    var response = context.HttpContext.Response;
+        //    response.ContentType = "text/xml";
+        //    document.Open(response.OutputStream, FormatType.Html, XHTMLValidationType.Transitional);
+        //}
     }
 }
