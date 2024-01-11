@@ -307,7 +307,7 @@ namespace FDR.Tools.Library
                 {
                     RenameFile(file, config, ref counter, 100 * counter / fileCount);
                 }
-                catch (IOException)
+                catch (Exception)
                 {
                     if (config.StopOnError) throw;
                 }
