@@ -9,18 +9,6 @@ using System.Threading;
 
 namespace FDR
 {
-    public enum Operation
-    {
-        Help,
-        Import,
-        Hash,
-        Verify,
-        Diff,
-        Cleanup,
-        Rename,
-        Resize
-    }
-
     public class Program
     {
         private const string param_import = "-import";
@@ -37,6 +25,7 @@ namespace FDR
         private const string param_reference = "-reference";
         private const string param_rename = "-rename";
         private const string param_resize = "-resize";
+        private const string param_web = "-web";
         private const string param_config = "-config";
         private const string param_help = "-help";
         private const ConsoleColor titleColor = ConsoleColor.White;
@@ -137,6 +126,10 @@ namespace FDR
                     case param_resize:
                         operation = Operation.Resize;
                         GetParam(ref folder, nameof(folder));
+                        break;
+
+                    case param_web:
+                        operation = Operation.Web;
                         break;
 
                     case param_config:
@@ -248,6 +241,11 @@ namespace FDR
                             Resize.ResizeFilesInFolder(new DirectoryInfo(Path.GetFullPath(folder)), resizeConfig);
                             break;
 
+                        case Operation.Web:
+                            Common.Msg($"FDR Tools {version} - Web", titleColor);
+                            Common.Msg("Starting the web application...");
+                            break;
+
                         default:
                             DisplayHelp(version, function);
                             break;
@@ -312,6 +310,7 @@ namespace FDR
                 help.Add($"{param_rename} <{nameof(folder)}>", "Rename image files based on a given configuration");
                 help.Add($"{param_resize} <{nameof(folder)}>", "Resize image files based on a given configuration");
                 help.Add($"{param_config} <{nameof(config)}>", "Named configuration for some functions like renaming and resizing");
+                help.Add(param_web, "Start the web application");
                 help.Add(param_auto, "Start the import automatically");
                 help.Add(param_noactions, "Skip the actions during import to enable importing from multiple sources");
                 help.Add(param_force, "Force importing existing folders");
