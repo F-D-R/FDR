@@ -7,6 +7,15 @@ namespace FDR.Web.Pages
 {
     public class CleanupModel : PageModel
     {
+        private readonly List<ProcessInfo> Processes;
+
+        public CleanupModel(List<ProcessInfo> processes)
+        {
+            Processes = processes;
+            Processes.Add(new ("Cleanup", Operation.Cleanup));
+        }
+
+
         [Required(ErrorMessage = "Folder is empty!")]
         [PageRemote(AdditionalFields = "__RequestVerificationToken", HttpMethod = "POST", PageHandler = "ValidateFolder", ErrorMessage = "Folder doesn't exist!")]
         [BindProperty]

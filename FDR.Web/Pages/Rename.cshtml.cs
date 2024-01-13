@@ -8,12 +8,13 @@ namespace FDR.Web.Pages
     public class RenameModel : PageModel
     {
         private readonly IConfiguration Configuration;
-        private readonly WebApplication App;
+        private readonly List<ProcessInfo> Processes;
 
-        public RenameModel(IConfiguration configuration, WebApplication app)
+        public RenameModel(IConfiguration configuration, List<ProcessInfo> processes)
         {
             Configuration = configuration;
-            App = app;
+            Processes = processes;
+            Processes.Add(new ("Rename", Operation.Rename));
         }
 
         public AppConfig? AppConfig { get; set; }
@@ -44,7 +45,7 @@ namespace FDR.Web.Pages
             }
             catch { }
 
-            
+
 
             ConfigKey = Request.Query["config"];
             if (AppConfig != null && !string.IsNullOrWhiteSpace(ConfigKey))

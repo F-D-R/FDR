@@ -1,7 +1,11 @@
+using FDR.Web;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+builder.Services.Add(new ServiceDescriptor(typeof(List<ProcessInfo>), new List<ProcessInfo>()));
 
 var app = builder.Build();
 

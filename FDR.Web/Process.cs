@@ -1,4 +1,6 @@
-﻿namespace FDR.Web
+﻿using FDR.Tools.Library;
+
+namespace FDR.Web
 {
     public class Process
     {
@@ -17,5 +19,27 @@
                 }
             });
         }
+    }
+
+    public class ProcessInfo
+    {
+        public ProcessInfo(string name, Operation operation)
+        {
+            StartedAt = DateTime.Now;
+            Name = name;
+            Operation = operation;
+        }
+
+        public string Name { get; }
+
+        public Operation Operation { get; }
+
+        public DateTime StartedAt { get; }
+
+        public Task? ProcessTask { get; set; }
+
+        public CancellationToken Token { get; set; }
+
+        public Stream? Output { get; set; }
     }
 }
