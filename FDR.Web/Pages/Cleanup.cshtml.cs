@@ -12,7 +12,7 @@ namespace FDR.Web.Pages
         public CleanupModel(List<ProcessInfo> processes)
         {
             Processes = processes;
-            Processes.Add(new ("Cleanup", Operation.Cleanup));
+            //Processes.Add(new (Operation.Cleanup));
         }
 
 
@@ -75,14 +75,15 @@ namespace FDR.Web.Pages
             Console.WriteLine($"Folder: {Folder}");
             Console.WriteLine($"Verbose output: {Verbose}");
 
-            //var sourceFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings.json";
-            //var destFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings_copy.json";
-            //await Common.CopyFileAsync(sourceFilePath, destFilePath);
+            var sourceFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings.json";
+            var destFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings_copy.json";
+            await Common.CopyFileAsync(sourceFilePath, destFilePath);
 
             cts.Token.ThrowIfCancellationRequested();
-            await Process.Start(cts.Token);
+            var task = DummyProcess.Start(cts.Token);
+            Processes.Add(new(Operation.Cleanup, cts));
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Output");
         }
     }
 

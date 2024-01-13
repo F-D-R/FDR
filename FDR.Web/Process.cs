@@ -2,7 +2,7 @@
 
 namespace FDR.Web
 {
-    public class Process
+    public class DummyProcess
     {
         public async static Task Start(CancellationToken token)
         {
@@ -13,6 +13,7 @@ namespace FDR.Web
                 int i = 0;
                 while (true)
                 {
+                    token.ThrowIfCancellationRequested();
                     i++;
                     Console.WriteLine($"Process: {i}");
                     Thread.Sleep(1000);
@@ -23,23 +24,17 @@ namespace FDR.Web
 
     public class ProcessInfo
     {
-        public ProcessInfo(string name, Operation operation)
+        public ProcessInfo(Operation operation, CancellationTokenSource tokenSource)
         {
             StartedAt = DateTime.Now;
-            Name = name;
             Operation = operation;
+            TokenSource = tokenSource;
         }
-
-        public string Name { get; }
 
         public Operation Operation { get; }
 
         public DateTime StartedAt { get; }
 
-        public Task? ProcessTask { get; set; }
-
-        public CancellationToken Token { get; set; }
-
-        public Stream? Output { get; set; }
+        public CancellationTokenSource? TokenSource { get; }
     }
 }

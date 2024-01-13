@@ -1,7 +1,8 @@
-﻿@page
+﻿@page "{handler?}"
 @model FDR.Web.Pages.OutputModel
 @{
     ViewData["Title"] = "Output";
+    int i = 0;
 }
 <h1>@ViewData["Title"]</h1>
 <hr>
@@ -11,7 +12,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Processes[0].Name)
+                @Html.DisplayNameFor(model => model.Processes[0].Operation)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Processes[0].StartedAt)
@@ -24,12 +25,18 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    @Html.DisplayFor(modelItem => item.Operation)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.StartedAt)
                 </td>
                 <td>
+                    <form asp-page-handler="Cancel" method="post">
+                        <button class="btn btn-outline-secondary">Cancel</button>
+                        <input type="hidden" name="index" value="@i" />
+                    </form>
+
+                    @*<button asp-page-handler="Cancel" type="submit">Cancel</button>*@
                     @*
                     <a asp-page="./Edit" asp-route-Id="@item.Id">Edit</a> |
                     <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
@@ -37,6 +44,7 @@
                     *@
                 </td>
             </tr>
+            i++;
         }
     </tbody>
 </table>
