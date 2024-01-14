@@ -11,10 +11,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Processes[0].Operation)
+                @Html.DisplayNameFor(model => model.Processes[0].StartedAt)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Processes[0].StartedAt)
+                @Html.DisplayNameFor(model => model.Processes[0].Operation)
             </th>
             <th></th>
         </tr>
@@ -24,10 +24,10 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Operation)
+                    @Html.DisplayFor(modelItem => item.StartedAt)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.StartedAt)
+                    @Html.DisplayFor(modelItem => item.Operation)
                 </td>
                 <td>
                     <form asp-page-handler="Cancel" method="post">

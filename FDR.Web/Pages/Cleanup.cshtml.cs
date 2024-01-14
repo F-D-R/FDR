@@ -7,11 +7,11 @@ namespace FDR.Web.Pages
 {
     public class CleanupModel : PageModel
     {
-        private readonly List<ProcessInfo> Processes;
+        private readonly Processes Processes;
         private CancellationTokenSource cts = new();
 
 
-        public CleanupModel(List<ProcessInfo> processes)
+        public CleanupModel(Processes processes)
         {
             Processes = processes;
         }
@@ -25,10 +25,6 @@ namespace FDR.Web.Pages
         [Display(Name = "Verbose output")]
         [BindProperty]
         public bool Verbose { get; set; } = false;
-
-        //public StreamReader Output { get; } = new StreamReader(Console.OpenStandardOutput());
-
-        public string? Output { get; set; } = string.Empty;
 
         public void OnGet()
         {
@@ -71,7 +67,7 @@ namespace FDR.Web.Pages
 
             cts.Token.ThrowIfCancellationRequested();
             var task = new DummyProcess().Start(cts.Token);
-            Processes.Add(new(Operation.Cleanup, cts, task));
+            Processes.Add(Operation.Cleanup, cts, task);
 
             return RedirectToPage("./Output");
         }

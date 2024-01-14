@@ -7,15 +7,12 @@ namespace FDR.Web.Pages
 {
     public class RenameModel : PageModel
     {
-        private readonly IConfiguration Configuration;
-        private readonly List<ProcessInfo> Processes;
+        private readonly Processes Processes;
         private CancellationTokenSource cts = new();
 
-        public RenameModel(IConfiguration configuration, List<ProcessInfo> processes)
+        public RenameModel(Processes processes)
         {
-            Configuration = configuration;
             Processes = processes;
-            //Processes.Add(new (Operation.Rename));
         }
 
         public AppConfig? AppConfig { get; set; }
@@ -113,13 +110,9 @@ namespace FDR.Web.Pages
             Console.WriteLine($"Folder: {Folder}");
             Console.WriteLine($"Verbose output: {Verbose}");
 
-            //var sourceFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings.json";
-            //var destFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings_copy.json";
-            //await Common.CopyFileAsync(sourceFilePath, destFilePath);
-
             cts.Token.ThrowIfCancellationRequested();
             var task = new DummyProcess().Start(cts.Token);
-            Processes.Add(new(Operation.Rename, cts, task));
+            Processes.Add(Operation.Rename, cts, task);
 
             return RedirectToPage("./Output");
         }

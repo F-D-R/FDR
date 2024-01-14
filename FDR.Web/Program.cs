@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-builder.Services.Add(new ServiceDescriptor(typeof(List<ProcessInfo>), new List<ProcessInfo>()));
+builder.Services.Add(new ServiceDescriptor(typeof(Processes), new Processes()));
 
 var app = builder.Build();
 

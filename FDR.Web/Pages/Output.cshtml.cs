@@ -5,22 +5,22 @@ namespace FDR.Web.Pages
 {
     public class OutputModel : PageModel
     {
-        public readonly List<ProcessInfo> Processes;
+        public Processes Processes { get; }
 
-        public OutputModel(List<ProcessInfo> processes)
+        public OutputModel(Processes processes)
         {
             Processes = processes;
         }
 
         public void OnGet()
         {
-            Processes.RemoveAll(p => p.Task?.Status == TaskStatus.RanToCompletion);
+            Processes.RemoveAll(p => p.Task.IsCompleted);
         }
 
         public IActionResult OnPostCancel(int index)
         {
             Console.WriteLine($"OutputModel.OnPostCancel(index={index})");
-            Processes[index]?.TokenSource?.Cancel();
+            Processes[index]?.CancellationTokenSource?.Cancel();
             Processes.RemoveAt(index);
             return Processes.Count > 0 ? new PageResult() : RedirectToPage("./Index");
         }

@@ -27,20 +27,33 @@ namespace FDR.Web
 
     public class ProcessInfo
     {
-        public ProcessInfo(Operation operation, CancellationTokenSource tokenSource, Task task)
+        public ProcessInfo(Operation operation, CancellationTokenSource cancellationTokenSource, Task task)
         {
+            Id = Guid.NewGuid();
             StartedAt = DateTime.Now;
             Operation = operation;
-            TokenSource = tokenSource;
+            CancellationTokenSource = cancellationTokenSource;
             Task = task;
         }
+
+        public Guid Id { get; }
 
         public Operation Operation { get; }
 
         public DateTime StartedAt { get; }
 
-        public CancellationTokenSource? TokenSource { get; }
+        public CancellationTokenSource? CancellationTokenSource { get; }
 
-        public Task? Task { get; }
+        public Task Task { get; }
+    }
+
+    public class Processes : List<ProcessInfo>
+    {
+        public Processes () { }
+
+        public void  Add(Operation operation, CancellationTokenSource cancellationTokenSource, Task task)
+        {
+            this.Add(new(operation, cancellationTokenSource, task));
+        }
     }
 }
