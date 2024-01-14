@@ -18,11 +18,10 @@ namespace FDR.Web.Pages
 
         public IActionResult OnPostCancel(int index)
         {
-            Console.WriteLine($"OutputModel.OnPostCancel... (index={index})");
+            Console.WriteLine($"OutputModel.OnPostCancel(index={index})");
             Processes[index]?.TokenSource?.Cancel();
             Processes.RemoveAt(index);
-            if (Processes.Count == 0) { return RedirectToPage("./Index"); }
-            return new PageResult();
+            return Processes.Count > 0 ? new PageResult() : RedirectToPage("./Index");
         }
     }
 }

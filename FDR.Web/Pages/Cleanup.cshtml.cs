@@ -8,11 +8,12 @@ namespace FDR.Web.Pages
     public class CleanupModel : PageModel
     {
         private readonly List<ProcessInfo> Processes;
+        private CancellationTokenSource cts = new();
+
 
         public CleanupModel(List<ProcessInfo> processes)
         {
             Processes = processes;
-            //Processes.Add(new (Operation.Cleanup));
         }
 
 
@@ -28,8 +29,6 @@ namespace FDR.Web.Pages
         //public StreamReader Output { get; } = new StreamReader(Console.OpenStandardOutput());
 
         public string? Output { get; set; } = string.Empty;
-
-        private CancellationTokenSource cts = new();
 
         public void OnGet()
         {
@@ -47,18 +46,13 @@ namespace FDR.Web.Pages
             Console.WriteLine("CleanupModel.OnPostSelectFolder...");
         }
 
-        public void OnClose()
+        public IActionResult OnPost()
         {
-            cts.Cancel();
-        }
-
-        public async Task<IActionResult> OnPostAsync()
-        {
-            Console.WriteLine("CleanupModel.OnPostAsync...");
+            Console.WriteLine("CleanupModel.OnPost...");
 
             if (!ModelState.IsValid)
             {
-                Console.WriteLine("CleanupModel.OnPostAsync ModelState is NOT valid!");
+                Console.WriteLine("CleanupModel.OnPost ModelState is NOT valid!");
                 return Page();
             }
 
@@ -69,18 +63,14 @@ namespace FDR.Web.Pages
                 return Page();
             }
 
-            Console.WriteLine("CleanupModel.OnPostAsync ModelState is valid...");
+            Console.WriteLine("CleanupModel.OnPost ModelState is valid...");
 
             Console.WriteLine("");
             Console.WriteLine($"Folder: {Folder}");
             Console.WriteLine($"Verbose output: {Verbose}");
 
-            var sourceFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings.json";
-            var destFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings_copy.json";
-            await Common.CopyFileAsync(sourceFilePath, destFilePath);
-
             cts.Token.ThrowIfCancellationRequested();
-            var task = DummyProcess.Start(cts.Token);
+            _ = DummyProcess.Start(cts.Token);
             Processes.Add(new(Operation.Cleanup, cts));
 
             return RedirectToPage("./Output");

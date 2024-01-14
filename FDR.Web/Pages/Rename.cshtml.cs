@@ -75,64 +75,13 @@ namespace FDR.Web.Pages
             Console.WriteLine("OnGetSelectFolder...");
         }
 
-        public void OnPost2()
+        public IActionResult OnPost()
         {
             Console.WriteLine("RenameModel.OnPost...");
 
             if (!ModelState.IsValid)
             {
                 Console.WriteLine("RenameModel.OnPost ModelState is NOT valid!!!");
-                Page();
-                return;
-            }
-
-            try
-            {
-                RenameConfig.Validate();
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("RenameConfig", ex.Message);
-                Page();
-                return;
-            }
-
-            var folder = new DirectoryInfo(Folder!);
-            if (!folder.Exists)
-            {
-                ModelState.AddModelError("Folder", "Folder doesn't exist!");
-                Page();
-                return;
-            }
-
-            Console.WriteLine("RenameModel.OnPost ModelState is valid...");
-
-            Console.WriteLine("");
-            Console.WriteLine($"Selected config: {ConfigKey}");
-            Console.WriteLine($"File filter: {RenameConfig.FileFilter}");
-            Console.WriteLine($"Filename pattern: {RenameConfig.FilenamePattern}");
-            Console.WriteLine($"Filename case: {RenameConfig.FilenameCase}");
-            Console.WriteLine($"Extension case: {RenameConfig.ExtensionCase}");
-            Console.WriteLine($"Additional files: {RenameConfig.AdditionalFiles}");
-            Console.WriteLine($"Recursive: {RenameConfig.Recursive}");
-            Console.WriteLine($"Stop on error: {RenameConfig.StopOnError}");
-            Console.WriteLine($"Verbose output: {Verbose}");
-
-            //Rename.RenameFilesInFolder(new DirectoryInfo(Path.GetFullPath(folder)), RenameConfig);
-
-            //_context.Movies.Add(Movie);
-            //await _context.SaveChangesAsync();
-
-            RedirectToPage("./Import");
-        }
-
-        public async Task<IActionResult> OnPostAsync()
-        {
-            Console.WriteLine("RenameModel.OnPostAsync...");
-
-            if (!ModelState.IsValid)
-            {
-                Console.WriteLine("RenameModel.OnPostAsync ModelState is NOT valid!!!");
                 return Page();
             }
 
@@ -150,7 +99,7 @@ namespace FDR.Web.Pages
                 return Page();
             }
 
-            Console.WriteLine("RenameModel.OnPostAsync ModelState is valid...");
+            Console.WriteLine("RenameModel.OnPost ModelState is valid...");
 
             Console.WriteLine("");
             Console.WriteLine($"Selected config: {ConfigKey}");
@@ -164,12 +113,12 @@ namespace FDR.Web.Pages
             Console.WriteLine($"Folder: {Folder}");
             Console.WriteLine($"Verbose output: {Verbose}");
 
-            var sourceFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings.json";
-            var destFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings_copy.json";
-            await Common.CopyFileAsync(sourceFilePath, destFilePath);
+            //var sourceFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings.json";
+            //var destFilePath = @"D:\GIT\FDR\FDR.Web\bin\Release\net7.0\appsettings_copy.json";
+            //await Common.CopyFileAsync(sourceFilePath, destFilePath);
 
             cts.Token.ThrowIfCancellationRequested();
-            var task = DummyProcess.Start(cts.Token);
+            _ = DummyProcess.Start(cts.Token);
             Processes.Add(new(Operation.Rename, cts));
 
             return RedirectToPage("./Output");
