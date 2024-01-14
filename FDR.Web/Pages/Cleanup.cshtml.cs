@@ -8,14 +8,11 @@ namespace FDR.Web.Pages
     public class CleanupModel : PageModel
     {
         private readonly Processes Processes;
-        private CancellationTokenSource cts = new();
-
 
         public CleanupModel(Processes processes)
         {
             Processes = processes;
         }
-
 
         [Required(ErrorMessage = "Folder is empty!")]
         [PageRemote(AdditionalFields = "__RequestVerificationToken", HttpMethod = "POST", PageHandler = "ValidateFolder", ErrorMessage = "Folder doesn't exist!")]
@@ -65,9 +62,7 @@ namespace FDR.Web.Pages
             Console.WriteLine($"Folder: {Folder}");
             Console.WriteLine($"Verbose output: {Verbose}");
 
-            cts.Token.ThrowIfCancellationRequested();
-            var task = new DummyProcess().Start(cts.Token);
-            Processes.Add(Operation.Cleanup, cts, task);
+            _ = Processes.Start(operation: Operation.Cleanup, folder: Folder, verbose: Verbose);
 
             return RedirectToPage("./Output");
         }

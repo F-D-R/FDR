@@ -1,4 +1,36 @@
-﻿@page
+﻿@page "{handler?}"
 @model FDR.Web.Pages.VerifyModel
 @{
+    ViewData["Title"] = "Verify";
+}
+<h1>@ViewData["Title"]</h1>
+<hr>
+
+@using (Html.BeginForm(FormMethod.Post))
+{
+    <div>
+        <div asp-validation-summary="All" class="text-danger col-sm-8"></div>
+        <div class="row mb-3">
+            <label asp-for="Folder" class="col-sm-3 col-form-label"></label>
+            <div class="col-sm-8">
+                <div class="input-group mb-3">
+                    <input asp-for="Folder" class="form-control">
+                    <button class="btn btn-outline-secondary" type="button" asp-page-handler="SelectFolder">...</button>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label asp-for="Verbose" class="col-sm-3 col-form-label"></label>
+            <div class="col-sm-8">
+                <input asp-for="Verbose" class="form-check-input">
+            </div>
+        </div>
+        <input type="submit" value="Verify" class="btn btn-primary"><br>
+    </div>
+}
+
+@section Scripts{
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/lib/jquery-ajax-unobtrusive/dist/jquery.unobtrusive-ajax.min.js"></script>
 }

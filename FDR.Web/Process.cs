@@ -1,4 +1,5 @@
 ﻿using FDR.Tools.Library;
+using System.Diagnostics;
 
 namespace FDR.Web
 {
@@ -49,11 +50,81 @@ namespace FDR.Web
 
     public class Processes : List<ProcessInfo>
     {
-        public Processes () { }
+        public Processes() { }
 
-        public void  Add(Operation operation, CancellationTokenSource cancellationTokenSource, Task task)
+        public void Add(Operation operation, CancellationTokenSource cancellationTokenSource, Task task)
         {
             this.Add(new(operation, cancellationTokenSource, task));
+        }
+
+        //public Task Start(CancellationTokenSource tokenSource, Operation operation, string folder, bool verbose)
+        public Task Start(Operation operation, string? folder = null, string? config = null, bool verbose = false, bool force = false)
+        {
+            CancellationTokenSource tokenSource = new();
+            tokenSource.Token.ThrowIfCancellationRequested();
+
+            Process process = new Process();
+            process.StartInfo.FileName = "FDR.exe";
+
+            string param = string.Empty;
+            switch (operation)
+            {
+                case Operation.Cleanup:
+                    param += $"-cleanup \"{folder}\"";
+                    break;
+                case Operation.Diff:
+                    param += $"-diff \"{folder}\"";
+                    break;
+                case Operation.Hash:
+                    param += $"-hash \"{folder}\"";
+                    break;
+                case Operation.Help:
+                    param += "-help";
+                    break;
+                case Operation.Import:
+                    param += $"-import \"{folder}\"";
+                    break;
+                case Operation.Rename:
+                    param += $"-rename \"{folder}\"";
+                    break;
+                case Operation.Resize:
+                    param += $"-resize \"{folder}\"";
+                    break;
+                case Operation.Verify:
+                    param += $"-verify \"{folder}\"";
+                    break;
+                case Operation.Web:
+                    param += "-web";
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            if (verbose) param += " -verbose";
+            if (force) param += " -force";
+
+            process.StartInfo.Arguments = param;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardOutput = true;
+
+            process.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
+            {
+                Console.WriteLine(e.Data);
+            });
+
+            process.Start();
+            process.BeginOutputReadLine();
+
+            //Console.WriteLine(process.StandardOutput.ReadToEnd());
+
+            tokenSource.Token.Register(() => { process.Kill(); });
+
+            //return process.WaitForExitAsync();
+            var task = process.WaitForExitAsync();
+
+            this.Add(operation, tokenSource, task);
+
+            return task;
         }
     }
 }

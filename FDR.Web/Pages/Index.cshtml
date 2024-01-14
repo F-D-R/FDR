@@ -4,6 +4,16 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-
+<div>
+    <p>Param: @Model.Configuration["param"]</p>
+    <br>
+    @if (false)
+    {
+        <p>
+            @foreach (var item in Model.Configuration.AsEnumerable())
+            {
+                @item.Key @: @item.Value<br>
+            }
+        </p>
+    }
 </div>

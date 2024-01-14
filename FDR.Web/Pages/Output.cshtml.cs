@@ -7,6 +7,8 @@ namespace FDR.Web.Pages
     {
         public Processes Processes { get; }
 
+        public string? Output { get; set; }
+
         public OutputModel(Processes processes)
         {
             Processes = processes;
