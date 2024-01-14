@@ -70,8 +70,8 @@ namespace FDR.Web.Pages
             Console.WriteLine($"Verbose output: {Verbose}");
 
             cts.Token.ThrowIfCancellationRequested();
-            _ = DummyProcess.Start(cts.Token);
-            Processes.Add(new(Operation.Cleanup, cts));
+            var task = new DummyProcess().Start(cts.Token);
+            Processes.Add(new(Operation.Cleanup, cts, task));
 
             return RedirectToPage("./Output");
         }

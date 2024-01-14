@@ -4,7 +4,9 @@ namespace FDR.Web
 {
     public class DummyProcess
     {
-        public async static Task Start(CancellationToken token)
+        private int run = new Random().Next(100, 999);
+
+        public async Task Start(CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
@@ -15,8 +17,9 @@ namespace FDR.Web
                 {
                     token.ThrowIfCancellationRequested();
                     i++;
-                    Console.WriteLine($"Process: {i}");
+                    Console.WriteLine($"Process: {run}/{i}");
                     Thread.Sleep(1000);
+                    if (i >= 100) break;
                 }
             });
         }
@@ -24,11 +27,12 @@ namespace FDR.Web
 
     public class ProcessInfo
     {
-        public ProcessInfo(Operation operation, CancellationTokenSource tokenSource)
+        public ProcessInfo(Operation operation, CancellationTokenSource tokenSource, Task task)
         {
             StartedAt = DateTime.Now;
             Operation = operation;
             TokenSource = tokenSource;
+            Task = task;
         }
 
         public Operation Operation { get; }
@@ -36,5 +40,7 @@ namespace FDR.Web
         public DateTime StartedAt { get; }
 
         public CancellationTokenSource? TokenSource { get; }
+
+        public Task? Task { get; }
     }
 }

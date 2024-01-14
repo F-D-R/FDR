@@ -118,8 +118,8 @@ namespace FDR.Web.Pages
             //await Common.CopyFileAsync(sourceFilePath, destFilePath);
 
             cts.Token.ThrowIfCancellationRequested();
-            _ = DummyProcess.Start(cts.Token);
-            Processes.Add(new(Operation.Rename, cts));
+            var task = new DummyProcess().Start(cts.Token);
+            Processes.Add(new(Operation.Rename, cts, task));
 
             return RedirectToPage("./Output");
         }

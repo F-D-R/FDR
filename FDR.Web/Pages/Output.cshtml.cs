@@ -14,6 +14,7 @@ namespace FDR.Web.Pages
 
         public void OnGet()
         {
+            Processes.RemoveAll(p => p.Task?.Status == TaskStatus.RanToCompletion);
         }
 
         public IActionResult OnPostCancel(int index)
