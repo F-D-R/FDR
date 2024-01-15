@@ -14,6 +14,9 @@
                 @Html.DisplayNameFor(model => model.Processes[0].StartedAt)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Processes[0].PID)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Processes[0].Operation)
             </th>
             <th></th>
@@ -25,6 +28,9 @@
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.StartedAt)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PID)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Operation)
