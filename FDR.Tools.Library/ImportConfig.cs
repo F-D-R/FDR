@@ -127,6 +127,11 @@ namespace FDR.Tools.Library
             }
         }
 
+        public ImportConfig Clone()
+        {
+            return (ImportConfig)MemberwiseClone();
+        }
+
         public override void Validate()
         {
             if (string.IsNullOrWhiteSpace(DestRoot)) throw new InvalidDataException("Destination root cannot be empty!");

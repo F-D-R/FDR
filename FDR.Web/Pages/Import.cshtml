@@ -4,5 +4,83 @@
     ViewData["Title"] = "Import";
 }
 <h1>@ViewData["Title"]</h1>
+<hr>
 
-<p>Use this page to import image files.</p>
+@using (Html.BeginForm(FormMethod.Post))
+{
+    <div>
+        <div asp-validation-summary="All" class="text-danger col-sm-8"></div>
+        @if (Model.AppConfig?.ImportConfigs != null)
+        {
+            <div class="row mb-3">
+                <label asp-for="ConfigKey" class="col-sm-3 col-form-label">Predefined import config</label>
+                <div class="col-sm-8">
+                    <select asp-for="ConfigKey" asp-items="@(Model.AppConfig?.ImportConfigs?.Select(d => new SelectListItem(d.Key, d.Key)))" class="form-select" onchange="location = '?config=' + this.value;">
+                        <option value="">Default config...</option>
+                    </select>
+                </div>
+            </div>
+            <hr>
+        }
+        <div class="row mb-3">
+            <label asp-for="ImportConfig.Name" class="col-sm-3 col-form-label"></label>
+            <div class="col-sm-8">
+                <input asp-for="ImportConfig.Name" class="form-control">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label asp-for="ImportConfig.FileFilter" class="col-sm-3 col-form-label"></label>
+            <div class="col-sm-8">
+                <input asp-for="ImportConfig.FileFilter" class="form-control">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label asp-for="ImportConfig.DestRoot" class="col-sm-3 col-form-label"></label>
+            <div class="col-sm-8">
+                <div class="input-group mb-3">
+                    <input asp-for="ImportConfig.DestRoot" class="form-control">
+                    <button class="btn btn-outline-secondary" type="button" asp-page-handler="SelectDestRoot">...</button>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label asp-for="ImportConfig.DestStructure" class="col-sm-3 col-form-label"></label>
+            <div class="col-sm-8">
+                <select asp-for="ImportConfig.DestStructure" asp-items="Html.GetEnumSelectList<FolderStructure>()" class="form-select"></select>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label asp-for="ImportConfig.DateFormat" class="col-sm-3 col-form-label"></label>
+            <div class="col-sm-8">
+                <input asp-for="ImportConfig.DateFormat" class="form-control">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-sm-8">
+            </div>
+        </div>
+        <hr>
+        <div class="row mb-3">
+            <label asp-for="Folder" class="col-sm-3 col-form-label"></label>
+            <div class="col-sm-8">
+                <div class="input-group mb-3">
+                    <input asp-for="Folder" class="form-control">
+                    <button class="btn btn-outline-secondary" type="button" asp-page-handler="SelectFolder">...</button>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label asp-for="Verbose" class="col-sm-3 col-form-label"></label>
+            <div class="col-sm-8">
+                <input asp-for="Verbose" class="form-check-input va-mid">
+            </div>
+        </div>
+        <input type="submit" value="Import" class="btn btn-primary"><br>
+    </div>
+}
+
+@section Scripts{
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/lib/jquery-ajax-unobtrusive/dist/jquery.unobtrusive-ajax.min.js"></script>
+}

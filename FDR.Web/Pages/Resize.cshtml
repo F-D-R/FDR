@@ -10,7 +10,7 @@
 {
     <div>
         <div asp-validation-summary="All" class="text-danger col-sm-8"></div>
-        @if (Model.AppConfig?.RenameConfigs != null)
+        @if (Model.AppConfig?.ResizeConfigs != null)
         {
             <div class="row mb-3">
                 <label asp-for="ConfigKey" class="col-sm-3 col-form-label">Predefined resize config</label>

@@ -64,7 +64,7 @@ namespace FDR.Web
             this.Add(new(operation, cancellationTokenSource, task));
         }
 
-        public Task Start(Operation operation, string? folder = null, string? reffolder = null, string? config = null, bool verbose = false, bool force = false, ConfigPartBase? tmpConfig = null)
+        public Task Start(Operation operation, string? folder = null, string? reffolder = null, string? config = null, bool verbose = false, bool force = false, bool auto = false, bool noactions = false, ConfigPartBase? tmpConfig = null)
         {
             CancellationTokenSource tokenSource = new();
             tokenSource.Token.ThrowIfCancellationRequested();
@@ -118,6 +118,8 @@ namespace FDR.Web
 
             if (verbose) param += $" {Common.param_verbose}";
             if (force) param += $" {Common.param_force}";
+            if (auto) param += $" {Common.param_auto}";
+            if (noactions) param += $" {Common.param_noactions}";
 
             string? tmpFile = null;
             if (tmpConfig != null)

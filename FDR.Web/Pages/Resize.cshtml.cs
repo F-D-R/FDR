@@ -80,7 +80,7 @@ namespace FDR.Web.Pages
             try { ResizeConfig.Validate(); }
             catch (Exception ex)
             {
-                ModelState.AddModelError("ResizeConfig", ex.Message ?? "Invalid rename configuration!");
+                ModelState.AddModelError("ResizeConfig", ex.Message ?? "Invalid resize configuration!");
                 return Page();
             }
 
