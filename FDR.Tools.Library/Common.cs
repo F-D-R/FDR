@@ -12,6 +12,25 @@ namespace FDR.Tools.Library
 {
     public static class Common
     {
+        public const string param_import = "-import";
+        public const string param_noactions = "-noactions";
+        public const string param_force = "-force";
+        public const string param_hash = "-hash";
+        public const string param_rehash = "-rehash";
+        public const string param_verify = "-verify";
+        public const string param_diff = "-diff";
+        public const string param_cleanup = "-cleanup";
+        public const string param_verbose = "-verbose";
+        public const string param_auto = "-auto";
+        public const string param_file = "-file";
+        public const string param_reference = "-reference";
+        public const string param_rename = "-rename";
+        public const string param_resize = "-resize";
+        public const string param_web = "-web";
+        public const string param_config = "-config";
+        public const string param_configfile = "-configfile";
+        public const string param_help = "-help";
+
         private static FileDateComparer? comparer;
 
         public static FileDateComparer FileComparer
@@ -95,7 +114,7 @@ namespace FDR.Tools.Library
 
         public static List<FileInfo> GetFiles(DirectoryInfo folder, ImportConfig config)
         {
-            if (config == null) throw new ArgumentNullException("config");
+            if (config == null) throw new ArgumentNullException(nameof(config));
             config.Validate();
 
             return GetFiles(folder, config.FileFilter, true);
@@ -103,7 +122,7 @@ namespace FDR.Tools.Library
 
         public static List<FileInfo> GetFiles(DirectoryInfo folder, ResizeConfig config)
         {
-            if (config == null) throw new ArgumentNullException("config");
+            if (config == null) throw new ArgumentNullException(nameof(config));
             config.Validate();
 
             return GetFiles(folder, config.FileFilter, config.Recursive);
@@ -111,8 +130,8 @@ namespace FDR.Tools.Library
 
         public static List<FileInfo> GetFiles(DirectoryInfo folder, string filter, bool recursive)
         {
-            if (string.IsNullOrWhiteSpace(filter)) throw new ArgumentNullException("filter");
-            if (folder == null) throw new ArgumentNullException("folder");
+            if (string.IsNullOrWhiteSpace(filter)) throw new ArgumentNullException(nameof(filter));
+            if (folder == null) throw new ArgumentNullException(nameof(folder));
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
             var files = new List<FileInfo>();
@@ -125,8 +144,8 @@ namespace FDR.Tools.Library
 
         public static IEnumerable<FileInfo> EnumerateFiles(DirectoryInfo folder, string filter, bool recursive = true)
         {
-            if (string.IsNullOrWhiteSpace(filter)) throw new ArgumentNullException("filter");
-            if (folder == null) throw new ArgumentNullException("folder");
+            if (string.IsNullOrWhiteSpace(filter)) throw new ArgumentNullException(nameof(filter));
+            if (folder == null) throw new ArgumentNullException(nameof(folder));
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
             var options = new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = recursive };

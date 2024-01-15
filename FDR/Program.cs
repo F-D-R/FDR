@@ -11,23 +11,6 @@ namespace FDR
 {
     public class Program
     {
-        private const string param_import = "-import";
-        private const string param_noactions = "-noactions";
-        private const string param_force = "-force";
-        private const string param_hash = "-hash";
-        private const string param_rehash = "-rehash";
-        private const string param_verify = "-verify";
-        private const string param_diff = "-diff";
-        private const string param_cleanup = "-cleanup";
-        private const string param_verbose = "-verbose";
-        private const string param_auto = "-auto";
-        private const string param_file = "-file";
-        private const string param_reference = "-reference";
-        private const string param_rename = "-rename";
-        private const string param_resize = "-resize";
-        private const string param_web = "-web";
-        private const string param_config = "-config";
-        private const string param_help = "-help";
         private const ConsoleColor titleColor = ConsoleColor.White;
         private static Operation operation = Operation.Help;
         private static string version = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
@@ -37,6 +20,7 @@ namespace FDR
         private static bool noactions = false;
         private static string folder = "";
         private static string file = "";
+        private static string configfile = "";
         private static string reference = "";
         private static string config = "";
         private static string function = "";
@@ -63,80 +47,84 @@ namespace FDR
             {
                 switch (args[i].ToLower())
                 {
-                    case param_import:
+                    case Common.param_import:
                         operation = Operation.Import;
                         GetParam(ref folder, nameof(folder), true);
                         break;
 
-                    case param_hash:
+                    case Common.param_hash:
                         operation = Operation.Hash;
                         GetParam(ref folder, nameof(folder));
                         break;
 
-                    case param_rehash:
+                    case Common.param_rehash:
                         operation = Operation.Hash;
                         force = true;
                         GetParam(ref folder, nameof(folder));
                         break;
 
-                    case param_verify:
+                    case Common.param_verify:
                         operation = Operation.Verify;
                         GetParam(ref folder, nameof(folder));
                         break;
 
-                    case param_diff:
+                    case Common.param_diff:
                         operation = Operation.Diff;
                         GetParam(ref folder, nameof(folder));
                         break;
 
-                    case param_cleanup:
+                    case Common.param_cleanup:
                         operation = Operation.Cleanup;
                         GetParam(ref folder, nameof(folder));
                         break;
 
-                    case param_verbose:
+                    case Common.param_verbose:
                         verbose = true;
                         break;
 
-                    case param_auto:
+                    case Common.param_auto:
                         auto = true;
                         break;
 
-                    case param_noactions:
+                    case Common.param_noactions:
                         noactions = true;
                         break;
 
-                    case param_force:
+                    case Common.param_force:
                         force = true;
                         break;
 
-                    case param_file:
+                    case Common.param_file:
                         GetParam(ref file, nameof(file));
                         break;
 
-                    case param_reference:
+                    case Common.param_reference:
                         GetParam(ref reference, nameof(reference));
                         break;
 
-                    case param_rename:
+                    case Common.param_rename:
                         operation = Operation.Rename;
                         GetParam(ref folder, nameof(folder));
                         break;
 
-                    case param_resize:
+                    case Common.param_resize:
                         operation = Operation.Resize;
                         GetParam(ref folder, nameof(folder));
                         break;
 
-                    case param_web:
+                    case Common.param_web:
                         operation = Operation.Web;
                         break;
 
-                    case param_config:
+                    case Common.param_config:
                         GetParam(ref config, nameof(config));
                         break;
 
-                    case param_help:
+                    case Common.param_configfile:
+                        GetParam(ref configfile, nameof(configfile));
+                        break;
+
+                    case Common.param_help:
                         operation = Operation.Help;
                         GetParam(ref function, nameof(function), true);
                         break;
@@ -171,7 +159,7 @@ namespace FDR
                     {
                         case Operation.Import:
                             Common.Msg($"FDR Tools {version} - Import", titleColor);
-                            appConfig = AppConfig.Load();
+                            appConfig = AppConfig.Load(configfile);
                             if (appConfig.ImportConfigs == null)
                             {
                                 Common.Msg("There are no import configurations!", ConsoleColor.Red);
@@ -213,7 +201,7 @@ namespace FDR
                                 Common.Msg("Rename configuration is not defined!", ConsoleColor.Red);
                                 return;
                             }
-                            appConfig = AppConfig.Load();
+                            appConfig = AppConfig.Load(configfile);
                             RenameConfig? renameConfig;
                             if (!appConfig.RenameConfigs.TryGetValue(config, out renameConfig))
                             {
@@ -231,7 +219,7 @@ namespace FDR
                                 Common.Msg("Resize configuration is not defined!", ConsoleColor.Red);
                                 return;
                             }
-                            appConfig = AppConfig.Load();
+                            appConfig = AppConfig.Load(configfile);
                             ResizeConfig? resizeConfig;
                             if (!appConfig.ResizeConfigs.TryGetValue(config, out resizeConfig))
                             {
@@ -299,22 +287,23 @@ namespace FDR
                 Common.Msg("");
                 Common.Msg("Where options can be:");
                 var help = new Dictionary<string, string>();
-                help.Add($"{param_help} [<{nameof(function)}>]", "Generic help (this screen) or optionally help about a given function");
-                help.Add($"{param_import} [<{nameof(folder)}>]", "Import memory card content or optionally the content of a folder");
-                help.Add($"{param_hash} <{nameof(folder)}>", "Create hash of files in a folder");
-                help.Add($"{param_rehash} <{nameof(folder)}>", "Recreate hashes of all files in a folder");
-                help.Add($"{param_verify} <{nameof(folder)}>", "Verify the files in a folder against their saved hash");
-                help.Add($"{param_diff} <{nameof(folder)}>", "Compare the files of a folder to a reference one");
-                help.Add($"{param_reference} <{nameof(folder)}>", "Reference folder for the diff function");
-                help.Add($"{param_cleanup} <{nameof(folder)}>", "Delete unnecessary raw, hash and err files");
-                help.Add($"{param_rename} <{nameof(folder)}>", "Rename image files based on a given configuration");
-                help.Add($"{param_resize} <{nameof(folder)}>", "Resize image files based on a given configuration");
-                help.Add($"{param_config} <{nameof(config)}>", "Named configuration for some functions like renaming and resizing");
-                help.Add(param_web, "Start the web application");
-                help.Add(param_auto, "Start the import automatically");
-                help.Add(param_noactions, "Skip the actions during import to enable importing from multiple sources");
-                help.Add(param_force, "Force importing existing folders");
-                help.Add(param_verbose, "More detailed output");
+                help.Add($"{Common.param_help} [<{nameof(function)}>]", "Generic help (this screen) or optionally help about a given function");
+                help.Add($"{Common.param_import} [<{nameof(folder)}>]", "Import memory card content or optionally the content of a folder");
+                help.Add($"{Common.param_hash} <{nameof(folder)}>", "Create hash of files in a folder");
+                help.Add($"{Common.param_rehash} <{nameof(folder)}>", "Recreate hashes of all files in a folder");
+                help.Add($"{Common.param_verify} <{nameof(folder)}>", "Verify the files in a folder against their saved hash");
+                help.Add($"{Common.param_diff} <{nameof(folder)}>", "Compare the files of a folder to a reference one");
+                help.Add($"{Common.param_reference} <{nameof(folder)}>", "Reference folder for the diff function");
+                help.Add($"{Common.param_cleanup} <{nameof(folder)}>", "Delete unnecessary raw, hash and err files");
+                help.Add($"{Common.param_rename} <{nameof(folder)}>", "Rename image files based on a given configuration");
+                help.Add($"{Common.param_resize} <{nameof(folder)}>", "Resize image files based on a given configuration");
+                help.Add($"{Common.param_configfile} <{nameof(file)}>", "Path of the configuration file to use instead of appsettings.json");
+                help.Add($"{Common.param_config} <{nameof(config)}>", "Named configuration for some functions like renaming and resizing");
+                help.Add(Common.param_web, "Start the web application");
+                help.Add(Common.param_auto, "Start the import automatically");
+                help.Add(Common.param_noactions, "Skip the actions during import to enable importing from multiple sources");
+                help.Add(Common.param_force, "Force importing existing folders");
+                help.Add(Common.param_verbose, "More detailed output");
                 Common.ShowAttributeHelp(help, false);
             }
             else
