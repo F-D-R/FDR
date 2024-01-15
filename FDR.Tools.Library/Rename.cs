@@ -165,8 +165,8 @@ namespace FDR.Tools.Library
 
         public static void RenameFolder(DirectoryInfo folder, string? pattern)
         {
-            if (string.IsNullOrWhiteSpace(pattern)) throw new ArgumentNullException("pattern");
-            if (folder == null) throw new ArgumentNullException("folder");
+            if (string.IsNullOrWhiteSpace(pattern)) throw new ArgumentNullException(nameof(pattern));
+            if (folder == null) throw new ArgumentNullException(nameof(folder));
             if (!folder.Exists) throw new DirectoryNotFoundException("Folder doesn't exist! " + folder.FullName);
 
             var path = folder.Parent?.FullName;
@@ -177,14 +177,14 @@ namespace FDR.Tools.Library
 
         public static void RenameFolder(DirectoryInfo folder, RenameConfig config)
         {
-            if (config == null) throw new ArgumentNullException("config");
+            if (config == null) throw new ArgumentNullException(nameof(config));
             RenameFolder(folder, config.FilenamePattern);
         }
 
         public static string CalculateFileName(FileInfo file, RenameConfig config, int counter = 1)
         {
-            if (config == null) throw new ArgumentNullException("config");
-            if (file == null) throw new ArgumentNullException("file");
+            if (config == null) throw new ArgumentNullException(nameof(config));
+            if (file == null) throw new ArgumentNullException(nameof(file));
             if (!file.Exists) throw new FileNotFoundException("File doesn't exist!", file.FullName);
 
             var path = Path.GetDirectoryName(file.FullName)??"";
@@ -211,8 +211,8 @@ namespace FDR.Tools.Library
 
         public static void RenameFile(FileInfo file, RenameConfig config, ref int counter, int progressPercent)
         {
-            if (config == null) throw new ArgumentNullException("config");
-            if (file == null) throw new ArgumentNullException("file");
+            if (config == null) throw new ArgumentNullException(nameof(config));
+            if (file == null) throw new ArgumentNullException(nameof(file));
             if (!File.Exists(file.FullName)) return;    //file.Exists wouldn't work here!
 
             var origName = file.Name;
@@ -282,9 +282,9 @@ namespace FDR.Tools.Library
 
         public static void RenameFilesInFolder(DirectoryInfo folder, RenameConfig config)
         {
-            if (config == null) throw new ArgumentNullException("config");
+            if (config == null) throw new ArgumentNullException(nameof(config));
             config.Validate();
-            if (folder == null) throw new ArgumentNullException("folder");
+            if (folder == null) throw new ArgumentNullException(nameof(folder));
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
             var filter = config.FileFilter;

@@ -88,9 +88,9 @@ namespace FDR.Tools.Library
 
         public static void ResizeFilesInFolder(DirectoryInfo folder, ResizeConfig config)
         {
-            if (config == null) throw new ArgumentNullException("config");
+            if (config == null) throw new ArgumentNullException(nameof(config));
             config.Validate();
-            if (folder == null) throw new ArgumentNullException("folder");
+            if (folder == null) throw new ArgumentNullException(nameof(folder));
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
             var filter = config.FileFilter;

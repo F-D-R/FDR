@@ -103,9 +103,9 @@ namespace FDR.Tools.Library
 
         public static void MoveFilesInFolder(DirectoryInfo folder, MoveConfig config)
         {
-            if (config == null) throw new ArgumentNullException("config");
+            if (config == null) throw new ArgumentNullException(nameof(config));
             config.Validate();
-            if (folder == null) throw new ArgumentNullException("folder");
+            if (folder == null) throw new ArgumentNullException(nameof(folder));
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
             var filter = config.FileFilter;
@@ -136,11 +136,11 @@ namespace FDR.Tools.Library
 
         public static void ImportFiles(DirectoryInfo source, ImportConfig config, bool force, CancellationToken token)
         {
-            if (config == null) throw new ArgumentNullException("config");
+            if (config == null) throw new ArgumentNullException(nameof(config));
             config.Validate();
-            if (source == null) throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
             if (!source.Exists) throw new DirectoryNotFoundException($"Source folder doesn't exist! ({source.FullName})");
-            if (string.IsNullOrWhiteSpace(config.DestRoot)) throw new ArgumentNullException("DestRoot");
+            if (string.IsNullOrWhiteSpace(config.DestRoot)) throw new ArgumentNullException(nameof(config.DestRoot));
             if (!Directory.Exists(config.DestRoot)) throw new DirectoryNotFoundException($"Destination root folder doesn't exist! ({config.DestRoot})");
 
             var files = Common.GetFiles(source, config.FileFilter, true);
