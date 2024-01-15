@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System;
 
 namespace FDR.Tools.Library
 {
@@ -14,14 +15,29 @@ namespace FDR.Tools.Library
 
     public sealed class AppConfig : IValidatable
     {
-        public static AppConfig Load()
+        public static AppConfig Load(string? configPath = null)
         {
-            var appPath = Assembly.GetExecutingAssembly().Location;
-            var configPath = Path.Combine(Path.GetDirectoryName(appPath)!, "appsettings.json");
+            if (!string.IsNullOrWhiteSpace(configPath))
+            {
+                if (!File.Exists(configPath)) throw new FileNotFoundException($"Config file not found! ({configPath})");
+            }
+            else
+            {
+                var appPath = Assembly.GetExecutingAssembly().Location;
+                configPath = Path.Combine(Path.GetDirectoryName(appPath)!, "appsettings.json");
+            }
             var appConfig = JsonConvert.DeserializeObject<AppConfig>(File.ReadAllText(configPath, Encoding.UTF8));
             if (appConfig == null) appConfig = new AppConfig();
             appConfig.Validate();
             return appConfig;
+        }
+
+        public static void SaveToFile(AppConfig appConfig, string configPath)
+        {
+            if (appConfig == null) throw new ArgumentNullException(nameof(appConfig));
+            if (string.IsNullOrWhiteSpace(configPath)) throw new ArgumentNullException(nameof(configPath));
+
+            File.WriteAllText(configPath, JsonConvert.SerializeObject(appConfig), Encoding.UTF8);
         }
 
         public AppConfig()
