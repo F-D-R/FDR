@@ -36,10 +36,11 @@ else
                     <label asp-for="ConfigKey" class="col-sm-3 col-form-label">Predefined rename config</label>
                     <div class="col-sm-8">
                         <select asp-for="ConfigKey" asp-items="@(Model.AppConfig?.RenameConfigs?.Select(d => new SelectListItem(d.Key, d.Key)))" class="form-select" onchange="location = '?config=' + this.value;">
-                            <option value="">&lt;default&gt;</option>
+                            <option value="">Default config...</option>
                         </select>
                     </div>
                 </div>
+                <hr>
             }
             <div class="row mb-3">
                 <label asp-for="RenameConfig.FileFilter" class="col-sm-3 col-form-label"></label>

@@ -34,18 +34,23 @@ namespace FDR.Tools.Library
         private const string INVALID_RESIZE_METHOD = "Invalid resize method!";
         private const string JPG_QUALITY_ERROR = "JPG quality must be between 0 and 100!";
 
+        [Display(Name = "Resize method")]
         [Required]
         [Range(0, 3, ErrorMessage = INVALID_RESIZE_METHOD)]
         public ResizeMethod ResizeMethod { get; set; } = ResizeMethod.fit_in;
 
+        [Display(Name = "Max width")]
         public int MaxWidth { get; set; }
 
+        [Display(Name = "Max height")]
         public int MaxHeight { get; set; }
 
+        [Display(Name = "Clear metadata")]
         public bool ClearMetadata { get; set; }
 
         private int jpgQuality = DEFAULT_QUALITY;
 
+        [Display(Name = "JPG quality")]
         [Range(0, 100, ErrorMessage = JPG_QUALITY_ERROR)]
         public int JpgQuality
         {
