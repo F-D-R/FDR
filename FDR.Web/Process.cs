@@ -62,7 +62,6 @@ namespace FDR.Web
             this.Add(new(operation, cancellationTokenSource, task));
         }
 
-        //public Task Start(CancellationTokenSource tokenSource, Operation operation, string folder, bool verbose)
         public Task Start(Operation operation, string? folder = null, string? config = null, bool verbose = false, bool force = false)
         {
             CancellationTokenSource tokenSource = new();

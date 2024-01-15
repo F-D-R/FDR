@@ -16,6 +16,13 @@ namespace FDR.Web.Pages
 
         public void OnGet()
         {
+            var index = 0;
+            int.TryParse(Request.Query["index"], out index);
+            if (Processes.Count > index)
+            {
+                Output = Processes[index]?.Output.ToString();
+            }
+
             Processes.RemoveAll(p => p.Task.IsCompleted);
         }
 
