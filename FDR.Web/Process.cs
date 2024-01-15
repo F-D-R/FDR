@@ -1,5 +1,6 @@
 ﻿using FDR.Tools.Library;
 using System.Diagnostics;
+using System.Text;
 
 namespace FDR.Web
 {
@@ -46,6 +47,10 @@ namespace FDR.Web
         public CancellationTokenSource? CancellationTokenSource { get; }
 
         public Task Task { get; }
+
+        public int PID { get; set; }
+
+        public StringBuilder Output { get; } = new StringBuilder();
     }
 
     public class Processes : List<ProcessInfo>
@@ -110,6 +115,13 @@ namespace FDR.Web
             process.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
             {
                 Console.WriteLine(e.Data);
+
+                Process? proc = sender as Process;
+                if (proc != null)
+                {
+                    var pi = this.Find(pi => pi.PID == proc.Id);
+                    pi?.Output?.AppendLine(e.Data);
+                }
             });
 
             process.Start();
@@ -122,7 +134,10 @@ namespace FDR.Web
             //return process.WaitForExitAsync();
             var task = process.WaitForExitAsync();
 
-            this.Add(operation, tokenSource, task);
+            //this.Add(operation, tokenSource, task);
+            ProcessInfo proc = new(operation, tokenSource, task);
+            proc.PID = process.Id;
+            this.Add(proc);
 
             return task;
         }
