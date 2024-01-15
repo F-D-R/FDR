@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -21,6 +21,14 @@
   <ItemGroup>
     <Folder Include="Pages\Shared\Components\" />
     <Folder Include="wwwroot\lib\jquery-ajax-unobtrusive\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\lib\**\*.map" CopyToPublishDirectory="never" />
+    <Content Update="wwwroot\lib\**\*.css" CopyToPublishDirectory="never" />
+    <Content Update="wwwroot\lib\**\*.min.css" CopyToPublishDirectory="always" />
+    <Content Update="wwwroot\lib\**\*.js" CopyToPublishDirectory="never" />
+    <Content Update="wwwroot\lib\**\*.min.js" CopyToPublishDirectory="always" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
