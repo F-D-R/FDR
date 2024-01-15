@@ -64,7 +64,7 @@ namespace FDR.Web
             this.Add(new(operation, cancellationTokenSource, task));
         }
 
-        public Task Start(Operation operation, string? folder = null, string? config = null, bool verbose = false, bool force = false, ConfigPartBase? tmpConfig = null)
+        public Task Start(Operation operation, string? folder = null, string? reffolder = null, string? config = null, bool verbose = false, bool force = false, ConfigPartBase? tmpConfig = null)
         {
             CancellationTokenSource tokenSource = new();
             tokenSource.Token.ThrowIfCancellationRequested();
@@ -77,27 +77,36 @@ namespace FDR.Web
             switch (operation)
             {
                 case Operation.Cleanup:
+                    if(string.IsNullOrEmpty(folder)) throw new ArgumentNullException(nameof(folder));
                     param += $" {Common.param_cleanup} \"{folder}\"";
                     break;
                 case Operation.Diff:
+                    if (string.IsNullOrEmpty(folder)) throw new ArgumentNullException(nameof(folder));
+                    if (string.IsNullOrEmpty(reffolder)) throw new ArgumentNullException(nameof(reffolder));
                     param += $" {Common.param_diff} \"{folder}\"";
+                    param += $" {Common.param_reference} \"{reffolder}\"";
                     break;
                 case Operation.Hash:
+                    if (string.IsNullOrEmpty(folder)) throw new ArgumentNullException(nameof(folder));
                     param += $" {Common.param_hash} \"{folder}\"";
                     break;
                 case Operation.Help:
                     param += $" {Common.param_help}";
                     break;
                 case Operation.Import:
+                    if (string.IsNullOrEmpty(folder)) throw new ArgumentNullException(nameof(folder));
                     param += $" {Common.param_import} \"{folder}\"";
                     break;
                 case Operation.Rename:
+                    if (string.IsNullOrEmpty(folder)) throw new ArgumentNullException(nameof(folder));
                     param += $" {Common.param_rename} \"{folder}\"";
                     break;
                 case Operation.Resize:
+                    if (string.IsNullOrEmpty(folder)) throw new ArgumentNullException(nameof(folder));
                     param += $" {Common.param_resize} \"{folder}\"";
                     break;
                 case Operation.Verify:
+                    if (string.IsNullOrEmpty(folder)) throw new ArgumentNullException(nameof(folder));
                     param += $" {Common.param_verify} \"{folder}\"";
                     break;
                 case Operation.Web:
