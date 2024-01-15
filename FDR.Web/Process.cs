@@ -55,6 +55,8 @@ namespace FDR.Web
 
     public class Processes : List<ProcessInfo>
     {
+        private const string tmpKey = "tmp";
+
         public Processes() { }
 
         public void Add(Operation operation, CancellationTokenSource cancellationTokenSource, Task task)
@@ -62,51 +64,61 @@ namespace FDR.Web
             this.Add(new(operation, cancellationTokenSource, task));
         }
 
-        public Task Start(Operation operation, string? folder = null, string? config = null, bool verbose = false, bool force = false)
+        public Task Start(Operation operation, string? folder = null, string? config = null, bool verbose = false, bool force = false, ConfigPartBase? tmpConfig = null)
         {
             CancellationTokenSource tokenSource = new();
             tokenSource.Token.ThrowIfCancellationRequested();
 
             Process process = new Process();
+            //TODO: Linux! (dotnet FDR.dll [options])
             process.StartInfo.FileName = "FDR.exe";
 
             string param = string.Empty;
             switch (operation)
             {
                 case Operation.Cleanup:
-                    param += $"-cleanup \"{folder}\"";
+                    param += $" {Common.param_cleanup} \"{folder}\"";
                     break;
                 case Operation.Diff:
-                    param += $"-diff \"{folder}\"";
+                    param += $" {Common.param_diff} \"{folder}\"";
                     break;
                 case Operation.Hash:
-                    param += $"-hash \"{folder}\"";
+                    param += $" {Common.param_hash} \"{folder}\"";
                     break;
                 case Operation.Help:
-                    param += "-help";
+                    param += $" {Common.param_help}";
                     break;
                 case Operation.Import:
-                    param += $"-import \"{folder}\"";
+                    param += $" {Common.param_import} \"{folder}\"";
                     break;
                 case Operation.Rename:
-                    param += $"-rename \"{folder}\"";
+                    param += $" {Common.param_rename} \"{folder}\"";
                     break;
                 case Operation.Resize:
-                    param += $"-resize \"{folder}\"";
+                    param += $" {Common.param_resize} \"{folder}\"";
                     break;
                 case Operation.Verify:
-                    param += $"-verify \"{folder}\"";
+                    param += $" {Common.param_verify} \"{folder}\"";
                     break;
                 case Operation.Web:
-                    param += "-web";
+                    param += $" {Common.param_web}";
                     break;
                 default:
                     throw new NotImplementedException();
             }
 
-            if (verbose) param += " -verbose";
-            if (force) param += " -force";
+            if (verbose) param += $" {Common.param_verbose}";
+            if (force) param += $" {Common.param_force}";
 
+            string? tmpFile = null;
+            if (tmpConfig != null)
+            {
+                tmpFile = CreateTmpConfigFile(tmpConfig);
+                Console.WriteLine($"Temporary config file: {tmpFile}");
+                param += $" {Common.param_config} {tmpKey} {Common.param_configfile} \"{tmpFile}\"";
+            }
+
+            Console.WriteLine($"Arguments: {param}");
             process.StartInfo.Arguments = param;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
@@ -123,22 +135,42 @@ namespace FDR.Web
                 }
             });
 
+            process.Exited += new EventHandler((sender, e) =>
+            {
+                if (!string.IsNullOrEmpty(tmpFile) && File.Exists(tmpFile)) 
+                    File.Delete(tmpFile);
+            });
+
             process.Start();
             process.BeginOutputReadLine();
 
-            //Console.WriteLine(process.StandardOutput.ReadToEnd());
-
             tokenSource.Token.Register(() => { process.Kill(); });
 
-            //return process.WaitForExitAsync();
             var task = process.WaitForExitAsync();
 
-            //this.Add(operation, tokenSource, task);
             ProcessInfo proc = new(operation, tokenSource, task);
             proc.PID = process.Id;
             this.Add(proc);
 
             return task;
+        }
+
+        public string? CreateTmpConfigFile(ConfigPartBase config)
+        {
+            AppConfig appConfig = new();
+            var file = Path.GetTempFileName();
+
+            if (config is ImportConfig)
+                appConfig.ImportConfigs.Add(tmpKey, (ImportConfig)config);
+            else if (config is ResizeConfig)
+                appConfig.ResizeConfigs.Add(tmpKey, (ResizeConfig)config);
+            else if (config is MoveConfig)
+                appConfig.MoveConfigs.Add(tmpKey, (MoveConfig)config);
+            else if (config is RenameConfig)
+                appConfig.RenameConfigs.Add(tmpKey, (RenameConfig)config);
+
+            AppConfig.SaveToFile(appConfig, file);
+            return file;
         }
     }
 }

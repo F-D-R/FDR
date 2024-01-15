@@ -72,6 +72,7 @@ namespace FDR.Tools.Library
 
         public ConfigPartBase(AppConfig? appConfig) => AppConfig = appConfig;
 
+        [JsonIgnore]
         public virtual AppConfig? AppConfig { get; internal set; }
 
         public virtual void Validate() { }

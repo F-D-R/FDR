@@ -8,7 +8,6 @@ namespace FDR.Web.Pages
     public class RenameModel : PageModel
     {
         private readonly Processes Processes;
-        private CancellationTokenSource cts = new();
 
         public RenameModel(Processes processes)
         {
@@ -32,8 +31,6 @@ namespace FDR.Web.Pages
         [BindProperty]
         public string? Folder { get; set; }
 
-        //public StreamReader Output { get; } = new StreamReader(Console.OpenStandardOutput());
-
         public void OnGet()
         {
             Console.WriteLine("RenameModel.OnGet...");
@@ -42,8 +39,6 @@ namespace FDR.Web.Pages
                 AppConfig = AppConfig.Load();
             }
             catch { }
-
-
 
             ConfigKey = Request.Query["config"];
             if (AppConfig != null && !string.IsNullOrWhiteSpace(ConfigKey))
@@ -110,9 +105,7 @@ namespace FDR.Web.Pages
             Console.WriteLine($"Folder: {Folder}");
             Console.WriteLine($"Verbose output: {Verbose}");
 
-            cts.Token.ThrowIfCancellationRequested();
-            var task = new DummyProcess().Start(cts.Token);
-            Processes.Add(Operation.Rename, cts, task);
+            _ = Processes.Start(operation: Operation.Rename, folder: Folder, verbose: Verbose, tmpConfig: RenameConfig);
 
             return RedirectToPage("./Output");
         }
