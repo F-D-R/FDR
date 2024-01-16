@@ -14,7 +14,7 @@ namespace FDR
     {
         private const ConsoleColor titleColor = ConsoleColor.White;
         private static Operation operation = Operation.Help;
-        private static string version = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
+        private static readonly string version = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
         private static bool verbose = false;
         private static bool auto = false;
         private static bool force = false;
@@ -25,7 +25,7 @@ namespace FDR
         private static string reference = "";
         private static string config = "";
         private static string function = "";
-        private static readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
+        private static readonly CancellationTokenSource tokenSource = new();
         private static CancellationToken token; // = new();
         private static string? URL = null;
 
@@ -160,111 +160,109 @@ namespace FDR
                 }
             }
 
-            using (ConsoleTraceListener consoleTracer = new ConsoleTraceListener())
+            using ConsoleTraceListener consoleTracer = new();
+            AppConfig appConfig;
+            if (verbose) Trace.Listeners.Add(consoleTracer);
+            try
             {
-                AppConfig appConfig;
-                if (verbose) Trace.Listeners.Add(consoleTracer);
-                try
+                switch (operation)
                 {
-                    switch (operation)
-                    {
-                        case Operation.Import:
-                            Common.Msg($"FDR Tools {version} - Import", titleColor);
-                            appConfig = AppConfig.Load(configfile);
-                            if (appConfig.ImportConfigs == null)
-                            {
-                                Common.Msg("There are no import configurations!", ConsoleColor.Red);
-                                return;
-                            }
-                            Import.ImportWizard(appConfig.ImportConfigs, string.IsNullOrWhiteSpace(folder) ? null : new DirectoryInfo(Path.GetFullPath(folder)), auto, noactions, force);
-                            break;
+                    case Operation.Import:
+                        Common.Msg($"FDR Tools {version} - Import", titleColor);
+                        appConfig = AppConfig.Load(configfile);
+                        if (appConfig.ImportConfigs == null)
+                        {
+                            Common.Msg("There are no import configurations!", ConsoleColor.Red);
+                            return;
+                        }
+                        Import.ImportWizard(appConfig.ImportConfigs, string.IsNullOrWhiteSpace(folder) ? null : new DirectoryInfo(Path.GetFullPath(folder)), auto, noactions, force);
+                        break;
 
-                        case Operation.Hash:
-                            Common.Msg($"FDR Tools {version} - Hash", titleColor);
-                            if (!Common.IsFolderValid(folder)) return;
-                            Verify.HashFolder(new DirectoryInfo(Path.GetFullPath(folder)), force);
-                            break;
+                    case Operation.Hash:
+                        Common.Msg($"FDR Tools {version} - Hash", titleColor);
+                        if (!Common.IsFolderValid(folder)) return;
+                        Verify.HashFolder(new DirectoryInfo(Path.GetFullPath(folder)), force);
+                        break;
 
-                        case Operation.Verify:
-                            Common.Msg($"FDR Tools {version} - Verify", titleColor);
-                            if (!Common.IsFolderValid(folder)) return;
-                            Verify.VerifyFolder(new DirectoryInfo(Path.GetFullPath(folder)));
-                            break;
+                    case Operation.Verify:
+                        Common.Msg($"FDR Tools {version} - Verify", titleColor);
+                        if (!Common.IsFolderValid(folder)) return;
+                        Verify.VerifyFolder(new DirectoryInfo(Path.GetFullPath(folder)));
+                        break;
 
-                        case Operation.Diff:
-                            Common.Msg($"FDR Tools {version} - Diff", titleColor);
-                            if (!Common.IsFolderValid(folder)) return;
-                            if (!Common.IsFolderValid(reference)) return;
-                            Verify.DiffFolder(new DirectoryInfo(Path.GetFullPath(folder)), new DirectoryInfo(Path.GetFullPath(reference)));
-                            break;
+                    case Operation.Diff:
+                        Common.Msg($"FDR Tools {version} - Diff", titleColor);
+                        if (!Common.IsFolderValid(folder)) return;
+                        if (!Common.IsFolderValid(reference)) return;
+                        Verify.DiffFolder(new DirectoryInfo(Path.GetFullPath(folder)), new DirectoryInfo(Path.GetFullPath(reference)));
+                        break;
 
-                        case Operation.Cleanup:
-                            Common.Msg($"FDR Tools {version} - Cleanup", titleColor);
-                            if (!Common.IsFolderValid(folder)) return;
-                            Raw.CleanupFolder(new DirectoryInfo(Path.GetFullPath(folder)), token);
-                            break;
+                    case Operation.Cleanup:
+                        Common.Msg($"FDR Tools {version} - Cleanup", titleColor);
+                        if (!Common.IsFolderValid(folder)) return;
+                        Raw.CleanupFolder(new DirectoryInfo(Path.GetFullPath(folder)), token);
+                        break;
 
-                        case Operation.Rename:
-                            Common.Msg($"FDR Tools {version} - Rename", titleColor);
-                            if (!Common.IsFolderValid(folder)) return;
-                            if (string.IsNullOrWhiteSpace(config))
-                            {
-                                Common.Msg("Rename configuration is not defined!", ConsoleColor.Red);
-                                return;
-                            }
-                            appConfig = AppConfig.Load(configfile);
-                            RenameConfig? renameConfig;
-                            if (!appConfig.RenameConfigs.TryGetValue(config, out renameConfig))
-                            {
-                                Common.Msg("Given rename configuration does not exist!", ConsoleColor.Red);
-                                return;
-                            }
-                            Rename.RenameFilesInFolder(new DirectoryInfo(Path.GetFullPath(folder)), renameConfig);
-                            break;
+                    case Operation.Rename:
+                        Common.Msg($"FDR Tools {version} - Rename", titleColor);
+                        if (!Common.IsFolderValid(folder)) return;
+                        if (string.IsNullOrWhiteSpace(config))
+                        {
+                            Common.Msg("Rename configuration is not defined!", ConsoleColor.Red);
+                            return;
+                        }
+                        appConfig = AppConfig.Load(configfile);
+                        RenameConfig? renameConfig;
+                        if (!appConfig.RenameConfigs.TryGetValue(config, out renameConfig))
+                        {
+                            Common.Msg("Given rename configuration does not exist!", ConsoleColor.Red);
+                            return;
+                        }
+                        Rename.RenameFilesInFolder(new DirectoryInfo(Path.GetFullPath(folder)), renameConfig);
+                        break;
 
-                        case Operation.Resize:
-                            Common.Msg($"FDR Tools {version} - Resize", titleColor);
-                            if (!Common.IsFolderValid(folder)) return;
-                            if (string.IsNullOrWhiteSpace(config))
-                            {
-                                Common.Msg("Resize configuration is not defined!", ConsoleColor.Red);
-                                return;
-                            }
-                            appConfig = AppConfig.Load(configfile);
-                            ResizeConfig? resizeConfig;
-                            if (!appConfig.ResizeConfigs.TryGetValue(config, out resizeConfig))
-                            {
-                                Common.Msg("Given resize configuration does not exist!", ConsoleColor.Red);
-                                return;
-                            }
-                            Resize.ResizeFilesInFolder(new DirectoryInfo(Path.GetFullPath(folder)), resizeConfig);
-                            break;
+                    case Operation.Resize:
+                        Common.Msg($"FDR Tools {version} - Resize", titleColor);
+                        if (!Common.IsFolderValid(folder)) return;
+                        if (string.IsNullOrWhiteSpace(config))
+                        {
+                            Common.Msg("Resize configuration is not defined!", ConsoleColor.Red);
+                            return;
+                        }
+                        appConfig = AppConfig.Load(configfile);
+                        ResizeConfig? resizeConfig;
+                        if (!appConfig.ResizeConfigs.TryGetValue(config, out resizeConfig))
+                        {
+                            Common.Msg("Given resize configuration does not exist!", ConsoleColor.Red);
+                            return;
+                        }
+                        Resize.ResizeFilesInFolder(new DirectoryInfo(Path.GetFullPath(folder)), resizeConfig);
+                        break;
 
-                        case Operation.Web:
-                            Common.Msg($"FDR Tools {version} - Web", titleColor);
-                            if (string.IsNullOrEmpty(URL))
-                            {
-                                Common.Msg("Missing URL configuration!", ConsoleColor.Red);
-                                return;
-                            }
-                            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                                Process.Start("FDR.Web.exe");
-                            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                                Process.Start("dotnet", "FDR.Web.dll");
-                            Process.Start("explorer", URL);
-                            break;
+                    case Operation.Web:
+                        Common.Msg($"FDR Tools {version} - Web", titleColor);
+                        if (string.IsNullOrEmpty(URL))
+                        {
+                            Common.Msg("Missing URL configuration!", ConsoleColor.Red);
+                            return;
+                        }
+                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                            Process.Start("FDR.Web.exe");
+                        else
+                            Process.Start("dotnet", "FDR.Web.dll");
+                        Process.Start("explorer", URL);
+                        break;
 
-                        default:
-                            DisplayHelp(version, function);
-                            break;
-                    }
+                    default:
+                        DisplayHelp(version, function);
+                        break;
                 }
-                finally
-                {
-                    Trace.Flush();
-                    Trace.Listeners.Remove(consoleTracer);
-                    consoleTracer.Close();
-                }
+            }
+            finally
+            {
+                Trace.Flush();
+                Trace.Listeners.Remove(consoleTracer);
+                consoleTracer.Close();
             }
         }
 

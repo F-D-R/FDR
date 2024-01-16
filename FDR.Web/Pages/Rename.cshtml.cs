@@ -45,7 +45,7 @@ namespace FDR.Web.Pages
             {
                 RenameConfig = AppConfig.RenameConfigs.Where(d => string.Equals(d.Key, ConfigKey, StringComparison.OrdinalIgnoreCase)).FirstOrDefault().Value.Clone();
             }
-            if (RenameConfig == null) { RenameConfig = new RenameConfig(); }
+            RenameConfig ??= new RenameConfig();
         }
 
         public JsonResult OnPostValidateFolder()

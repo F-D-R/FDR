@@ -1,12 +1,13 @@
 ﻿using FDR.Tools.Library;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace FDR.Web
 {
     public class DummyProcess
     {
-        private int run = new Random().Next(100, 999);
+        private readonly int run = new Random().Next(100, 999);
 
         public async Task Start(CancellationToken token)
         {
@@ -23,7 +24,7 @@ namespace FDR.Web
                     Thread.Sleep(1000);
                     if (i >= 100) break;
                 }
-            });
+            }, token);
         }
     }
 
@@ -64,20 +65,26 @@ namespace FDR.Web
             this.Add(new(operation, cancellationTokenSource, task));
         }
 
-        public Task Start(Operation operation, string? folder = null, string? reffolder = null, string? config = null, bool verbose = false, bool force = false, bool auto = false, bool noactions = false, ConfigPartBase? tmpConfig = null)
+        public Task Start(Operation operation, string? folder = null, string? reffolder = null, bool verbose = false, bool force = false, bool auto = false, bool noactions = false, ConfigPartBase? tmpConfig = null)
         {
             CancellationTokenSource tokenSource = new();
             tokenSource.Token.ThrowIfCancellationRequested();
 
-            Process process = new Process();
-            //TODO: Linux! (dotnet FDR.dll [options])
-            process.StartInfo.FileName = "FDR.exe";
+            Process process = new();
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                process.StartInfo.FileName = "FDR.exe";
+            else
+            {
+                process.StartInfo.FileName = "dotnet";
+                process.StartInfo.Arguments = "FDR.dll";
+            }
 
             string param = string.Empty;
             switch (operation)
             {
                 case Operation.Cleanup:
-                    if(string.IsNullOrEmpty(folder)) throw new ArgumentNullException(nameof(folder));
+                    if (string.IsNullOrEmpty(folder)) throw new ArgumentNullException(nameof(folder));
                     param += $" {Common.param_cleanup} \"{folder}\"";
                     break;
                 case Operation.Diff:
@@ -130,7 +137,7 @@ namespace FDR.Web
             }
 
             Console.WriteLine($"Arguments: {param}");
-            process.StartInfo.Arguments = param;
+            process.StartInfo.Arguments += param;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
 
@@ -138,8 +145,7 @@ namespace FDR.Web
             {
                 Console.WriteLine(e.Data);
 
-                Process? proc = sender as Process;
-                if (proc != null)
+                if (sender is Process proc)
                 {
                     var pi = this.Find(pi => pi.PID == proc.Id);
                     pi?.Output?.AppendLine(e.Data);
@@ -148,7 +154,7 @@ namespace FDR.Web
 
             process.Exited += new EventHandler((sender, e) =>
             {
-                if (!string.IsNullOrEmpty(tmpFile) && File.Exists(tmpFile)) 
+                if (!string.IsNullOrEmpty(tmpFile) && File.Exists(tmpFile))
                     File.Delete(tmpFile);
             });
 
@@ -159,8 +165,7 @@ namespace FDR.Web
 
             var task = process.WaitForExitAsync();
 
-            ProcessInfo proc = new(operation, tokenSource, task);
-            proc.PID = process.Id;
+            ProcessInfo proc = new(operation, tokenSource, task) { PID = process.Id };
             this.Add(proc);
 
             return task;
@@ -171,14 +176,14 @@ namespace FDR.Web
             AppConfig appConfig = new();
             var file = Path.GetTempFileName();
 
-            if (config is ImportConfig)
-                appConfig.ImportConfigs.Add(tmpKey, (ImportConfig)config);
-            else if (config is ResizeConfig)
-                appConfig.ResizeConfigs.Add(tmpKey, (ResizeConfig)config);
-            else if (config is MoveConfig)
-                appConfig.MoveConfigs.Add(tmpKey, (MoveConfig)config);
-            else if (config is RenameConfig)
-                appConfig.RenameConfigs.Add(tmpKey, (RenameConfig)config);
+            if (config is ImportConfig importConfig)
+                appConfig.ImportConfigs.Add(tmpKey, importConfig);
+            else if (config is ResizeConfig resizeConfig)
+                appConfig.ResizeConfigs.Add(tmpKey, resizeConfig);
+            else if (config is MoveConfig moveConfig)
+                appConfig.MoveConfigs.Add(tmpKey, moveConfig);
+            else if (config is RenameConfig renameConfig)
+                appConfig.RenameConfigs.Add(tmpKey, renameConfig);
 
             AppConfig.SaveToFile(appConfig, file);
             return file;

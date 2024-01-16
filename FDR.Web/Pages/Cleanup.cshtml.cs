@@ -67,29 +67,4 @@ namespace FDR.Web.Pages
             return RedirectToPage("./Output");
         }
     }
-
-    public class OutputResult : ActionResult
-    {
-        private readonly TextWriter _output = Console.Out;
-
-        public override Task ExecuteResultAsync(ActionContext context)
-        {
-            var response = context.HttpContext.Response;
-            response.ContentType = "text/xml";
-            var responseStream = response.BodyWriter.AsStream();
-
-            //document.Open(response.OutputStream, FormatType.Html, XHTMLValidationType.Transitional);
-
-
-            return new Task(() => { });
-            //return Task.CompletedTask;
-        }
-
-        //public override void ExecuteResult(ActionContext context)
-        //{
-        //    var response = context.HttpContext.Response;
-        //    response.ContentType = "text/xml";
-        //    document.Open(response.OutputStream, FormatType.Html, XHTMLValidationType.Transitional);
-        //}
-    }
 }

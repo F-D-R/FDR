@@ -13,22 +13,18 @@ namespace FDR.Tools.Library
 
         internal static string ComputeHash(FileInfo file)
         {
-            using (var md5 = MD5.Create())
-            using (var fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
-            {
-                var hash = md5.ComputeHash(fileStream);
-                return Convert.ToBase64String(hash);
-            }
+            using var md5 = MD5.Create();
+            using var fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read);
+            var hash = md5.ComputeHash(fileStream);
+            return Convert.ToBase64String(hash);
         }
 
         internal static async Task<string> ComputeHashAsync(FileInfo file)
         {
-            using (var md5 = MD5.Create())
-            using (var fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
-            {
-                var hash = await md5.ComputeHashAsync(fileStream);
-                return Convert.ToBase64String(hash);
-            }
+            using var md5 = MD5.Create();
+            using var fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read);
+            var hash = await md5.ComputeHashAsync(fileStream);
+            return Convert.ToBase64String(hash);
         }
 
         internal static string GetMd5FileName(FileInfo file)
@@ -333,7 +329,7 @@ namespace FDR.Tools.Library
                 Common.Msg($"All the checked files match...", ConsoleColor.Green);
             return;
 
-            async Task CopyFileToFolderAsync(string destFolder, string sourceFile, string postFix = "")
+            static async Task CopyFileToFolderAsync(string destFolder, string sourceFile, string postFix = "")
             {
                 if (!Directory.Exists(destFolder)) Directory.CreateDirectory(destFolder);
                 var destFile = Path.Combine(destFolder, Path.GetFileNameWithoutExtension(sourceFile) + postFix + Path.GetExtension(sourceFile));

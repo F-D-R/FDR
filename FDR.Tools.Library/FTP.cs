@@ -36,7 +36,7 @@ namespace FDR.Tools.Library.FTP
         private int mintActiveConnectionsCount;
         private string? mstrRemoteHost;
 
-        private readonly List<string> mcolMessageList = new List<string>();
+        private readonly List<string> mcolMessageList = new();
         private bool mlogMessages;
 
         public FTPConnection()
@@ -141,7 +141,7 @@ namespace FDR.Tools.Library.FTP
         {
             List<string> lcolTmpList = Dir();
 
-            using (System.Data.DataTable lobjTable = new System.Data.DataTable())
+            using (System.Data.DataTable lobjTable = new())
             {
                 lobjTable.Columns.Add("Name");
                 for (int i = 0; i <= lcolTmpList.Count - 1; i++)
@@ -155,7 +155,7 @@ namespace FDR.Tools.Library.FTP
                 System.Data.DataRow[] lobjaRowList = lobjTable.Select("Name LIKE '" + tstrMask + "'", "", System.Data.DataViewRowState.CurrentRows);
                 for (int I = 0; I <= lobjaRowList.Length - 1; I++)
                     lcolTmpList.Add((string)lobjaRowList[I]["Name"]);
-                lobjaRowList = new System.Data.DataRow[0];
+                lobjaRowList = Array.Empty<System.Data.DataRow>();
             }
 
             return lcolTmpList;
@@ -229,7 +229,7 @@ namespace FDR.Tools.Library.FTP
 
             TcpListener? lobjListener = null;
             TcpClient? lobjClient = null;
-            List<string> lcolTempMessageList = new List<string>();
+            List<string> lcolTempMessageList = new();
             int lintReturn;
 
             SetTransferType(tintType);
@@ -294,11 +294,9 @@ namespace FDR.Tools.Library.FTP
 
         public void SendFile(string tstrLocalFileName, string tstrRemoteFileName, FTPFileTransferType tintType)
         {
-            using (FileStream lobjFS = new FileStream(tstrLocalFileName, FileMode.Open))
-            {
-                SendStream(lobjFS, tstrRemoteFileName, tintType);
-                lobjFS.Close();
-            }
+            using FileStream lobjFS = new(tstrLocalFileName, FileMode.Open);
+            SendStream(lobjFS, tstrRemoteFileName, tintType);
+            lobjFS.Close();
         }
 
         public void GetStream(string tstrRemoteFileName, Stream tobjStream, FTPFileTransferType tintType)
@@ -373,11 +371,9 @@ namespace FDR.Tools.Library.FTP
         }
         public void GetFile(string tstrRemoteFileName, string tstrLocalFileName, FTPFileTransferType tintType)
         {
-            using (FileStream lobjFS = new FileStream(tstrLocalFileName, FileMode.Create))
-            {
-                GetStream(tstrRemoteFileName, lobjFS, tintType);
-                lobjFS.Close();
-            }
+            using FileStream lobjFS = new(tstrLocalFileName, FileMode.Create);
+            GetStream(tstrRemoteFileName, lobjFS, tintType);
+            lobjFS.Close();
         }
 
         public void DeleteFile(string tstrRemoteFileName)
@@ -461,7 +457,7 @@ namespace FDR.Tools.Library.FTP
             int lintPort = GetPortNumber();
             SetDataPort(lintPort);
             IPHostEntry lobjLocalHost = Dns.GetHostEntry(Dns.GetHostName());
-            TcpListener lobjListener = new TcpListener(lobjLocalHost.AddressList[0], lintPort);
+            TcpListener lobjListener = new(lobjLocalHost.AddressList[0], lintPort);
             return lobjListener;
         }
 
@@ -470,7 +466,7 @@ namespace FDR.Tools.Library.FTP
             if (mstrRemoteHost == null)
                 throw new ArgumentNullException(nameof(mstrRemoteHost));
             int lintPort = GetPortNumber();
-            TcpClient lobjClient = new TcpClient();
+            TcpClient lobjClient = new();
             lobjClient.Connect(mstrRemoteHost, lintPort);
             return lobjClient;
         }
@@ -539,7 +535,7 @@ namespace FDR.Tools.Library.FTP
         private List<string> Read()
         {
             NetworkStream lobjStream = mobjTcpClient!.GetStream();
-            List<string> lcolMessageList = new List<string>();
+            List<string> lcolMessageList = new();
             List<string> lcolTempMessage = ReadLines(lobjStream);
 
             int lintTryCount = 0;
@@ -566,7 +562,7 @@ namespace FDR.Tools.Library.FTP
 
         private List<string> ReadLines(NetworkStream tobjStream)
         {
-            List<string> lcolMessageList = new List<string>();
+            List<string> lcolMessageList = new();
             char[] lchraSeperator = new[] { (char)10 };
             char[] lchaToRemove = new[] { (char)13 };
             byte[] lbytaBuffer = new byte[mintsBlockSize - 1 + 1];
@@ -598,7 +594,7 @@ namespace FDR.Tools.Library.FTP
         private int GetMessageReturnValue(string? tstrMessage)
         {
             if (string.IsNullOrWhiteSpace(tstrMessage))
-                throw new ArgumentException(nameof(tstrMessage));
+                throw new ArgumentNullException(nameof(tstrMessage));
             return int.Parse(tstrMessage.Substring(0, 3));
         }
 
@@ -612,7 +608,7 @@ namespace FDR.Tools.Library.FTP
                 switch (mintFtpMode)
                 {
                     case FTPMode.Active:
-                        Random lobjRnd = new Random((int)DateTime.Now.Ticks);
+                        Random lobjRnd = new((int)DateTime.Now.Ticks);
                         lintPort = mintsDataPortRangeFrom + lobjRnd.Next(mintsDataPortRangeTo - mintsDataPortRangeFrom);
                         break;
 
@@ -652,7 +648,7 @@ namespace FDR.Tools.Library.FTP
                 mcolMessageList.AddRange(tcolMessages);
         }
 
-        private IPAddress[] GetLocalAddressList()
+        private static IPAddress[] GetLocalAddressList()
         {
             return Dns.GetHostEntry(Dns.GetHostName()).AddressList;
         }

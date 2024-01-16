@@ -53,7 +53,7 @@ namespace FDR.Web.Pages
             {
                 ImportConfig = AppConfig.ImportConfigs.Where(d => string.Equals(d.Key, ConfigKey, StringComparison.OrdinalIgnoreCase)).FirstOrDefault().Value.Clone();
             }
-            if (ImportConfig == null) { ImportConfig = new ImportConfig(); }
+            ImportConfig ??= new ImportConfig();
         }
 
         public JsonResult OnPostValidateFolder()

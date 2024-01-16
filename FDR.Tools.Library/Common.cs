@@ -191,8 +191,7 @@ namespace FDR.Tools.Library
 
             try
             {
-                IExifValue<string>? dateExif = null;
-                if (exif.TryGetValue(ExifTag.DateTimeOriginal, out dateExif)
+                if (exif.TryGetValue(ExifTag.DateTimeOriginal, out IExifValue<string>? dateExif)
                     || exif.TryGetValue(ExifTag.DateTime, out dateExif)
                     || exif.TryGetValue(ExifTag.DateTimeDigitized, out dateExif))
                 {
@@ -272,19 +271,18 @@ namespace FDR.Tools.Library
 
         public class FileDateComparer : Comparer<FileInfo>
         {
-            private ConcurrentDictionary<string, DateTime> dates = new ConcurrentDictionary<string, DateTime>();
+            private ConcurrentDictionary<string, DateTime> dates = new();
 
             public override int Compare(FileInfo? x, FileInfo? y)
             {
                 if (x == null || y == null) return 0;
 
-                DateTime dateX, dateY;
-                if (!dates.TryGetValue(x.FullName, out dateX))
+                if (!dates.TryGetValue(x.FullName, out DateTime dateX))
                 {
                     dateX = x.GetExifDate();
                     dates[x.FullName] = dateX;
                 }
-                if (!dates.TryGetValue(y.FullName, out dateY))
+                if (!dates.TryGetValue(y.FullName, out DateTime dateY))
                 {
                     dateY = y.GetExifDate();
                     dates[y.FullName] = dateY;

@@ -144,7 +144,7 @@ namespace FDR.Tools.Library
             if (!Directory.Exists(config.DestRoot)) throw new DirectoryNotFoundException($"Destination root folder doesn't exist! ({config.DestRoot})");
 
             var files = Common.GetFiles(source, config.FileFilter, true);
-            var fileCount = files.Count();
+            var fileCount = files.Count;
 
             var folderNames = new List<string>();
             //TODO: exif date...
@@ -229,13 +229,15 @@ namespace FDR.Tools.Library
             var sourceInfos = new List<SourceInfo>();
             foreach (var folder in sourceFolders)
             {
-                var si = new SourceInfo();
-                si.DirectoryInfo = folder;
-                si.Path = folder.FullName;
-                si.ImportConfig = FindConfig(folder, configs);
+                var si = new SourceInfo()
+                {
+                    DirectoryInfo = folder,
+                    Path = folder.FullName,
+                    ImportConfig = FindConfig(folder, configs)
+                };
 
                 if (si.ImportConfig != null)
-                    si.SumFileCount = Common.GetFiles(folder, si.ImportConfig).Count();
+                    si.SumFileCount = Common.GetFiles(folder, si.ImportConfig).Count;
                 sourceInfos.Add(si);
             }
             return sourceInfos;
@@ -321,7 +323,7 @@ namespace FDR.Tools.Library
                 }
             }
 
-            sourceInfo.SumFileCount = Common.GetFiles(sourceInfo.DirectoryInfo!, config).Count();
+            sourceInfo.SumFileCount = Common.GetFiles(sourceInfo.DirectoryInfo!, config).Count;
             Common.Msg($"Selected source: {sourceInfo.Path}\tConfig: {sourceInfo.ConfigName} ({sourceInfo.SumFileCount} files on drive {GetVolumeLabel(sourceInfo.Path!)})");
             return config;
         }
@@ -341,7 +343,7 @@ namespace FDR.Tools.Library
             Trace.Unindent();
         }
 
-        public static void ImportWizard(Dictionary<string, ImportConfig> configs, DirectoryInfo? folder = null, bool auto = false, bool noactions = false, bool force = false, CancellationToken token = new ())
+        public static void ImportWizard(Dictionary<string, ImportConfig> configs, DirectoryInfo? folder = null, bool auto = false, bool noactions = false, bool force = false, CancellationToken token = new())
         {
             if (configs == null) throw new ArgumentNullException(nameof(configs));
             if (configs.Count == 0) throw new ArgumentNullException("Import configurations cannot be empty!");

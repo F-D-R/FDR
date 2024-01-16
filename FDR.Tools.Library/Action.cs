@@ -84,22 +84,19 @@ namespace FDR.Tools.Library
                 case ActionType.rename:
                     if (AppConfig == null) throw new InvalidDataException("Application config cannot be empty!");
                     if (string.IsNullOrWhiteSpace(Config)) throw new InvalidDataException("ActionConfig cannot be empty!");
-                    RenameConfig? renameConfig;
-                    if (!AppConfig.RenameConfigs.TryGetValue(Config, out renameConfig)) throw new ArgumentOutOfRangeException();
+                    if (!AppConfig.RenameConfigs.TryGetValue(Config, out _)) throw new ArgumentOutOfRangeException();
                     break;
 
                 case ActionType.move:
                     if (AppConfig == null) throw new InvalidDataException("Application config cannot be empty!");
                     if (string.IsNullOrWhiteSpace(Config)) throw new InvalidDataException("ActionConfig cannot be empty!");
-                    MoveConfig? moveConfig;
-                    if (!AppConfig.MoveConfigs.TryGetValue(Config, out moveConfig)) throw new ArgumentOutOfRangeException();
+                    if (!AppConfig.MoveConfigs.TryGetValue(Config, out _)) throw new ArgumentOutOfRangeException();
                     break;
 
                 case ActionType.resize:
                     if (AppConfig == null) throw new InvalidDataException("Application config cannot be empty!");
                     if (string.IsNullOrWhiteSpace(Config)) throw new InvalidDataException("ActionConfig cannot be empty!");
-                    ResizeConfig? resizeConfig;
-                    if (!AppConfig.ResizeConfigs.TryGetValue(Config, out resizeConfig)) throw new ArgumentOutOfRangeException();
+                    if (!AppConfig.ResizeConfigs.TryGetValue(Config, out _)) throw new ArgumentOutOfRangeException();
                     break;
 
                 case ActionType.hash:

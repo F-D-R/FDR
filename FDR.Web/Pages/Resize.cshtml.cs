@@ -45,7 +45,7 @@ namespace FDR.Web.Pages
             {
                 ResizeConfig = AppConfig.ResizeConfigs.Where(d => string.Equals(d.Key, ConfigKey, StringComparison.OrdinalIgnoreCase)).FirstOrDefault().Value.Clone();
             }
-            if (ResizeConfig == null) { ResizeConfig = new ResizeConfig(); }
+            ResizeConfig ??= new ResizeConfig();
         }
 
         public JsonResult OnPostValidateFolder()

@@ -76,7 +76,7 @@ namespace FDR.Tools.Library
                 await image.SaveAsync(destFullName, encoder);
             }
 
-            void ClearMetadata(Image image)
+            static void ClearMetadata(Image image)
             {
                 var md = image.Metadata;
                 md.ExifProfile = null;

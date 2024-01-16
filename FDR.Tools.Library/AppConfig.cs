@@ -27,7 +27,7 @@ namespace FDR.Tools.Library
                 configPath = Path.Combine(Path.GetDirectoryName(appPath)!, "appsettings.json");
             }
             var appConfig = JsonConvert.DeserializeObject<AppConfig>(File.ReadAllText(configPath, Encoding.UTF8));
-            if (appConfig == null) appConfig = new AppConfig();
+            appConfig ??= new AppConfig();
             appConfig.Validate();
             return appConfig;
         }

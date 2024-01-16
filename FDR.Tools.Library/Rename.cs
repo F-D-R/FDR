@@ -58,7 +58,7 @@ namespace FDR.Tools.Library
             string result = pattern;
 
             var regex = new Regex(REGEX, RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            foreach (Match match in regex.Matches(pattern))
+            foreach (Match match in regex.Matches(pattern).Cast<Match>())
             {
                 string arg = match.Groups.Count > 2 ? match.Groups[2].Value : string.Empty;
 
@@ -99,7 +99,7 @@ namespace FDR.Tools.Library
             string result = EvaluateNamePattern(pattern, folder);
 
             var regex = new Regex(REGEX, RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            foreach (Match match in regex.Matches(pattern))
+            foreach (Match match in regex.Matches(pattern).Cast<Match>())
             {
                 string arg = match.Groups.Count > 2 ? match.Groups[2].Value : string.Empty;
 
@@ -126,7 +126,7 @@ namespace FDR.Tools.Library
             string result = EvaluateNamePattern(pattern, file);
 
             var regex = new Regex(REGEX, RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            foreach (Match match in regex.Matches(pattern))
+            foreach (Match match in regex.Matches(pattern).Cast<Match>())
             {
                 string arg = match.Groups.Count > 2 ? match.Groups[2].Value : string.Empty;
 
@@ -153,8 +153,7 @@ namespace FDR.Tools.Library
                         break;
 
                     case COUNTER:
-                        int digits = 0;
-                        int.TryParse(arg, out digits);
+                        _=int.TryParse(arg, out int digits);
                         result = result.Replace(match.Value, string.Format("{0:D" + digits.ToString() + "}", counter), StringComparison.InvariantCultureIgnoreCase);
                         break;
                 }
