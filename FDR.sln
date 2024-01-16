@@ -13,8 +13,6 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "FDRTools", "FDRTools\FDRToo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FDR.Web", "FDR.Web\FDR.Web.csproj", "{F5D06634-A869-4609-B1FF-3A4026E694F7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FDR.UI", "FDR.UI\FDR.UI.csproj", "{B3BA789A-35BA-4C9D-8D16-24F0742EE91A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,10 +39,6 @@ Global
 		{F5D06634-A869-4609-B1FF-3A4026E694F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5D06634-A869-4609-B1FF-3A4026E694F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5D06634-A869-4609-B1FF-3A4026E694F7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B3BA789A-35BA-4C9D-8D16-24F0742EE91A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B3BA789A-35BA-4C9D-8D16-24F0742EE91A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B3BA789A-35BA-4C9D-8D16-24F0742EE91A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B3BA789A-35BA-4C9D-8D16-24F0742EE91A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
