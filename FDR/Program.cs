@@ -124,6 +124,7 @@ namespace FDR
                         break;
 
                     case Common.param_web:
+                    case "-ui":
                         operation = Operation.Web;
                         break;
 
