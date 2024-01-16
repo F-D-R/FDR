@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using FDR.Tools.Library;
 using System.Collections.Generic;
 using System.Threading;
+using Microsoft.Extensions.Configuration;
 
 namespace FDR
 {
@@ -26,12 +27,22 @@ namespace FDR
         private static string function = "";
         private static readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
         private static CancellationToken token; // = new();
+        private static string? URL = null;
 
 
         public static void Main(string[] args)
         {
             //AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
             //AppDomain.CurrentDomain.DomainUnload += OnDomainUnload;
+
+
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false)
+                .Build();
+
+            URL = configuration["Kestrel:Endpoints:Https:Url"];
+
 
             token = tokenSource.Token;
 
@@ -231,7 +242,16 @@ namespace FDR
 
                         case Operation.Web:
                             Common.Msg($"FDR Tools {version} - Web", titleColor);
-                            Common.Msg("Starting the web application...");
+                            if (string.IsNullOrEmpty(URL))
+                            {
+                                Common.Msg("Missing URL configuration!", ConsoleColor.Red);
+                                return;
+                            }
+                            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                                Process.Start("FDR.Web.exe");
+                            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                                Process.Start("dotnet", "FDR.Web.dll");
+                            Process.Start("explorer", URL);
                             break;
 
                         default:
