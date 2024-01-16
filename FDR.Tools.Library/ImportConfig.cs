@@ -104,7 +104,7 @@ namespace FDR.Tools.Library
             return attributes;
         }
 
-        private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.CRW|*.DNG|*.JPG|*.MP4|*.AVI|*.MOV|*.SRT";
+        private const string DEFAULT_FILTER = "*.CR3|*.CR2|*.CRW|*.DNG|*.JPG|*.MP4|*.AVI|*.MOV";
         private const string DEFAULT_DATEFORMAT = "yyMMdd";
 
         public string? Name { get; set; }
