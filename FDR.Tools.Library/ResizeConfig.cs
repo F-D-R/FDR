@@ -10,9 +10,13 @@ namespace FDR.Tools.Library
     [JsonConverter(typeof(StringEnumConverter))]
     public enum ResizeMethod
     {
+        [Display(Name = "Fit in")]
         fit_in = 0,
+        [Display(Name = "Max width")]
         max_width = 1,
+        [Display(Name = "Max height")]
         max_height = 2,
+        [Display(Name = "Stretch")]
         stretch = 3
     }
 

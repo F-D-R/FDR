@@ -4,24 +4,33 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Linq;
+using System.ComponentModel.DataAnnotations;
 
 namespace FDR.Tools.Library
 {
     [JsonConverter(typeof(StringEnumConverter))]
     public enum FolderStructure
     {
+        [Display(Name = "Date")]
         date,
+        [Display(Name = "Year/Date")]
         year_date,
+        [Display(Name = "Year/Month/Date")]
         year_month_date,
+        [Display(Name = "Year/Month/Day")]
         year_month_day,
+        [Display(Name = "Year/Month")]
         year_month
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
     public enum ImportRuleType
     {
+        [Display(Name = "Contains folder")]
         contains_folder,
+        [Display(Name = "Contains file")]
         contains_file,
+        [Display(Name = "Volume label")]
         volume_label
     }
 

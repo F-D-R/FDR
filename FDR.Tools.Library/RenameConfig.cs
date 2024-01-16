@@ -9,8 +9,11 @@ namespace FDR.Tools.Library
     [JsonConverter(typeof(StringEnumConverter))]
     public enum CharacterCasing
     {
+        [Display(Name = "Upper")]
         upper = 0,
+        [Display(Name = "Lower")]
         lower = 1,
+        [Display(Name = "Unchanged")]
         unchanged = 2
     }
 

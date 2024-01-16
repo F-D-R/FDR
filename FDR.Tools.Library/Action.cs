@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading;
 using Newtonsoft.Json;
@@ -9,11 +10,17 @@ namespace FDR.Tools.Library
     [JsonConverter(typeof(StringEnumConverter))]
     public enum ActionType
     {
+        [Display(Name = "Rename")]
         rename,
+        [Display(Name = "Move")]
         move,
+        [Display(Name = "Resize")]
         resize,
+        [Display(Name = "Hash")]
         hash,
+        [Display(Name = "Rehash")]
         rehash,
+        [Display(Name = "Cleanup")]
         cleanup
     }
 
