@@ -271,7 +271,7 @@ namespace FDR.Tools.Library
 
         public class FileDateComparer : Comparer<FileInfo>
         {
-            private ConcurrentDictionary<string, DateTime> dates = new();
+            private readonly ConcurrentDictionary<string, DateTime> dates = new();
 
             public override int Compare(FileInfo? x, FileInfo? y)
             {

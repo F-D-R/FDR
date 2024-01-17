@@ -101,7 +101,7 @@ namespace FDR.Tools.Library
     public abstract class ConfigListBase<T> : List<T>
         where T : ConfigPartBase
     {
-        private AppConfig? appConfig;
+        private readonly AppConfig? appConfig;
 
         public ConfigListBase(AppConfig? appConfig) => this.appConfig = appConfig;
 

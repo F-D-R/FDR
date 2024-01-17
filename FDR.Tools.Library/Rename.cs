@@ -41,15 +41,17 @@ namespace FDR.Tools.Library
 
         private static Dictionary<string, string> GetPlaceholderList()
         {
-            var list = new Dictionary<string, string>();
-            list.Add($"{{{NOW}[:format]}}", "Current date time with optional date format");
-            list.Add($"{{{NAME}[:start,length]}}", "Name without extension with optional start index and character length");
-            list.Add($"{{{PFOLDER}[:start,length]}}", "Parent folder's name with optional start index and character length");
-            list.Add($"{{{CDATE}[:format]}}", "Creation date with optional date format");
-            list.Add($"{{{MDATE}[:format]}}", "Modify date with optional date format");
-            list.Add($"{{{EDATE}[:format]}}", $"EXIF date (={SDATE}) with optional date format");
-            list.Add($"{{{SDATE}[:format]}}", $"Shooting date (={EDATE}) with optional date format");
-            list.Add($"{{{COUNTER}[:digits]}}", "File counter with optional number of digits starting with 1 or 'auto'");
+            var list = new Dictionary<string, string>()
+            {
+                { $"{{{NOW}[:format]}}", "Current date time with optional date format" },
+                { $"{{{NAME}[:start,length]}}", "Name without extension with optional start index and character length" },
+                { $"{{{PFOLDER}[:start,length]}}", "Parent folder's name with optional start index and character length" },
+                { $"{{{CDATE}[:format]}}", "Creation date with optional date format" },
+                { $"{{{MDATE}[:format]}}", "Modify date with optional date format" },
+                { $"{{{EDATE}[:format]}}", $"EXIF date (={SDATE}) with optional date format" },
+                { $"{{{SDATE}[:format]}}", $"Shooting date (={EDATE}) with optional date format" },
+                { $"{{{COUNTER}[:digits]}}", "File counter with optional number of digits starting with 1 or 'auto'" }
+            };
             return list;
         }
 

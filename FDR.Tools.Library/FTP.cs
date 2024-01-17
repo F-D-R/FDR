@@ -28,10 +28,10 @@ namespace FDR.Tools.Library.FTP
     public sealed class FTPConnection
     {
         private TcpClient? mobjTcpClient;
-        private static int mintsBlockSize = 512;
-        private static int mintsDefaultRemotePort = 21;
-        private static int mintsDataPortRangeFrom = 1500;
-        private static int mintsDataPortRangeTo = 65000;
+        private const int mintsBlockSize = 512;
+        private const int mintsDefaultRemotePort = 21;
+        private const int mintsDataPortRangeFrom = 1500;
+        private const int mintsDataPortRangeTo = 65000;
         private FTPMode mintFtpMode;
         private int mintActiveConnectionsCount;
         private string? mstrRemoteHost;
@@ -548,7 +548,7 @@ namespace FDR.Tools.Library.FTP
                 lcolTempMessage = ReadLines(lobjStream);
             }
 
-            while (lcolTempMessage[lcolTempMessage.Count - 1].ToString().Substring(3, 1) == "-")
+            while (lcolTempMessage[^1].ToString().Substring(3, 1) == "-")
             {
                 lcolMessageList.AddRange(lcolTempMessage);
                 lcolTempMessage = ReadLines(lobjStream);
@@ -560,7 +560,7 @@ namespace FDR.Tools.Library.FTP
             return lcolMessageList;
         }
 
-        private List<string> ReadLines(NetworkStream tobjStream)
+        private static List<string> ReadLines(NetworkStream tobjStream)
         {
             List<string> lcolMessageList = new();
             char[] lchraSeperator = new[] { (char)10 };
@@ -585,17 +585,17 @@ namespace FDR.Tools.Library.FTP
             return lcolMessageList;
         }
 
-        private int GetMessageReturnValue(List<string>? tcolMessages)
+        private static int GetMessageReturnValue(List<string>? tcolMessages)
         {
             if (tcolMessages == null || tcolMessages.Count == 0)
                 throw new ArgumentNullException(nameof(tcolMessages));
             return GetMessageReturnValue(tcolMessages[0]);
         }
-        private int GetMessageReturnValue(string? tstrMessage)
+        private static int GetMessageReturnValue(string? tstrMessage)
         {
             if (string.IsNullOrWhiteSpace(tstrMessage))
                 throw new ArgumentNullException(nameof(tstrMessage));
-            return int.Parse(tstrMessage.Substring(0, 3));
+            return int.Parse(tstrMessage[0..3]);
         }
 
         private int GetPortNumber()

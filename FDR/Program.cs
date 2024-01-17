@@ -305,24 +305,26 @@ namespace FDR
                 }
                 Common.Msg("");
                 Common.Msg("Where options can be:");
-                var help = new Dictionary<string, string>();
-                help.Add($"{Common.param_help} [<{nameof(function)}>]", "Generic help (this screen) or optionally help about a given function");
-                help.Add($"{Common.param_import} [<{nameof(folder)}>]", "Import memory card content or optionally the content of a folder");
-                help.Add($"{Common.param_hash} <{nameof(folder)}>", "Create hash of files in a folder");
-                help.Add($"{Common.param_rehash} <{nameof(folder)}>", "Recreate hashes of all files in a folder");
-                help.Add($"{Common.param_verify} <{nameof(folder)}>", "Verify the files in a folder against their saved hash");
-                help.Add($"{Common.param_diff} <{nameof(folder)}>", "Compare the files of a folder to a reference one");
-                help.Add($"{Common.param_reference} <{nameof(folder)}>", "Reference folder for the diff function");
-                help.Add($"{Common.param_cleanup} <{nameof(folder)}>", "Delete unnecessary raw, hash and err files");
-                help.Add($"{Common.param_rename} <{nameof(folder)}>", "Rename image files based on a given configuration");
-                help.Add($"{Common.param_resize} <{nameof(folder)}>", "Resize image files based on a given configuration");
-                help.Add($"{Common.param_configfile} <{nameof(file)}>", "Path of the configuration file to use instead of appsettings.json");
-                help.Add($"{Common.param_config} <{nameof(config)}>", "Named configuration for some functions like renaming and resizing");
-                help.Add(Common.param_web, "Start the web application");
-                help.Add(Common.param_auto, "Start the import automatically");
-                help.Add(Common.param_noactions, "Skip the actions during import to enable importing from multiple sources");
-                help.Add(Common.param_force, "Force importing existing folders");
-                help.Add(Common.param_verbose, "More detailed output");
+                var help = new Dictionary<string, string>()
+                {
+                    { $"{Common.param_help} [<{nameof(function)}>]", "Generic help (this screen) or optionally help about a given function" },
+                    { $"{Common.param_import} [<{nameof(folder)}>]", "Import memory card content or optionally the content of a folder" },
+                    { $"{Common.param_hash} <{nameof(folder)}>", "Create hash of files in a folder" },
+                    { $"{Common.param_rehash} <{nameof(folder)}>", "Recreate hashes of all files in a folder" },
+                    { $"{Common.param_verify} <{nameof(folder)}>", "Verify the files in a folder against their saved hash" },
+                    { $"{Common.param_diff} <{nameof(folder)}>", "Compare the files of a folder to a reference one" },
+                    { $"{Common.param_reference} <{nameof(folder)}>", "Reference folder for the diff function" },
+                    { $"{Common.param_cleanup} <{nameof(folder)}>", "Delete unnecessary raw, hash and err files" },
+                    { $"{Common.param_rename} <{nameof(folder)}>", "Rename image files based on a given configuration" },
+                    { $"{Common.param_resize} <{nameof(folder)}>", "Resize image files based on a given configuration" },
+                    { $"{Common.param_configfile} <{nameof(file)}>", "Path of the configuration file to use instead of appsettings.json" },
+                    { $"{Common.param_config} <{nameof(config)}>", "Named configuration for some functions like renaming and resizing" },
+                    { Common.param_web, "Start the web application" },
+                    { Common.param_auto, "Start the import automatically" },
+                    { Common.param_noactions, "Skip the actions during import to enable importing from multiple sources" },
+                    { Common.param_force, "Force importing existing folders" },
+                    { Common.param_verbose, "More detailed output" }
+                };
                 Common.ShowAttributeHelp(help, false);
             }
             else
