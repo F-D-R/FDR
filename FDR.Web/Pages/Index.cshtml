@@ -2,7 +2,19 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
+
+    //ViewData["test"] = ResizeMethod.fit_in.GetDisplayName();
+    //ViewData["test"] = typeof(RenameConfig).GetDisplayName();
+    //ViewData["test"] = Common.GetPropertyDisplayName<RenameConfig>(i => i.FilenamePattern!);
+    //ViewData["test"] = typeof(RenameConfig).GetProperty(nameof(RenameConfig.FilenamePattern))?.GetDisplayName();
+    //ViewData["test"] = typeof(RenameConfig).GetDisplayNameFor(nameof(RenameConfig.FilenamePattern));
 }
+
+<h3>@ViewData["test"]</h3>
+<h3>@ViewData["test1"]</h3>
+<h3>@ViewData["test2"]</h3>
+<h3>@ViewData["test3"]</h3>
+<h3>@ViewData["test4"]</h3>
 
 @*
 <div>

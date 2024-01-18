@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 using SixLabors.ImageSharp;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
+using System.Linq.Expressions;
+using System.Globalization;
+using System.Reflection;
 
 namespace FDR.Tools.Library
 {
@@ -291,5 +296,105 @@ namespace FDR.Tools.Library
             }
         }
 
+
+        #region Get property name from attribute
+
+        public static T? GetAttribute<T>(this MemberInfo member, bool isRequired = false) where T : Attribute
+        {
+            var attribute = member.GetCustomAttributes(typeof(T), false).SingleOrDefault();
+
+            if (attribute == null && isRequired)
+            {
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "The {0} attribute must be defined on member {1}", typeof(T).Name, member.Name));
+            }
+
+            if (attribute != null) return (T)attribute;
+            return null;
+        }
+
+        public static T? GetAttribute<T>(this Enum enumVal) where T : Attribute
+        {
+            var type = enumVal.GetType();
+            var memInfo = type.GetMember(enumVal.ToString());
+            var attributes = memInfo[0].GetCustomAttributes(typeof(T), false);
+            return (attributes.Length > 0) ? (T)attributes[0] : null;
+        }
+
+        public static string GetDisplayName(this MemberInfo member)
+        {
+            var displayAttribute = member.GetAttribute<DisplayAttribute>();
+            if (displayAttribute != null && !string.IsNullOrWhiteSpace(displayAttribute.Name))
+                return displayAttribute.Name;
+
+            var displayNameAttribute = member.GetAttribute<DisplayNameAttribute>();
+            if (displayNameAttribute != null && !string.IsNullOrWhiteSpace(displayNameAttribute.DisplayName))
+                return displayNameAttribute.DisplayName;
+
+            return member.Name;
+        }
+
+        public static string GetDisplayName(this Enum enumVal)
+        {
+            var displayAttribute = enumVal.GetAttribute<DisplayAttribute>();
+            if (displayAttribute != null && !string.IsNullOrWhiteSpace(displayAttribute.Name))
+                return displayAttribute.Name;
+
+            return enumVal.ToString();
+        }
+
+        public static string GetDisplayNameFor(this Type type, string memberName)
+        {
+            var property = type.GetProperty(memberName);
+            if (property != null)
+                return property.GetDisplayName();
+
+            var field = type.GetField(memberName);
+            if (field != null)
+                return field.GetDisplayName();
+
+            return memberName;
+        }
+
+
+        public static MemberInfo? GetPropertyInformation(Expression propertyExpression)
+        {
+            if (propertyExpression == null) throw new ArgumentNullException(nameof(propertyExpression));
+            MemberExpression? memberExpr = propertyExpression as MemberExpression;
+            if (memberExpr == null)
+            {
+
+                UnaryExpression? unaryExpr = propertyExpression as UnaryExpression;
+                if (unaryExpr != null && unaryExpr.NodeType == ExpressionType.Convert)
+                {
+                    memberExpr = unaryExpr.Operand as MemberExpression;
+                }
+            }
+
+            if (memberExpr != null && memberExpr.Member.MemberType == MemberTypes.Property)
+            {
+                return memberExpr.Member;
+            }
+
+            return null;
+        }
+
+        public static string? GetPropertyDisplayName<T>(Expression<Func<T, object>> propertyExpression)
+        {
+            var memberInfo = GetPropertyInformation(propertyExpression.Body);
+
+            if (memberInfo == null) throw new ArgumentException("No property reference expression was found.", nameof(propertyExpression));
+
+            var displayAttribute = memberInfo.GetAttribute<DisplayAttribute>(false);
+            if (displayAttribute != null)
+                return displayAttribute.Name;
+
+            var displayNameAttribute = memberInfo.GetAttribute<DisplayNameAttribute>(false);
+            if (displayNameAttribute != null)
+                return displayNameAttribute.DisplayName;
+
+            return memberInfo.Name;
+        }
+
+        #endregion
     }
 }
