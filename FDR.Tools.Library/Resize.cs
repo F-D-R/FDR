@@ -38,7 +38,7 @@ namespace FDR.Tools.Library
 #if RELEASE
             Trace.WriteLine($"Resizing file {file.Name} to {Path.GetFileName(destFullName)}");
 #else
-            Trace.WriteLine($"Resizing file {file.FullName} to {newFullName}");
+            Trace.WriteLine($"Resizing file {file.FullName} to {destFullName}");
 #endif
 
             int maxWidth = config.MaxWidth;
