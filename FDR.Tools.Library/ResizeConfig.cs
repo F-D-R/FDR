@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using Newtonsoft.Json;
@@ -38,23 +39,23 @@ namespace FDR.Tools.Library
         private const string INVALID_RESIZE_METHOD = "Invalid resize method!";
         private const string JPG_QUALITY_ERROR = "JPG quality must be between 0 and 100!";
 
-        [Display(Name = "Resize method")]
+        [DisplayName("Resize method")]
         [Required]
         [Range(0, 3, ErrorMessage = INVALID_RESIZE_METHOD)]
         public ResizeMethod ResizeMethod { get; set; } = ResizeMethod.fit_in;
 
-        [Display(Name = "Max width")]
+        [DisplayName("Max width")]
         public int MaxWidth { get; set; }
 
-        [Display(Name = "Max height")]
+        [DisplayName("Max height")]
         public int MaxHeight { get; set; }
 
-        [Display(Name = "Clear metadata")]
+        [DisplayName("Clear metadata")]
         public bool ClearMetadata { get; set; }
 
         private int jpgQuality = DEFAULT_QUALITY;
 
-        [Display(Name = "JPG quality")]
+        [DisplayName("JPG quality")]
         [Range(0, 100, ErrorMessage = JPG_QUALITY_ERROR)]
         public int JpgQuality
         {

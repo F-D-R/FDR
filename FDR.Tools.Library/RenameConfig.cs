@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 
 namespace FDR.Tools.Library
 {
@@ -39,34 +40,34 @@ namespace FDR.Tools.Library
         private const string INVALID_FILENAME_CASE = "Invalid filename case!";
         private const string INVALID_EXTENSION_CASE = "Invalid extension case!";
 
-        [Display(Name = "Filename pattern")]
+        [DisplayName("Filename pattern")]
         [Required(ErrorMessage = FILENAME_PATTERN_ERROR)]
         public string? FilenamePattern { get; set; } = "{name}";
 
-        [Display(Name = "Filename case")]
+        [DisplayName("Filename case")]
         [Required]
         [Range(0, 2, ErrorMessage = INVALID_FILENAME_CASE)]
         public CharacterCasing FilenameCase { get; set; } = CharacterCasing.unchanged;
 
-        [Display(Name = "Extension case")]
+        [DisplayName("Extension case")]
         [Required]
         [Range(0, 2, ErrorMessage = INVALID_EXTENSION_CASE)]
         public CharacterCasing ExtensionCase { get; set; } = CharacterCasing.lower;
 
         protected string? filter;
-        [Display(Name = "File filter")]
+        [DisplayName("File filter")]
         public virtual string FileFilter
         {
             get { return !string.IsNullOrWhiteSpace(filter) ? filter : DEFAULT_FILTER; }
             set { filter = value; }
         }
 
-        [Display(Name = "Additional files")]
+        [DisplayName("Additional files")]
         public virtual bool AdditionalFiles { get; set; } = true;
 
         public bool Recursive { get; set; } = false;
 
-        [Display(Name = "Stop on errors")]
+        [DisplayName("Stop on errors")]
         public bool StopOnError { get; set; } = true;
 
         public RenameConfig Clone()

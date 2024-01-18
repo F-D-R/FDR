@@ -1,6 +1,7 @@
 using FDR.Tools.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace FDR.Web.Pages
@@ -19,13 +20,13 @@ namespace FDR.Web.Pages
         [BindProperty]
         public string? Folder { get; set; }
 
-        [Display(Name = "Reference folder")]
+        [DisplayName("Reference folder")]
         [Required(ErrorMessage = "Reference folder is empty!")]
         [PageRemote(AdditionalFields = "__RequestVerificationToken", HttpMethod = "POST", PageHandler = "ValidateReferenceFolder", ErrorMessage = "Reference folder doesn't exist!")]
         [BindProperty]
         public string? ReferenceFolder { get; set; }
 
-        [Display(Name = "Verbose output")]
+        [DisplayName("Verbose output")]
         [BindProperty]
         public bool Verbose { get; set; } = false;
 

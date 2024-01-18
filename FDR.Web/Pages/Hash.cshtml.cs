@@ -1,6 +1,7 @@
 using FDR.Tools.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace FDR.Web.Pages
@@ -19,11 +20,11 @@ namespace FDR.Web.Pages
         [BindProperty]
         public string? Folder { get; set; }
 
-        [Display(Name = "Force (aka Re-hash)")]
+        [DisplayName("Force (aka Re-hash)")]
         [BindProperty]
         public bool Force { get; set; } = false;
 
-        [Display(Name = "Verbose output")]
+        [DisplayName("Verbose output")]
         [BindProperty]
         public bool Verbose { get; set; } = false;
 

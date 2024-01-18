@@ -1,6 +1,7 @@
 using FDR.Tools.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace FDR.Web.Pages
@@ -22,15 +23,15 @@ namespace FDR.Web.Pages
         [BindProperty]
         public ImportConfig ImportConfig { get; set; } = new ImportConfig();
 
-        [Display(Name = "Overwrite existing folders")]
+        [DisplayName("Overwrite existing folders")]
         [BindProperty]
         public bool Force { get; set; } = false;
 
-        [Display(Name = "Run no actions")]
+        [DisplayName("Run no actions")]
         [BindProperty]
         public bool NoActions { get; set; } = false;
 
-        [Display(Name = "Verbose output")]
+        [DisplayName("Verbose output")]
         [BindProperty]
         public bool Verbose { get; set; } = false;
 

@@ -35,7 +35,7 @@ else
                 <div class="row mb-3">
                     <label asp-for="ConfigKey" class="col-sm-3 col-form-label">Predefined rename config</label>
                     <div class="col-sm-8">
-                        <select asp-for="ConfigKey" asp-items="@(Model.AppConfig?.RenameConfigs?.Select(d => new SelectListItem(d.Key, d.Key)))" class="form-select" onchange="location = '?config=' + this.value;">
+                        <select asp-for="ConfigKey" asp-items="@(Model.AppConfig?.RenameConfigs?.Select(d => new SelectListItem(d.Key + " - " + d.Value.FilenamePattern, d.Key)))" class="form-select" onchange="location = '?config=' + this.value;">
                             <option value="">Default config...</option>
                         </select>
                     </div>
