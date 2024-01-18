@@ -20,7 +20,7 @@ namespace FDR.Web.Pages
         [BindProperty]
         public string? Folder { get; set; }
 
-        [DisplayName("Force (aka Re-hash)")]
+        [DisplayName("Force re-hash")]
         [BindProperty]
         public bool Force { get; set; } = false;
 
