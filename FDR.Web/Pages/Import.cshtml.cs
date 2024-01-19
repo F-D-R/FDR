@@ -29,7 +29,7 @@ namespace FDR.Web.Pages
 
         [DisplayName("Run no actions")]
         [BindProperty]
-        public bool NoActions { get; set; } = false;
+        public bool NoActions { get; set; } = true;
 
         [DisplayName("Verbose output")]
         [BindProperty]
