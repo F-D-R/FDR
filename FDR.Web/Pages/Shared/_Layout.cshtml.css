@@ -46,3 +46,9 @@ button.accept-policy {
   white-space: nowrap;
   line-height: 60px;
 }
+
+.oi {
+    width: 1.3rem;
+    vertical-align: middle;
+    top: -2px;
+}
