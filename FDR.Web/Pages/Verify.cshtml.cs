@@ -24,9 +24,17 @@ namespace FDR.Web.Pages
         [BindProperty]
         public bool Verbose { get; set; } = false;
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
             Console.WriteLine("VerifyModel.OnGet...");
+
+            //https://localhost:7241/ajaxdemo?X-Requested-With=XMLHttpRequest&_=1705786395982
+            if (Request.Query["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Content("Some AJAX result...", "text/plain");
+            }
+
+            return Page();
         }
 
         public JsonResult OnPostValidateFolder()

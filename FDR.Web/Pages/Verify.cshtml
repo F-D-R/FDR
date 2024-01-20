@@ -15,7 +15,9 @@
             <div class="col-sm-8">
                 <div class="input-group mb-3">
                     <input asp-for="Folder" class="form-control">
-                    <button class="btn btn-outline-secondary" type="button" asp-page-handler="SelectFolder">...</button>
+                    @*<button id="selectFolder" class="btn btn-outline-secondary" type="button">...</button>*@
+                    @*<a class="btn btn-outline-secondary" data-ajax="true" data-ajax-update="#result" data-ajax-url="/ajax">...</a>*@
+                    <a class="btn btn-outline-secondary" data-ajax="true" data-ajax-update="#result">...</a>
                 </div>
             </div>
         </div>
@@ -25,10 +27,24 @@
                 <input asp-for="Verbose" class="form-check-input va-mid">
             </div>
         </div>
-        <input type="submit" value="Verify" class="btn btn-primary"><br>
+        <div class="row mb-3">
+            <div class="col-sm-8 offset-sm-3">
+                <input type="submit" value="Verify" class="btn btn-primary"><br>
+            </div>
+        </div>
     </div>
+    <br>
+    <div id="result"></div>
 }
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
+
+    @*<script>
+        $(function () {
+            $('#selectFolder').on('click', function () {
+                $('#result').load('/ajaxdemo');
+            });
+        });
+    </script>*@
 }
