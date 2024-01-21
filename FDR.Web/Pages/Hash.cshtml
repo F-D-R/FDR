@@ -15,7 +15,7 @@
             <div class="col-sm-8">
                 <div class="input-group mb-3">
                     <input asp-for="Folder" class="form-control">
-                    <button class="btn btn-outline-secondary" type="button" asp-page-handler="SelectFolder">...</button>
+                    <button id="SelectFolder" class="btn btn-outline-secondary" type="button" asp-page-handler="SelectFolder">...</button>
                 </div>
             </div>
         </div>
@@ -33,7 +33,7 @@
         </div>
         <div class="row mb-3">
             <div class="col-sm-8 offset-sm-3">
-                <input type="submit" value="Hash" class="btn btn-primary"><br>
+                <button type="submit" class="btn btn-primary"><span class="oi oi-key"></span> @ViewData["Title"]</button><br>
             </div>
         </div>
     </div>
@@ -41,4 +41,13 @@
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
+
+    <script type="text/javascript">
+        $(function () {
+            $('#SelectFolder').click(function () {
+                // window.open('/Verify', 'CustomerSearch', 'height=' + (window.screen.height - 100) + ',width=200,left=' + (window.screen.width - 250) + ',top=10,status=no,toolbar=no,resizable=yes,scrollbars=yes');
+                window.open('/Verify', 'CustomerSearch', 'height=500,width=500,left=' + (window.screen.width / 2 - 250) + ',top=' + (window.screen.Height / 2 - 250) + ',status=no,toolbar=no,resizable=yes,scrollbars=yes');
+            });
+        });
+    </script>
 }

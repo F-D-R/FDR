@@ -6,8 +6,8 @@
 <h1>@ViewData["Title"]</h1>
 <hr>
 
-@using (Html.BeginForm(FormMethod.Post))
-{
+@*<form method="post" data-ajax="true" data-ajax-method="post">*@
+<form method="post">
     <div>
         <div asp-validation-summary="All" class="text-danger col-sm-8"></div>
         <div class="row mb-3">
@@ -17,7 +17,8 @@
                     <input asp-for="Folder" class="form-control">
                     @*<button id="selectFolder" class="btn btn-outline-secondary" type="button">...</button>*@
                     @*<a class="btn btn-outline-secondary" data-ajax="true" data-ajax-update="#result" data-ajax-url="/ajax">...</a>*@
-                    <a class="btn btn-outline-secondary" data-ajax="true" data-ajax-update="#result">...</a>
+                    @*<a class="btn btn-outline-secondary" data-ajax="true" data-ajax-update="#result">...</a>*@
+                    <a class="btn btn-outline-secondary" data-ajax="true" data-ajax-update="#result" data-ajax-url="/Verify/SelectFolder" data-ajax-method="get">...</a>
                 </div>
             </div>
         </div>
@@ -29,13 +30,13 @@
         </div>
         <div class="row mb-3">
             <div class="col-sm-8 offset-sm-3">
-                <input type="submit" value="Verify" class="btn btn-primary"><br>
+                <button type="submit" class="btn btn-primary"><span class="oi oi-check"></span> @ViewData["Title"]</button><br>
             </div>
         </div>
     </div>
     <br>
     <div id="result"></div>
-}
+</form>
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />

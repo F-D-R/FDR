@@ -43,9 +43,18 @@ namespace FDR.Web.Pages
             return new JsonResult(folder.Exists);
         }
 
-        public void OnPostSelectFolder()
+        public IActionResult OnPostSelectFolder()
         {
             Console.WriteLine("VerifyModel.OnPostSelectFolder...");
+
+            return Content("VerifyModel.OnPostSelectFolder called from AJAX...", "text/plain");
+        }
+
+        public IActionResult OnGetSelectFolder()
+        {
+            Console.WriteLine("VerifyModel.OnGetSelectFolder...");
+
+            return Content("VerifyModel.OnGetSelectFolder called from AJAX...", "text/plain");
         }
 
         public IActionResult OnPost()
