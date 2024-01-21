@@ -6,8 +6,7 @@
 <h1>@ViewData["Title"]</h1>
 <hr>
 
-@using (Html.BeginForm(FormMethod.Post))
-{
+<form method="post">
     <div>
         <div asp-validation-summary="All" class="text-danger col-sm-8"></div>
         <div class="row mb-3">
@@ -40,7 +39,7 @@
             </div>
         </div>
     </div>
-}
+</form>
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />

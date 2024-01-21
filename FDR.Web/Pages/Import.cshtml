@@ -7,8 +7,7 @@
 <small>* without actions</small>
 <hr>
 
-@using (Html.BeginForm(FormMethod.Post))
-{
+<form method="post">
     <div>
         <div asp-validation-summary="All" class="text-danger col-sm-8"></div>
         @if (Model.AppConfig?.ImportConfigs != null)
@@ -88,7 +87,7 @@
             </div>
         </div>
     </div>
-}
+</form>
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
