@@ -47,7 +47,10 @@ namespace FDR.Web.Pages
         {
             Console.WriteLine("VerifyModel.OnGetSelectFolder...");
 
-            return Partial("_SelectFolder", new DirectoryInfo(folder??"/"));
+            var di = new DirectoryInfo(folder??"/");
+            if (!di.Exists) { di = new DirectoryInfo("/"); }
+
+            return Partial("_SelectFolder", di);
         }
 
         public IActionResult OnPost()
