@@ -1,5 +1,19 @@
 ﻿@model DirectoryInfo
 
 <div>
-    <span class="d-inline-block">Folder: </span> <input id="SelectedFolder" type="text" value="@Model.FullName" />
+    <label for="SelectedFolder" class="col-sm-3 col-form-label">Selected folder</label>
+    <input id="SelectedFolder" type="text" class="form-control" value="@Model.FullName" />
+</div>
+<div>
+    <label for="SelectedFolder" class="col-sm-3 col-form-label">Subfolders</label>
+    <select id="Subfolders" class="form-control" size="5" onclick="document.getElementById('SelectedFolder').value = this.value;">
+        @if (Model.Parent != null)
+        {
+            <option value="@Model.Parent?.FullName">..</option>
+        }
+        @foreach (var dir in Model.GetDirectories())
+        {
+            <option value="@dir.FullName">@dir.Name</option>
+        }
+    </select>
 </div>
