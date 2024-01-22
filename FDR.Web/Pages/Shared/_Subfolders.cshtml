@@ -2,7 +2,7 @@
 @using System.Runtime.InteropServices;
 
 <label for="Subfolders" class="col-sm-3 col-form-label">Subfolders</label>
-<select id="Subfolders" class="form-control" size="5" onclick="document.getElementById('SelectedFolder').value = this.value;">
+<select id="Subfolders" class="form-control" size="5" onclick="SubfoldersOnClick();">
     @if (Model.Parent != null)
     {
         <option value="@Model.Parent?.FullName">..</option>
