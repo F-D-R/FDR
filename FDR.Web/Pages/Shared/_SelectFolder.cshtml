@@ -1,11 +1,24 @@
 ﻿@model DirectoryInfo
+@using System.Runtime.InteropServices;
 
 <div>
     <label for="SelectedFolder" class="col-sm-3 col-form-label">Selected folder</label>
     <input id="SelectedFolder" type="text" class="form-control" value="@Model.FullName" />
 </div>
 <div>
-    <label for="SelectedFolder" class="col-sm-3 col-form-label">Subfolders</label>
+    @if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+    {
+        <label for="Drives" class="col-sm-3 col-form-label">Drives</label>
+        <select id="Drives" class="form-control" onchange="document.getElementById('SelectedFolder').value = this.value;">
+            @foreach (var d in DriveInfo.GetDrives())
+            {
+                <option value="@d.Name" selected="@(d.Name == Model.Root.Name)">@(d.Name + (!string.IsNullOrEmpty(d.VolumeLabel) ? " - " + d.VolumeLabel : ""))</option>
+            }
+        </select>
+    }
+</div>
+<div>
+    <label for="Subfolders" class="col-sm-3 col-form-label">Subfolders</label>
     <select id="Subfolders" class="form-control" size="5" onclick="document.getElementById('SelectedFolder').value = this.value;">
         @if (Model.Parent != null)
         {
