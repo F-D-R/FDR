@@ -1,0 +1,13 @@
+﻿@model DirectoryInfo
+@using System.Runtime.InteropServices;
+
+@if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+{
+    <label for="Drives" class="col-sm-3 col-form-label">Drives</label>
+    <select id="Drives" class="form-control" onchange="document.getElementById('SelectedFolder').value = this.value;">
+        @foreach (var d in DriveInfo.GetDrives())
+        {
+            <option value="@d.Name" selected="@(d.Name == Model.Root.Name)">@(d.Name + (!string.IsNullOrEmpty(d.VolumeLabel) ? " - " + d.VolumeLabel : ""))</option>
+        }
+    </select>
+}

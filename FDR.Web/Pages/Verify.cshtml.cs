@@ -43,16 +43,6 @@ namespace FDR.Web.Pages
             return new JsonResult(folder.Exists);
         }
 
-        public IActionResult OnGetSelectFolder(string? folder)
-        {
-            Console.WriteLine("VerifyModel.OnGetSelectFolder...");
-
-            var di = new DirectoryInfo(folder??"/");
-            if (!di.Exists) { di = new DirectoryInfo("/"); }
-
-            return Partial("_SelectFolder", di);
-        }
-
         public IActionResult OnPost()
         {
             Console.WriteLine("VerifyModel.OnPost...");

@@ -34,22 +34,7 @@
     <div id="result"></div>
 </form>
 
-<div id="FolderPopup" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fs-5">Select folder</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div id="FolderPopupBody" class="modal-body"></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="SaveFolder">Save</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            </div>
-        </div>
-    </div>
-</div>
-
+<partial name="_FolderPopup" />
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
@@ -57,7 +42,9 @@
     <script>
         $(function () {
             $('#SelectFolder').on('click', function () {
-                $('#FolderPopupBody').load(`/Verify/SelectFolder?folder=${encodeURIComponent($('#Folder').val())}`);
+                $('#FolderDiv').load(`/Folder/Folder?folder=${encodeURIComponent($('#Folder').val())}`);
+                $('#DrivesDiv').load(`/Folder/Drives?folder=${encodeURIComponent($('#Folder').val())}`);
+                $('#SubfoldersDiv').load(`/Folder/Subfolders?folder=${encodeURIComponent($('#Folder').val())}`);
             });
         })
 

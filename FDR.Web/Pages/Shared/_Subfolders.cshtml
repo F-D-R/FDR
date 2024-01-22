@@ -1,0 +1,14 @@
+﻿@model DirectoryInfo
+@using System.Runtime.InteropServices;
+
+<label for="Subfolders" class="col-sm-3 col-form-label">Subfolders</label>
+<select id="Subfolders" class="form-control" size="5" onclick="document.getElementById('SelectedFolder').value = this.value;">
+    @if (Model.Parent != null)
+    {
+        <option value="@Model.Parent?.FullName">..</option>
+    }
+    @foreach (var dir in Model.GetDirectories())
+    {
+        <option value="@dir.FullName">@dir.Name</option>
+    }
+</select>
