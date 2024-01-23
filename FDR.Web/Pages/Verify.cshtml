@@ -53,15 +53,5 @@
                 $('#Folder').val($('#SelectedFolder').val());
             });
         })
-
-        function DrivesOnChange() {
-            $('#SelectedFolder').val($('#Drives').val());
-            $('#SubfoldersDiv').load(`/Folder/Subfolders?folder=${encodeURIComponent($('#SelectedFolder').val())}`);
-        }
-
-        function SubfoldersOnClick() {
-            $('#SelectedFolder').val($('#Subfolders').val());
-            $('#SubfoldersDiv').load(`/Folder/Subfolders?folder=${encodeURIComponent($('#SelectedFolder').val())}`);
-        }
     </script>
 }
