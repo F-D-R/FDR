@@ -5,6 +5,8 @@ namespace FDR.Web.Pages
 {
     public class FolderModel : PageModel
     {
+        private const string DEFAULT_FOLDER = "/";
+
         public void OnGet()
         {
         }
@@ -22,8 +24,8 @@ namespace FDR.Web.Pages
         {
             Console.WriteLine($"FolderModel.OnGetDrives... {folder}");
 
-            var di = new DirectoryInfo(folder??"/");
-            if (!di.Exists) { di = new DirectoryInfo("/"); }
+            var di = new DirectoryInfo(folder??DEFAULT_FOLDER);
+            if (!di.Exists) { di = new DirectoryInfo(DEFAULT_FOLDER); }
 
             return Partial("_Drives", di);
         }
@@ -32,8 +34,8 @@ namespace FDR.Web.Pages
         {
             Console.WriteLine($"FolderModel.OnGetSubfolders... {folder}");
 
-            var di = new DirectoryInfo(folder??"/");
-            if (!di.Exists) { di = new DirectoryInfo("/"); }
+            var di = new DirectoryInfo(folder??DEFAULT_FOLDER);
+            if (!di.Exists) { di = new DirectoryInfo(DEFAULT_FOLDER); }
 
             return Partial("_Subfolders", di);
         }
