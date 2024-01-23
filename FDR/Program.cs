@@ -37,7 +37,6 @@ namespace FDR
 
 
             var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false)
                 .Build();
 
@@ -290,6 +289,7 @@ namespace FDR
         {
             var func = function?.Trim().ToLower();
             Common.Msg($"FDR Tools {version} - Help" + (string.IsNullOrWhiteSpace(func) ? "" : ": " + func), titleColor);
+            Common.Msg(Assembly.GetExecutingAssembly().Location);
 
             if (string.IsNullOrWhiteSpace(func))
             {
