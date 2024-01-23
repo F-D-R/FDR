@@ -1,4 +1,6 @@
-﻿<div id="FolderPopup" class="modal" tabindex="-1" role="dialog">
+﻿@using System.Runtime.InteropServices;
+
+<div id="FolderPopup" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
@@ -6,9 +8,21 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div id="FolderPopupBody" class="modal-body">
-                <div id="FolderDiv"></div>
-                <div id="DrivesDiv"></div>
-                <div id="SubfoldersDiv"></div>
+                <div id="FolderDiv">
+                    <label for="SelectedFolder" class="col-sm-3 col-form-label">Selected folder</label>
+                    <input id="SelectedFolder" type="text" class="form-control" />
+                </div>
+                <div id="DrivesDiv">
+                    @if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        <label for="Drives" class="col-sm-3 col-form-label">Drives</label>
+                        <select id="Drives" class="form-control" onchange="SelectDrive();"></select>
+                    }
+                </div>
+                <div id="SubfoldersDiv">
+                    <label for="Subfolders" class="col-sm-3 col-form-label">Subfolders</label>
+                    <select id="Subfolders" class="form-control" size="5" ondblclick="SelectSubfolder();"></select>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="SaveFolder">Save</button>
