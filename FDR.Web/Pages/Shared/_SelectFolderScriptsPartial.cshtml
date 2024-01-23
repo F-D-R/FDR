@@ -5,7 +5,7 @@
             $('#source').val(source);
 
             let folder = $('#' + source).val();
-            $('#SelectedFolder').val(folder);
+            $.ajax({ url: `/Folder/Folder?folder=${encodeURIComponent(folder)}`, type: 'GET', complete: function (res) { $('#SelectedFolder').val(res.responseText); } });
             $('#Drives').load(`/Folder/Drives?folder=${encodeURIComponent(folder)}`);
             $('#Subfolders').load(`/Folder/Subfolders?folder=${encodeURIComponent(folder)}`);
         });

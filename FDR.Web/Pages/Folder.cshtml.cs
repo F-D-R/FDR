@@ -15,9 +15,19 @@ namespace FDR.Web.Pages
         {
             Console.WriteLine($"FolderModel.OnPostValidateFolder... {folder}");
 
-            if (!string.IsNullOrWhiteSpace(folder)) 
+            if (!string.IsNullOrWhiteSpace(folder))
                 return new JsonResult(new DirectoryInfo(folder).Exists);
             return new JsonResult(false);
+        }
+
+        public IActionResult OnGetFolder(string? folder)
+        {
+            Console.WriteLine($"FolderModel.OnGetFolder... {folder}");
+
+            var di = new DirectoryInfo(folder??DEFAULT_FOLDER);
+            if (!di.Exists) { di = new DirectoryInfo(DEFAULT_FOLDER); }
+
+            return Content(di.FullName);
         }
 
         public IActionResult OnGetDrives(string? folder)
