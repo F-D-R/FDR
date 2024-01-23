@@ -2,5 +2,8 @@
 
 @foreach (var d in DriveInfo.GetDrives())
 {
-    <option value="@d.Name" selected="@(d.Name == Model.Root.Name)">@(d.Name + (!string.IsNullOrEmpty(d.VolumeLabel) ? " - " + d.VolumeLabel : ""))</option>
+    @if (d.IsReady)
+    {
+        <option value="@d.Name" selected="@(d.Name == Model.Root.Name)">@(d.Name + (!string.IsNullOrEmpty(d.VolumeLabel) ? " - " + d.VolumeLabel : ""))</option>
+    }
 }
