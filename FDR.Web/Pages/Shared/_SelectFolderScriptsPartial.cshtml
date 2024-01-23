@@ -1,10 +1,13 @@
 ﻿<script>
     $(function () {
-        $('#SelectFolder').on('click', function () {
-            $('#source').val('Folder');
-            $('#SelectedFolder').val($('#Folder').val());
-            $('#Drives').load(`/Folder/Drives?folder=${encodeURIComponent($('#Folder').val())}`);
-            $('#Subfolders').load(`/Folder/Subfolders?folder=${encodeURIComponent($('#Folder').val())}`);
+        $('[data-bs-target="#FolderPopup"]').on('click', function (e) {
+            let source = $(e.target).attr('id').replace(/select/i, "");
+            $('#source').val(source);
+
+            let folder = $('#' + source).val();
+            $('#SelectedFolder').val(folder);
+            $('#Drives').load(`/Folder/Drives?folder=${encodeURIComponent(folder)}`);
+            $('#Subfolders').load(`/Folder/Subfolders?folder=${encodeURIComponent(folder)}`);
         });
     })
 
