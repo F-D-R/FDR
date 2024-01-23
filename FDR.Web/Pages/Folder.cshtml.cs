@@ -18,16 +18,6 @@ namespace FDR.Web.Pages
             return new JsonResult(false);
         }
 
-        public IActionResult OnGetFolder(string? folder)
-        {
-            Console.WriteLine($"FolderModel.OnGetFolder... {folder}");
-
-            var di = new DirectoryInfo(folder??"/");
-            if (!di.Exists) { di = new DirectoryInfo("/"); }
-
-            return Partial("_Folder", di);
-        }
-
         public IActionResult OnGetDrives(string? folder)
         {
             Console.WriteLine($"FolderModel.OnGetDrives... {folder}");
