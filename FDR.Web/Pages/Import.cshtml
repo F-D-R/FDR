@@ -39,7 +39,7 @@
             <div class="col-sm-8">
                 <div class="input-group mb-3">
                     <input asp-for="ImportConfig.DestRoot" class="form-control">
-                    <button class="btn btn-outline-secondary" type="button" asp-page-handler="SelectDestRoot">...</button>
+                    <button id="SelectDestRoot" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FolderPopup">...</button>
                 </div>
             </div>
         </div>
@@ -94,4 +94,15 @@
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
     <partial name="_SelectFolderScriptsPartial" />
+
+    <script>
+        $(function () {
+            $('#SelectDestRoot').on('click', function () {
+                $('#source').val('ImportConfig_DestRoot');
+                $('#SelectedFolder').val($('#ImportConfig_DestRoot').val());
+                $('#Drives').load(`/Folder/Drives?folder=${encodeURIComponent($('#ImportConfig_DestRoot').val())}`);
+                $('#Subfolders').load(`/Folder/Subfolders?folder=${encodeURIComponent($('#ImportConfig_DestRoot').val())}`);
+            });
+        })
+    </script>
 }

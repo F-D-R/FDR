@@ -1,6 +1,7 @@
 ﻿<script>
     $(function () {
         $('#SelectFolder').on('click', function () {
+            $('#source').val('Folder');
             $('#SelectedFolder').val($('#Folder').val());
             $('#Drives').load(`/Folder/Drives?folder=${encodeURIComponent($('#Folder').val())}`);
             $('#Subfolders').load(`/Folder/Subfolders?folder=${encodeURIComponent($('#Folder').val())}`);
@@ -9,7 +10,7 @@
 
     $(function () {
         $('#SaveFolder').on('click', function () {
-            $('#Folder').val($('#SelectedFolder').val());
+            $('#' + $('#source').val()).val($('#SelectedFolder').val())
         });
     })
 </script>

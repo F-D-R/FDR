@@ -23,7 +23,7 @@
             <div class="col-sm-8">
                 <div class="input-group mb-3">
                     <input asp-for="ReferenceFolder" class="form-control">
-                    <button class="btn btn-outline-secondary" type="button" asp-page-handler="SelectReferenceFolder">...</button>
+                    <button id="SelectReferenceFolder" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FolderPopup">...</button>
                 </div>
             </div>
         </div>
@@ -46,4 +46,16 @@
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
     <partial name="_SelectFolderScriptsPartial" />
+
+    <script>
+        $(function () {
+            $('#SelectReferenceFolder').on('click', function (e) {
+                //$(e.target).attr('')
+                $('#source').val('ReferenceFolder');
+                $('#SelectedFolder').val($('#ReferenceFolder').val());
+                $('#Drives').load(`/Folder/Drives?folder=${encodeURIComponent($('#ReferenceFolder').val())}`);
+                $('#Subfolders').load(`/Folder/Subfolders?folder=${encodeURIComponent($('#ReferenceFolder').val())}`);
+            });
+        })
+    </script>
 }
