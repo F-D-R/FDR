@@ -92,7 +92,7 @@ else
                 <div class="col-sm-8">
                     <div class="input-group mb-3">
                         <input asp-for="Folder" class="form-control">
-                        <button class="btn btn-outline-secondary" type="button" asp-page-handler="SelectFolder">...</button>
+                        <button id="SelectFolder" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FolderPopup">...</button>
                     </div>
                 </div>
             </div>
@@ -123,6 +123,9 @@ else
     </form>
 }
 
+<partial name="_FolderPopup" />
+
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
+    <partial name="_SelectFolderScriptsPartial" />
 }
