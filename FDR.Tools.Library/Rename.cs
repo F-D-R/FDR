@@ -33,13 +33,13 @@ namespace FDR.Tools.Library
         {
             Common.Msg("");
             Common.Msg("The FilenamePattern can have the following formatting placeholders:");
-            Common.ShowAttributeHelp(GetPlaceholderList(), false);
+            Common.ShowAttributeHelp(GetRenamePlaceholderList(), false);
             Common.Msg("");
             Common.Msg("...see the detailed format description here:");
             Common.Msg("    https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings");
         }
 
-        private static Dictionary<string, string> GetPlaceholderList()
+        public static Dictionary<string, string> GetRenamePlaceholderList()
         {
             var list = new Dictionary<string, string>()
             {

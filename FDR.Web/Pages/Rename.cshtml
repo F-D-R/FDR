@@ -61,7 +61,21 @@ else
             <div class="row mb-3">
                 <label asp-for="RenameConfig.FilenamePattern" class="col-sm-3 col-form-label"></label>
                 <div class="col-sm-8">
-                    <input asp-for="RenameConfig.FilenamePattern" class="form-control">
+                    <div class="input-group mb-3">
+                        <input asp-for="RenameConfig.FilenamePattern" class="form-control">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="popover" title="Editor" data-bs-placement="bottom" data-bs-target="FilenamePatternInfoDiv" id="FilenamePatternEditorButton"><span class="oi oi-ellipses"></span></button>
+                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="popover" title="Info" data-bs-placement="bottom" data-bs-html="true" data-bs-target="FilenamePatternInfoDiv" id="FilenamePatternInfoButton"><span class="oi oi-info"></span></button>
+                    </div>
+                    <div style="display: none;">
+                        <div id="FilenamePatternInfoDiv">
+                            <dl>
+                                @foreach (var d in Rename.GetRenamePlaceholderList())
+                                {
+                                    <dt>@d.Key</dt> <dd>@d.Value</dd>
+                                }
+                            </dl>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="row mb-3">
@@ -92,7 +106,7 @@ else
                 <div class="col-sm-8">
                     <div class="input-group mb-3">
                         <input asp-for="Folder" class="form-control">
-                        <button id="SelectFolder" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FolderPopup">...</button>
+                        <button id="SelectFolder" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FolderPopup"><span class="oi oi-ellipses"></span></button>
                     </div>
                 </div>
             </div>
@@ -128,4 +142,30 @@ else
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
     <partial name="_SelectFolderScriptsPartial" />
+
+    <script>
+        //const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+        //const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl, { content: document.getElementById('FilenamePatternInfoDiv') }));
+        //const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl, { content: function () { return infoPopover(); } }));
+        //const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl, { content: function () { return document.getElementById('FilenamePatternInfoDiv').innerHTML; } }));
+
+        // function infoPopover() {
+        //     return document.getElementById('FilenamePatternInfoDiv').innerHTML;
+        // }
+
+        //const fpib = document.getElementById('FilenamePatternInfoButton');
+        //const fpipo = new bootstrap.Popover(fpib, { content: document.getElementById('FilenamePatternInfoDiv') });
+        const fpipo = new bootstrap.Popover(document.getElementById('FilenamePatternInfoButton'), { content: document.getElementById('FilenamePatternInfoDiv') });
+
+        // $("[data-bs-toggle='popover']").each(function (index, element) {
+        //     var data = $(element).data();
+        //     if (data.bs-target) {
+        //         var contentElementId = data.bs-target;
+        //         var contentHtml = $(contentElementId).html();
+        //         data.content = contentHtml;
+        //     }
+        //     $(element).popover(data);
+        // });
+
+    </script>
 }
