@@ -25,7 +25,7 @@ namespace FDR.Tools.Library
             var attributes = new Dictionary<string, string>()
             {
                 { nameof(FileFilter), "Filter condition for the files to process. Wildcards (*?) are supported. Multiple filters can be defined separated with pipes. Example: \"*.CR3|*.CR2\"" },
-                { nameof(AdditionalFiles), " Defines if additional files with the same name should be renamed too (true) or not (false). Default is true." },
+                { nameof(AdditionalFiles), "Defines if additional files with the same name should be renamed too (true) or not (false). Default is true." },
                 { nameof(FilenamePattern), "The name pattern to rename the files to. It can contain static text parts and placeholders described below. Example: \"{mdate:yyMMdd}_{counter:3}s\"" },
                 { nameof(FilenameCase), $"The character case of the new filename. Possible values: \"{nameof(CharacterCasing.unchanged)}\", \"{nameof(CharacterCasing.lower)}\", \"{nameof(CharacterCasing.upper)}\". Default is {nameof(CharacterCasing.unchanged)}." },
                 { nameof(ExtensionCase), $"The character case of the new file's extension. Possible values: \"{nameof(CharacterCasing.unchanged)}\", \"{nameof(CharacterCasing.lower)}\", \"{nameof(CharacterCasing.upper)}\". Default is {nameof(CharacterCasing.lower)}." },
