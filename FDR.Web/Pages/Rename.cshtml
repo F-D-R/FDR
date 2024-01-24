@@ -145,31 +145,9 @@ else
     <partial name="_SelectFolderScriptsPartial" />
 
     <script>
-        // const potl = document.querySelectorAll('[data-bs-toggle="popover"]');
-        // const pol = [...potl].map(pote => new bootstrap.Popover(pote, { content: $('#FilenamePatternInfoDiv') }));
-        // const pol = [...potl].map(pote => new bootstrap.Popover(pote, { content: function () { return infoPopover(); } }));
-        // const pol = [...potl].map(pote => new bootstrap.Popover(pote, { content: function () { return $('#FilenamePatternInfoDiv').innerHTML; } }));
-
-        // function infoPopover() {
-        //     return $('#FilenamePatternInfoDiv').innerHTML;
-        // }
-
         const fpipo = new bootstrap.Popover($('#FilenamePatternInfoButton'), { content: $('#FilenamePatternInfoDiv') });
 
         const tttl = document.querySelectorAll('[data-bs-toggle="tooltip"]');
         const ttl = [...tttl].map(ttte => new bootstrap.Tooltip(ttte));
-
-
-
-                // $("[data-bs-toggle='popover']").each(function (index, element) {
-                //     var data = $(element).data();
-                //     if (data.bs-target) {
-                //         var contentElementId = data.bs-target;
-                //         var contentHtml = $(contentElementId).html();
-                //         data.content = contentHtml;
-                //     }
-                //     $(element).popover(data);
-                // });
-
     </script>
 }
