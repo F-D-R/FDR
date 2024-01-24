@@ -146,15 +146,14 @@ else
 
     <script>
         // const potl = document.querySelectorAll('[data-bs-toggle="popover"]');
-        // const pol = [...potl].map(pote => new bootstrap.Popover(pote, { content: document.getElementById('FilenamePatternInfoDiv') }));
+        // const pol = [...potl].map(pote => new bootstrap.Popover(pote, { content: $('#FilenamePatternInfoDiv') }));
         // const pol = [...potl].map(pote => new bootstrap.Popover(pote, { content: function () { return infoPopover(); } }));
-        // const pol = [...potl].map(pote => new bootstrap.Popover(pote, { content: function () { return document.getElementById('FilenamePatternInfoDiv').innerHTML; } }));
+        // const pol = [...potl].map(pote => new bootstrap.Popover(pote, { content: function () { return $('#FilenamePatternInfoDiv').innerHTML; } }));
 
         // function infoPopover() {
-        //     return document.getElementById('FilenamePatternInfoDiv').innerHTML;
+        //     return $('#FilenamePatternInfoDiv').innerHTML;
         // }
 
-        //const fpipo = new bootstrap.Popover(document.getElementById('FilenamePatternInfoButton'), { content: document.getElementById('FilenamePatternInfoDiv') });
         const fpipo = new bootstrap.Popover($('#FilenamePatternInfoButton'), { content: $('#FilenamePatternInfoDiv') });
 
         const tttl = document.querySelectorAll('[data-bs-toggle="tooltip"]');
