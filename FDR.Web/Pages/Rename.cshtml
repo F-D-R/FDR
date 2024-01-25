@@ -145,9 +145,12 @@ else
     <partial name="_SelectFolderScriptsPartial" />
 
     <script>
+        // const potl = $('[data-bs-toggle="popover"]');
+        // const pol = [...potl].map(pote => new bootstrap.Popover(pote));
+
         const fpipo = new bootstrap.Popover($('#FilenamePatternInfoButton'), { content: $('#FilenamePatternInfoDiv') });
 
-        const tttl = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tttl = $('[data-bs-toggle="tooltip"]');
         const ttl = [...tttl].map(ttte => new bootstrap.Tooltip(ttte));
     </script>
 }
