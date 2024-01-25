@@ -15,17 +15,10 @@
                 <label asp-for="ConfigKey" class="col-sm-3 col-form-label">Predefined resize config</label>
                 <div class="col-sm-8">
                     <select asp-for="ConfigKey" class="form-select" onchange="location = '?config=' + this.value;">
-                        <option value="">Default config...</option>
+                        <option value="">Default config...|</option>
                         @foreach (var kvp in Model.AppConfig!.ResizeConfigs!)
                         {
-                            <option value="@kvp.Key">
-                                @kvp.Key
-                                @for (int i = 20 - kvp.Key.Length; i > 0; i--)
-                                {
-                                    @:&nbsp;
-                                }
-                                (@kvp.Value.ResizeMethod.GetDisplayName() @kvp.Value.MaxWidth x @kvp.Value.MaxHeight)
-                            </option>
+                            <option value="@kvp.Key">@kvp.Key|(@kvp.Value.ResizeMethod.GetDisplayName() @kvp.Value.MaxWidth x @kvp.Value.MaxHeight)</option>
                         }
                     </select>
                 </div>
@@ -131,4 +124,5 @@
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
     <partial name="_SelectFolderScriptsPartial" />
+    <partial name="_Select2TwoColumnScriptsPartial" model='"#ConfigKey"' />
 }

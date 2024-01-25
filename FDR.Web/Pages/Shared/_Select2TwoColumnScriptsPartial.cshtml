@@ -1,0 +1,28 @@
+﻿@model string
+
+<script>
+    $(document).ready(function () {
+        $('select' + '@Model').select2({
+            templateResult: function (data) {
+                var r = data.text.split('|');
+                var result = jQuery(
+                    '<div class="row">' +
+                    '<div class="col-md-2">' + r[0] + '</div>' +
+                    (r.length > 1 ? '<div class="col-md-8">' + r[1] + '</div>' : '') +
+                    '</div>'
+                );
+                return result;
+            },
+            templateSelection: function (data) {
+                var r = data.text.split('|');
+                var result = jQuery(
+                    '<div class="row">' +
+                    '<div class="col-md-2">' + r[0] + '</div>' +
+                    (r.length > 1 ? '<div class="col-md-8">' + r[1] + '</div>' : '') +
+                    '</div>'
+                );
+                return result;
+            }
+        });
+    });
+</script>
