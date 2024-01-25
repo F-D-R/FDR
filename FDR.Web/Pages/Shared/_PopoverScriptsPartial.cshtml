@@ -1,0 +1,10 @@
+﻿<script>
+    const potl = $('[data-bs-toggle="popover"]');
+    const pol = [...potl].map(pote => {
+        const div = $('#' + (pote.getAttribute('id') ?? 'Invalid') + 'Div');
+        return new bootstrap.Popover(pote, div.length ? { content: div } : null);
+    });
+
+    const tttl = $('[data-bs-toggle="tooltip"]');
+    const ttl = [...tttl].map(ttte => new bootstrap.Tooltip(ttte));
+</script>

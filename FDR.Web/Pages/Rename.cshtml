@@ -63,8 +63,8 @@ else
                 <div class="col-sm-8">
                     <div class="input-group mb-3">
                         <input asp-for="RenameConfig.FilenamePattern" class="form-control" data-bs-toggle="tooltip" data-bs-title="@RenameConfig.GetRenameConfigAttributeList()[nameof(RenameConfig.FilenamePattern)]">
-                        <button type="button" class="btn btn-outline-secondary" id="FilenamePatternEditorButton"><span class="oi oi-ellipses"></span></button>
-                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="popover" title="Info" data-bs-placement="bottom" data-bs-html="true" data-bs-target="FilenamePatternInfoDiv" id="FilenamePatternInfoButton"><span class="oi oi-info"></span></button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="popover" title="Editor" data-bs-placement="bottom" data-bs-trigger="focus" data-bs-content="This is the editor popover..." id="FilenamePatternEditor"><span class="oi oi-ellipses"></span></button>
+                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="popover" title="Info" data-bs-placement="bottom" data-bs-html="true" id="FilenamePatternInfo"><span class="oi oi-info"></span></button>
                     </div>
                     <div style="display: none;">
                         <div id="FilenamePatternInfoDiv">
@@ -143,14 +143,5 @@ else
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
     <partial name="_SelectFolderScriptsPartial" />
-
-    <script>
-        // const potl = $('[data-bs-toggle="popover"]');
-        // const pol = [...potl].map(pote => new bootstrap.Popover(pote));
-
-        const fpipo = new bootstrap.Popover($('#FilenamePatternInfoButton'), { content: $('#FilenamePatternInfoDiv') });
-
-        const tttl = $('[data-bs-toggle="tooltip"]');
-        const ttl = [...tttl].map(ttte => new bootstrap.Tooltip(ttte));
-    </script>
+    <partial name="_PopoverScriptsPartial" />
 }
