@@ -8,7 +8,7 @@
             templateResult: function (data) {
                 var r = data.text.split('|');
                 var result = jQuery(
-                    '<div class="row">' +
+                    '<div class="row select-result">' +
                     '<div class="col-md-3 select-col1">' + r[0] + '</div>' +
                     (r.length > 1 ? '<div class="col-md-8 select-col2">' + r[1] + '</div>' : '') +
                     '</div>'
@@ -18,7 +18,7 @@
             templateSelection: function (data) {
                 var r = data.text.split('|');
                 var result = jQuery(
-                    '<div class="row">' +
+                    '<div class="row select-selection">' +
                     '<div class="col-md-3 select-col1">' + r[0] + '</div>' +
                     (r.length > 1 ? '<div class="col-md-8 select-col2">' + r[1] + '</div>' : '') +
                     '</div>'
