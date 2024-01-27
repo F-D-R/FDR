@@ -396,5 +396,31 @@ namespace FDR.Tools.Library
         }
 
         #endregion
+
+        public static Dictionary<string, string> GetProgramParameterList()
+        {
+            var attributes = new Dictionary<string, string>()
+            {
+                { Common.param_help + " [<function>]", "Generic help (this screen) or optionally help about a given function" },
+                { Common.param_import + " [<function>]", "Import memory card content or optionally the content of a folder" },
+                { Common.param_hash + " <folder>", "Create hash of files in a folder" },
+                { Common.param_rehash + " <folder>", "Recreate hashes of all files in a folder" },
+                { Common.param_verify + " <folder>", "Verify the files in a folder against their saved hash" },
+                { Common.param_diff + " <folder>", "Compare the files of a folder to a reference one" },
+                { Common.param_reference + " <folder>", "Reference folder for the diff function" },
+                { Common.param_cleanup + " <folder>", "Delete unnecessary raw, hash and err files" },
+                { Common.param_rename + " <folder>", "Rename image files based on a given configuration" },
+                { Common.param_resize + " <folder>", "Resize image files based on a given configuration" },
+                { Common.param_configfile + " <file>", "Path of the configuration file to use instead of appsettings.json" },
+                { Common.param_config + " <config>", "Named configuration for some functions like renaming and resizing" },
+                { Common.param_web, "Start the web application" },
+                { Common.param_auto, "Start the import automatically" },
+                { Common.param_noactions, "Skip the actions during import to enable importing from multiple sources" },
+                { Common.param_force, "Force importing existing folders" },
+                { Common.param_verbose, "More detailed output" }
+            };
+            return attributes;
+        }
+
     }
 }
