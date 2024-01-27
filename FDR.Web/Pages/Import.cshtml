@@ -25,20 +25,20 @@
         <div class="row mb-3">
             <label asp-for="ImportConfig.Name" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <input asp-for="ImportConfig.Name" class="form-control">
+                <input asp-for="ImportConfig.Name" class="form-control" data-bs-toggle="tooltip" data-bs-title="@ImportConfig.GetImportConfigAttributeList()[nameof(ImportConfig.Name)]">
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="ImportConfig.FileFilter" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <input asp-for="ImportConfig.FileFilter" class="form-control">
+                <input asp-for="ImportConfig.FileFilter" class="form-control" data-bs-toggle="tooltip" data-bs-title="@ImportConfig.GetImportConfigAttributeList()[nameof(ImportConfig.FileFilter)]">
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="ImportConfig.DestRoot" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
                 <div class="input-group mb-3">
-                    <input asp-for="ImportConfig.DestRoot" class="form-control">
+                    <input asp-for="ImportConfig.DestRoot" class="form-control" data-bs-toggle="tooltip" data-bs-title="@ImportConfig.GetImportConfigAttributeList()[nameof(ImportConfig.DestRoot)]">
                     <button id="SelectImportConfig_DestRoot" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FolderPopup"><span class="oi oi-ellipses"></span></button>
                 </div>
             </div>
@@ -46,13 +46,13 @@
         <div class="row mb-3">
             <label asp-for="ImportConfig.DestStructure" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <select asp-for="ImportConfig.DestStructure" asp-items="Html.GetEnumSelectList<FolderStructure>()" class="form-select"></select>
+                <select asp-for="ImportConfig.DestStructure" asp-items="Html.GetEnumSelectList<FolderStructure>()" class="form-select" data-bs-toggle="tooltip" data-bs-title="@ImportConfig.GetImportConfigAttributeList()[nameof(ImportConfig.DestStructure)]"></select>
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="ImportConfig.DateFormat" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <input asp-for="ImportConfig.DateFormat" class="form-control">
+                <input asp-for="ImportConfig.DateFormat" class="form-control" data-bs-toggle="tooltip" data-bs-title="@ImportConfig.GetImportConfigAttributeList()[nameof(ImportConfig.DateFormat)]">
             </div>
         </div>
         <div class="row mb-3">
@@ -72,13 +72,13 @@
         <div class="row mb-3">
             <label asp-for="Force" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <input asp-for="Force" class="form-check-input va-mid">
+                <input asp-for="Force" class="form-check-input va-mid" data-bs-toggle="tooltip" data-bs-title="@Common.GetProgramParameterList()[Common.param_force]">
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="Verbose" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <input asp-for="Verbose" class="form-check-input va-mid">
+                <input asp-for="Verbose" class="form-check-input va-mid" data-bs-toggle="tooltip" data-bs-title="@Common.GetProgramParameterList()[Common.param_verbose]">
             </div>
         </div>
         <div class="row mb-3">
@@ -94,4 +94,5 @@
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
     <partial name="_SelectFolderScriptsPartial" />
+    <partial name="_PopoverScriptsPartial" />
 }
