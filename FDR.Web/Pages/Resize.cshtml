@@ -28,55 +28,55 @@
         <div class="row mb-3">
             <label asp-for="ResizeConfig.FileFilter" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <input asp-for="ResizeConfig.FileFilter" class="form-control">
+                <input asp-for="ResizeConfig.FileFilter" class="form-control" data-bs-toggle="tooltip" data-bs-title="@ResizeConfig.GetResizeConfigAttributeList()[nameof(ResizeConfig.FileFilter)]">
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="ResizeConfig.ResizeMethod" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <select asp-for="ResizeConfig.ResizeMethod" asp-items="Html.GetEnumSelectList<ResizeMethod>()" class="form-select"></select>
+                <select asp-for="ResizeConfig.ResizeMethod" asp-items="Html.GetEnumSelectList<ResizeMethod>()" class="form-select" data-bs-toggle="tooltip" data-bs-title="@ResizeConfig.GetResizeConfigAttributeList()[nameof(ResizeConfig.ResizeMethod)]"></select>
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="ResizeConfig.MaxWidth" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <input asp-for="ResizeConfig.MaxWidth" class="form-control">
+                <input asp-for="ResizeConfig.MaxWidth" class="form-control" data-bs-toggle="tooltip" data-bs-title="@ResizeConfig.GetResizeConfigAttributeList()[nameof(ResizeConfig.MaxWidth)]">
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="ResizeConfig.MaxHeight" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <input asp-for="ResizeConfig.MaxHeight" class="form-control">
+                <input asp-for="ResizeConfig.MaxHeight" class="form-control" data-bs-toggle="tooltip" data-bs-title="@ResizeConfig.GetResizeConfigAttributeList()[nameof(ResizeConfig.MaxHeight)]">
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="ResizeConfig.JpgQuality" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <input asp-for="ResizeConfig.JpgQuality" class="form-control">
+                <input asp-for="ResizeConfig.JpgQuality" class="form-control" data-bs-toggle="tooltip" data-bs-title="@ResizeConfig.GetResizeConfigAttributeList()[nameof(ResizeConfig.JpgQuality)]">
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="ResizeConfig.ClearMetadata" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <input asp-for="ResizeConfig.ClearMetadata" class="form-check-input va-mid">
+                <input asp-for="ResizeConfig.ClearMetadata" class="form-check-input va-mid" data-bs-toggle="tooltip" data-bs-title="@ResizeConfig.GetResizeConfigAttributeList()[nameof(ResizeConfig.ClearMetadata)]">
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="ResizeConfig.FilenamePattern" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <input asp-for="ResizeConfig.FilenamePattern" class="form-control">
+                <input asp-for="ResizeConfig.FilenamePattern" class="form-control" data-bs-toggle="tooltip" data-bs-title="@ResizeConfig.GetResizeConfigAttributeList()[nameof(ResizeConfig.FilenamePattern)]">
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="ResizeConfig.FilenameCase" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <select asp-for="ResizeConfig.FilenameCase" asp-items="Html.GetEnumSelectList<CharacterCasing>()" class="form-select"></select>
+                <select asp-for="ResizeConfig.FilenameCase" asp-items="Html.GetEnumSelectList<CharacterCasing>()" class="form-select" data-bs-toggle="tooltip" data-bs-title="@ResizeConfig.GetResizeConfigAttributeList()[nameof(ResizeConfig.FilenameCase)]"></select>
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="ResizeConfig.ExtensionCase" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <select asp-for="ResizeConfig.ExtensionCase" asp-items="Html.GetEnumSelectList<CharacterCasing>()" class="form-select"></select>
+                <select asp-for="ResizeConfig.ExtensionCase" asp-items="Html.GetEnumSelectList<CharacterCasing>()" class="form-select" data-bs-toggle="tooltip" data-bs-title="@ResizeConfig.GetResizeConfigAttributeList()[nameof(ResizeConfig.ExtensionCase)]"></select>
             </div>
         </div>
         <div class="row mb-3">
@@ -96,19 +96,19 @@
         <div class="row mb-3">
             <label asp-for="ResizeConfig.Recursive" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <input asp-for="ResizeConfig.Recursive" class="form-check-input va-mid">
+                <input asp-for="ResizeConfig.Recursive" class="form-check-input va-mid" data-bs-toggle="tooltip" data-bs-title="@ResizeConfig.GetResizeConfigAttributeList()[nameof(ResizeConfig.Recursive)]">
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="ResizeConfig.StopOnError" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <input asp-for="ResizeConfig.StopOnError" class="form-check-input va-mid">
+                <input asp-for="ResizeConfig.StopOnError" class="form-check-input va-mid" data-bs-toggle="tooltip" data-bs-title="@ResizeConfig.GetResizeConfigAttributeList()[nameof(ResizeConfig.StopOnError)]">
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="Verbose" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <input asp-for="Verbose" class="form-check-input va-mid">
+                <input asp-for="Verbose" class="form-check-input va-mid" data-bs-toggle="tooltip" data-bs-title="@Common.GetProgramParameterList()[Common.param_verbose]">
             </div>
         </div>
         <div class="row mb-3">
@@ -124,5 +124,6 @@
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
     <partial name="_SelectFolderScriptsPartial" />
+    <partial name="_PopoverScriptsPartial" />
     <partial name="_Select2TwoColumnScriptsPartial" model='"#ConfigKey"' />
 }
