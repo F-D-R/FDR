@@ -37,7 +37,7 @@
         <div class="row mb-3">
             <label asp-for="ImportConfig.DestRoot" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <div class="input-group mb-3">
+                <div class="input-group">
                     <input asp-for="ImportConfig.DestRoot" class="form-control" data-bs-toggle="tooltip" data-bs-title="@ImportConfig.GetImportConfigAttributeList()[nameof(ImportConfig.DestRoot)]">
                     <button id="SelectImportConfig_DestRoot" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FolderPopup"><span class="oi oi-ellipses"></span></button>
                 </div>
@@ -63,7 +63,7 @@
         <div class="row mb-3">
             <label asp-for="Folder" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <div class="input-group mb-3">
+                <div class="input-group">
                     <input asp-for="Folder" class="form-control">
                     <button id="SelectFolder" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FolderPopup"><span class="oi oi-ellipses"></span></button>
                 </div>
