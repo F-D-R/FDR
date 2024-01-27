@@ -25,6 +25,16 @@ body {
     vertical-align: middle;
 }
 
+hr {
+    border-width: 1px;
+    opacity: 0.5;
+}
+
+h1+hr, h1+small+hr {
+    border-width: 2px;
+    opacity: 1;
+}
+
 .select2-results__options {
     overflow-x: hidden;
 }
