@@ -8,12 +8,12 @@
 
 <form method="post">
     <div>
-        <div asp-validation-summary="All" class="text-danger col-sm-8"></div>
+        <div asp-validation-summary="All" class="text-danger col-sm-12"></div>
         @if (Model.AppConfig?.RenameConfigs != null)
         {
             <div class="row mb-3">
                 <label asp-for="ConfigKey" class="col-sm-3 col-form-label">Predefined rename config</label>
-                <div class="col-sm-8">
+                <div class="col-sm-9">
                     <select asp-for="ConfigKey" class="form-select" onchange="location = '?config=' + this.value;">
                         <option value="">Default config...|</option>
                         @foreach (var kvp in Model.AppConfig!.RenameConfigs!)
@@ -27,13 +27,13 @@
         }
         <div class="row mb-3">
             <label asp-for="RenameConfig.FileFilter" class="col-sm-3 col-form-label"></label>
-            <div class="col-sm-8">
+            <div class="col-sm-9">
                 <input asp-for="RenameConfig.FileFilter" class="form-control" data-bs-toggle="tooltip" data-bs-title="@RenameConfig.GetRenameConfigAttributeList()[nameof(RenameConfig.FileFilter)]">
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="RenameConfig.FilenamePattern" class="col-sm-3 col-form-label"></label>
-            <div class="col-sm-8">
+            <div class="col-sm-9">
                 <div class="input-group">
                     <input asp-for="RenameConfig.FilenamePattern" class="form-control" data-bs-toggle="tooltip" data-bs-title="@RenameConfig.GetRenameConfigAttributeList()[nameof(RenameConfig.FilenamePattern)]">
                     @* <button type="button" class="btn btn-outline-secondary" data-bs-toggle="popover" title="Editor" data-bs-placement="bottom" data-bs-trigger="focus" data-bs-content="This is the editor popover..." id="FilenamePatternEditor"><span class="oi oi-ellipses"></span></button> *@
@@ -54,26 +54,26 @@
         </div>
         <div class="row mb-3">
             <label asp-for="RenameConfig.FilenameCase" class="col-sm-3 col-form-label"></label>
-            <div class="col-sm-8">
+            <div class="col-sm-9">
                 <select asp-for="RenameConfig.FilenameCase" asp-items="Html.GetEnumSelectList<CharacterCasing>()" class="form-select" data-bs-toggle="tooltip" data-bs-title="@RenameConfig.GetRenameConfigAttributeList()[nameof(RenameConfig.FilenameCase)]"></select>
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="RenameConfig.ExtensionCase" class="col-sm-3 col-form-label"></label>
-            <div class="col-sm-8">
+            <div class="col-sm-9">
                 <select asp-for="RenameConfig.ExtensionCase" asp-items="Html.GetEnumSelectList<CharacterCasing>()" class="form-select" data-bs-toggle="tooltip" data-bs-title="@RenameConfig.GetRenameConfigAttributeList()[nameof(RenameConfig.ExtensionCase)]"></select>
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="RenameConfig.AdditionalFiles" class="col-sm-3 col-form-label"></label>
-            <div class="col-sm-8">
+            <div class="col-sm-9">
                 <input asp-for="RenameConfig.AdditionalFiles" class="form-check-input va-mid" data-bs-toggle="tooltip" data-bs-title="@RenameConfig.GetRenameConfigAttributeList()[nameof(RenameConfig.AdditionalFiles)]">
             </div>
         </div>
         <hr>
         <div class="row mb-3">
             <label asp-for="Folder" class="col-sm-3 col-form-label"></label>
-            <div class="col-sm-8">
+            <div class="col-sm-9">
                 <div class="input-group">
                     <input asp-for="Folder" class="form-control">
                     <button id="SelectFolder" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FolderPopup"><span class="oi oi-ellipses"></span></button>
@@ -82,24 +82,24 @@
         </div>
         <div class="row mb-3">
             <label asp-for="RenameConfig.Recursive" class="col-sm-3 col-form-label"></label>
-            <div class="col-sm-8">
+            <div class="col-sm-9">
                 <input asp-for="RenameConfig.Recursive" class="form-check-input va-mid" data-bs-toggle="tooltip" data-bs-title="@RenameConfig.GetRenameConfigAttributeList()[nameof(RenameConfig.Recursive)]">
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="RenameConfig.StopOnError" class="col-sm-3 col-form-label"></label>
-            <div class="col-sm-8">
+            <div class="col-sm-9">
                 <input asp-for="RenameConfig.StopOnError" class="form-check-input va-mid" data-bs-toggle="tooltip" data-bs-title="@RenameConfig.GetRenameConfigAttributeList()[nameof(RenameConfig.StopOnError)]">
             </div>
         </div>
         <div class="row mb-3">
             <label asp-for="Verbose" class="col-sm-3 col-form-label"></label>
-            <div class="col-sm-8">
+            <div class="col-sm-9">
                 <input asp-for="Verbose" class="form-check-input va-mid" data-bs-toggle="tooltip" data-bs-title="@Common.GetProgramParameterList()[Common.param_verbose]">
             </div>
         </div>
         <div class="row mb-3">
-            <div class="col-sm-8 offset-sm-3">
+            <div class="col-sm-9 offset-sm-3">
                 <button type="submit" class="btn btn-primary"><span class="oi oi-pencil"></span> @ViewData["Title"]</button><br>
             </div>
         </div>

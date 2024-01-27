@@ -8,10 +8,10 @@
 
 <form method="post">
     <div>
-        <div asp-validation-summary="All" class="text-danger col-sm-8"></div>
+        <div asp-validation-summary="All" class="text-danger col-sm-12"></div>
         <div class="row mb-3">
             <label asp-for="Folder" class="col-sm-3 col-form-label"></label>
-            <div class="col-sm-8">
+            <div class="col-sm-9">
                 <div class="input-group">
                     <input asp-for="Folder" class="form-control">
                     <button id="SelectFolder" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FolderPopup"><span class="oi oi-ellipses"></span></button>
@@ -20,12 +20,12 @@
         </div>
         <div class="row mb-3">
             <label asp-for="Verbose" class="col-sm-3 col-form-label"></label>
-            <div class="col-sm-8">
+            <div class="col-sm-9">
                 <input asp-for="Verbose" class="form-check-input va-mid">
             </div>
         </div>
         <div class="row mb-3">
-            <div class="col-sm-8 offset-sm-3">
+            <div class="col-sm-9 offset-sm-3">
                 <button type="submit" class="btn btn-primary"><span class="oi oi-trash"></span> @ViewData["Title"]</button><br>
             </div>
         </div>
