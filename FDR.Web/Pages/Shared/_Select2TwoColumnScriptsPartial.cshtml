@@ -30,25 +30,9 @@
         });
     });
 
-    // $('.select2-selection__rendered').each(
-    //     function () {
-    //         $(this).on("mouseover",
-    //             function () {
-    //                 $(this).attr("title") = " ";
-    //             }
-    //         );
-    //     }
-    // );
-
     $(function () {
         $('.select2-selection__rendered').on('mouseover', function () {
-            //$(this).attr("title") = " ";
             $(this).removeAttr('title');
         });
     });
-
-    // $('.select2-selection__rendered').hover(function () {
-    //     $(this).removeAttr('title');
-    // });
-
 </script>
