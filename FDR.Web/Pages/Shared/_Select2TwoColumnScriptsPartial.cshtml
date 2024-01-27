@@ -5,6 +5,8 @@
 <script>
     $(document).ready(function () {
         $('select' + '@Model').select2({
+            selectionCssClass: 'form-select',
+            minimumResultsForSearch: 20,
             templateResult: function (data) {
                 var r = data.text.split('|');
                 var result = jQuery(
@@ -27,4 +29,26 @@
             }
         });
     });
+
+    // $('.select2-selection__rendered').each(
+    //     function () {
+    //         $(this).on("mouseover",
+    //             function () {
+    //                 $(this).attr("title") = " ";
+    //             }
+    //         );
+    //     }
+    // );
+
+    $(function () {
+        $('.select2-selection__rendered').on('mouseover', function () {
+            //$(this).attr("title") = " ";
+            $(this).removeAttr('title');
+        });
+    });
+
+    // $('.select2-selection__rendered').hover(function () {
+    //     $(this).removeAttr('title');
+    // });
+
 </script>

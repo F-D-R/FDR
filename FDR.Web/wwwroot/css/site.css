@@ -1,30 +1,48 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
 .va-mid {
-  vertical-align: middle;
+    vertical-align: middle;
 }
 
 .select2-results__options {
     overflow-x: hidden;
+}
+
+.select2-selection__arrow {
+    display: none;
+}
+
+.select2-container .select2-selection {
+    border: 1px solid #dee2e6;
+}
+
+.select2-container .select2-selection {
+    height: inherit;
+    padding-left: 4px;
+    cursor: inherit;
+}
+
+.select2-container .select2-selection--single, .select2-results__option--selectable {
+    cursor: inherit;
 }
