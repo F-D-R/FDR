@@ -64,7 +64,22 @@
         <div class="row mb-3">
             <label asp-for="ResizeConfig.FilenamePattern" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-8">
-                <input asp-for="ResizeConfig.FilenamePattern" class="form-control" data-bs-toggle="tooltip" data-bs-title="@ResizeConfig.GetResizeConfigAttributeList()[nameof(ResizeConfig.FilenamePattern)]">
+                <div class="input-group mb-3">
+                    <input asp-for="ResizeConfig.FilenamePattern" class="form-control" data-bs-toggle="tooltip" data-bs-title="@ResizeConfig.GetResizeConfigAttributeList()[nameof(ResizeConfig.FilenamePattern)]">
+                    @* <button type="button" class="btn btn-outline-secondary" data-bs-toggle="popover" title="Editor" data-bs-placement="bottom" data-bs-trigger="focus" data-bs-content="This is the editor popover..." id="FilenamePatternEditor"><span class="oi oi-ellipses"></span></button> *@
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="popover" title="Filename pattern placeholders" data-bs-placement="bottom" data-bs-html="true" id="FilenamePatternInfo"><span class="oi oi-info"></span></button>
+                </div>
+                <div style="display: none;">
+                    <div id="FilenamePatternInfoDiv">
+                        <dl>
+                            @foreach (var d in Rename.GetRenamePlaceholderList())
+                            {
+                                <dt>@d.Key</dt>
+                                <dd>@d.Value</dd>
+                            }
+                        </dl>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row mb-3">
