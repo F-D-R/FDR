@@ -1,8 +1,9 @@
 ﻿<script>
+
     $(function () {
         $('[data-bs-target="#FolderPopup"]').on('click', function (e) {
             $('#source').val("");
-            let source = $(e.target).attr('id').replace(/select/i, "");
+            let source = $(e.currentTarget).attr('id').replace(/select/i, "");
             $('#source').val(source);
 
             let folder = $('#' + source).val();
