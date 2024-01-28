@@ -1,6 +1,7 @@
 ﻿<script>
     $(function () {
         $('[data-bs-target="#FolderPopup"]').on('click', function (e) {
+            $('#source').val("");
             let source = $(e.target).attr('id').replace(/select/i, "");
             $('#source').val(source);
 
@@ -13,7 +14,22 @@
 
     $(function () {
         $('#SaveFolder').on('click', function () {
-            $('#' + $('#source').val()).val($('#SelectedFolder').val())
+            $('#' + $('#source').val()).val($('#SelectedFolder').val());
+            ClearFolderPopup();
         });
     })
+
+    $(function () {
+        $('#CancelFolder').on('click', function () {
+            ClearFolderPopup();
+        });
+    })
+
+    function ClearFolderPopup() {
+            $('#SelectedFolder').val("");
+            $('#Drives').val("");
+            $('#Subfolders').val("");
+            $('#Subfolders').empty();
+    }
+
 </script>
