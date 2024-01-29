@@ -113,23 +113,5 @@
     <partial name="_SelectFolderScriptsPartial" />
     <partial name="_PopoverScriptsPartial" />
     <partial name="_Select2TwoColumnScriptsPartial" model='"#ConfigKey"' />
-
-    <script>
-        $(function () {
-            $('button.insert').on('click', function (e) {
-                const input = $('#' + $(e.currentTarget).attr('for'))[0];
-                const data = $(e.currentTarget).attr('data');
-
-                if (input.selectionStart || input.selectionStart == '0') {
-                    var startPos = input.selectionStart;
-                    var endPos = input.selectionEnd;
-                    input.value = input.value.substring(0, startPos)
-                        + data
-                        + input.value.substring(endPos, input.value.length);
-                } else {
-                    input.value += data;
-                }
-            });
-        })
-    </script>
+    <partial name="_InsertButtonScriptsPartial" />
 }
