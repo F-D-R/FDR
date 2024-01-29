@@ -44,7 +44,7 @@
                         <dl>
                             @foreach (var d in Rename.GetRenamePlaceholderList())
                             {
-                                <dt>@d.Key <button type="button" class="btn"><span class="fa fa-pen"></span></button></dt>
+                                <dt>@d.Key <button for="RenameConfig_FilenamePattern" data="@d.Key" type="button" class="btn insert" style="float: right;" title="Insert..."><span class="fa fa-plus"></span></button></dt>
                                 <dd>@d.Value</dd>
                             }
                         </dl>
@@ -113,4 +113,23 @@
     <partial name="_SelectFolderScriptsPartial" />
     <partial name="_PopoverScriptsPartial" />
     <partial name="_Select2TwoColumnScriptsPartial" model='"#ConfigKey"' />
+
+    <script>
+        $(function () {
+            $('button.insert').on('click', function (e) {
+                const input = $('#' + $(e.currentTarget).attr('for'))[0];
+                const data = $(e.currentTarget).attr('data');
+
+                if (input.selectionStart || input.selectionStart == '0') {
+                    var startPos = input.selectionStart;
+                    var endPos = input.selectionEnd;
+                    input.value = input.value.substring(0, startPos)
+                        + data
+                        + input.value.substring(endPos, input.value.length);
+                } else {
+                    input.value += data;
+                }
+            });
+        })
+    </script>
 }
