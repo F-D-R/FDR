@@ -36,15 +36,15 @@
             <div class="col-sm-9">
                 <div class="input-group">
                     <input asp-for="RenameConfig.FilenamePattern" class="form-control" data-bs-toggle="tooltip" data-bs-title="@RenameConfig.GetRenameConfigAttributeList()[nameof(RenameConfig.FilenamePattern)]">
-                    @* <button type="button" class="btn btn-outline-secondary" data-bs-toggle="popover" title="Editor" data-bs-placement="bottom" data-bs-trigger="focus" data-bs-content="This is the editor popover..." id="FilenamePatternEditor"><span class="oi oi-pencil"></span></button> *@
-                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="popover" title="Filename pattern placeholders" data-bs-placement="bottom" data-bs-html="true" id="FilenamePatternInfo"><span class="oi oi-info"></span></button>
+                    @* <button type="button" class="btn btn-outline-secondary" data-bs-toggle="popover" title="Editor" data-bs-placement="bottom" data-bs-trigger="focus" data-bs-content="This is the editor popover..." id="FilenamePatternEditor"><span class="fa fa-pen"></span></button> *@
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="popover" title="Filename pattern placeholders" data-bs-placement="bottom" data-bs-html="true" id="FilenamePatternInfo"><span class="fa fa-info"></span></button>
                 </div>
                 <div style="display: none;">
                     <div id="FilenamePatternInfoDiv">
                         <dl>
                             @foreach (var d in Rename.GetRenamePlaceholderList())
                             {
-                                <dt>@d.Key</dt>
+                                <dt>@d.Key <button type="button" class="btn"><span class="fa fa-pen"></span></button></dt>
                                 <dd>@d.Value</dd>
                             }
                         </dl>
@@ -76,7 +76,7 @@
             <div class="col-sm-9">
                 <div class="input-group">
                     <input asp-for="Folder" class="form-control">
-                    <button id="SelectFolder" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FolderPopup"><span class="oi oi-ellipses"></span></button>
+                    <button id="SelectFolder" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FolderPopup"><span class="fa fa-ellipsis"></span></button>
                 </div>
             </div>
         </div>
@@ -100,7 +100,7 @@
         </div>
         <div class="row mb-3">
             <div class="col-sm-9 offset-sm-3">
-                <button type="submit" class="btn btn-primary"><span class="oi oi-pencil"></span> @ViewData["Title"]</button><br>
+                <button type="submit" class="btn btn-primary"><span class="fa fa-tag"></span> @ViewData["Title"]</button><br>
             </div>
         </div>
     </div>
