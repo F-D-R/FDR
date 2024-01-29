@@ -74,7 +74,7 @@
                         <dl>
                             @foreach (var d in Rename.GetRenamePlaceholderList())
                             {
-                                <dt>@d.Key</dt>
+                                <dt>@d.Key <button for="ResizeConfig_FilenamePattern" data="@d.Key" type="button" class="btn insert" style="float: right;" title="Insert..."><span class="fa fa-plus"></span></button></dt>
                                 <dd>@d.Value</dd>
                             }
                         </dl>
@@ -137,4 +137,5 @@
     <partial name="_SelectFolderScriptsPartial" />
     <partial name="_PopoverScriptsPartial" />
     <partial name="_Select2TwoColumnScriptsPartial" model='"#ConfigKey"' />
+    <partial name="_InsertButtonScriptsPartial" />
 }
