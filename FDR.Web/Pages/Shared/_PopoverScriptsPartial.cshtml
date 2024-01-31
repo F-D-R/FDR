@@ -2,7 +2,11 @@
     const potl = $('[data-bs-toggle="popover"]');
     const pol = [...potl].map(pote => {
         const div = $('#' + (pote.getAttribute('id') ?? 'Invalid') + 'Div');
-        return new bootstrap.Popover(pote, div.length ? { content: div } : null);
+        const modal = pote.closest('.modal');
+        return new bootstrap.Popover(pote, {
+            content: div.length ? div : null,
+            container: modal ?? false
+        });
     });
 
     const tttl = $('[data-bs-toggle="tooltip"]');
