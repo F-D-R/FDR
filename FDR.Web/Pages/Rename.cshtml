@@ -70,6 +70,29 @@
                             else
                                 $('#FilenamePatternCounterParamsDiv').hide();
                         }
+
+                        function AddFilenamePatternClick() {
+                            const input = $('#CurrentFilenamePattern')[0];
+                            let data = $('#FilenamePatternMacro').val();
+                            data = data.replace('start', $('#FilenamePatternStringStart').val());
+                            data = data.replace('length', $('#FilenamePatternStringLength').val());
+                            data = data.replace('digits', $('#FilenamePatternCounterDigits').val());
+                            const format = $('#FilenamePatternDateFormat').val();
+                            if (format && format.trim())
+                                data = data.replace('format', $('#FilenamePatternDateFormat').val().trim());
+                            else
+                                data = data.replace(':format', '');
+
+                            if (input.selectionStart || input.selectionStart == '0') {
+                                var startPos = input.selectionStart;
+                                var endPos = input.selectionEnd;
+                                input.value = input.value.substring(0, startPos)
+                                    + data
+                                    + input.value.substring(endPos, input.value.length);
+                            } else {
+                                input.value += data;
+                            }
+                        }
                     </script>
                     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
                         <div class="modal-content">
@@ -153,9 +176,9 @@
                                 </div>
                             </div>
                             <div class="modal-footer" style="display: block;">
-                                <button type="button" class="btn btn-primary" style="float: left;" id="AddFilenamePattern"><span class="fa fa-plus"></span> Add</button>
-                                <button type="button" class="btn btn-primary" style="float: right;" data-bs-dismiss="modal" id="SaveFilenamePattern">Save</button>
-                                <button type="button" class="btn btn-secondary" style="float: right;" data-bs-dismiss="modal" id="CancelFilenamePattern">Cancel</button>
+                                <button id="AddFilenamePattern" type="button" class="btn btn-primary" style="float: left;" onclick="AddFilenamePatternClick();"><span class="fa fa-plus"></span> Add</button>
+                                <button id="SaveFilenamePattern" type="button" class="btn btn-primary" style="float: right;" data-bs-dismiss="modal">Save</button>
+                                <button id="CancelFilenamePattern" type="button" class="btn btn-secondary" style="float: right;" data-bs-dismiss="modal">Cancel</button>
                             </div>
                         </div>
                     </div>
