@@ -78,3 +78,7 @@ h1+hr, h1+small+hr {
 .select2-container .select2-selection--single, .select2-results__option--selectable {
     cursor: inherit;
 }
+
+.popover {
+    min-width: 400px;
+}
