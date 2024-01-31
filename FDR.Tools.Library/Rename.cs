@@ -43,14 +43,58 @@ namespace FDR.Tools.Library
         {
             var list = new Dictionary<string, string>()
             {
-                { $"{{{NOW}[:format]}}", "Current date time with optional date format" },
-                { $"{{{NAME}[:start,length]}}", "Name without extension with optional start index and character length" },
-                { $"{{{PFOLDER}[:start,length]}}", "Parent folder's name with optional start index and character length" },
-                { $"{{{CDATE}[:format]}}", "Creation date with optional date format" },
-                { $"{{{MDATE}[:format]}}", "Modify date with optional date format" },
-                { $"{{{EDATE}[:format]}}", $"EXIF date (={SDATE}) with optional date format" },
-                { $"{{{SDATE}[:format]}}", $"Shooting date (={EDATE}) with optional date format" },
-                { $"{{{COUNTER}[:digits]}}", "File counter with optional number of digits starting with 1 or 'auto'" }
+                { $"{{{NOW}}}", "Current date time" },
+                { $"{{{NOW}:format}}", "Current date time with custom date format" },
+                { $"{{{NAME}}}", "Name without extension" },
+                { $"{{{NAME}:start,length}}", "Name without extension with start index and character length" },
+                { $"{{{PFOLDER}}}", "Parent folder's name" },
+                { $"{{{PFOLDER}:start,length}}", "Parent folder's name with start index and character length" },
+                { $"{{{CDATE}}}", "Creation date" },
+                { $"{{{CDATE}:format}}", "Creation date with custom date format" },
+                { $"{{{MDATE}}}", "Modify date" },
+                { $"{{{MDATE}:format}}", "Modify date with custom date format" },
+                { $"{{{EDATE}}}", $"EXIF date (={SDATE})" },
+                { $"{{{EDATE}:format}}", $"EXIF date (={SDATE}) with custom date format" },
+                { $"{{{SDATE}}}", $"Shooting date (={EDATE})" },
+                { $"{{{SDATE}:format}}", $"Shooting date (={EDATE}) with custom date format" },
+                { $"{{{COUNTER}}}", "File counter" },
+                { $"{{{COUNTER}:digits}}", "File counter with custom number of digits starting with 1 or 'auto'" }
+            };
+            return list;
+        }
+
+        public static Dictionary<string, string> GetDateFormatters()
+        {
+            var list = new Dictionary<string, string>()
+            {
+                { "d", "Day of the month, from 1 to 31" },
+                { "dd", "Day of the month, from 01 to 31" },
+                { "ddd", "Abbreviated name of the day of the week" },
+                { "dddd", "Full name of the day of the week" },
+                { "h", "Hour, using a 12-hour clock from 1 to 12" },
+                { "hh", "Hour, using a 12-hour clock from 01 to 12" },
+                { "H", "Hour, using a 24-hour clock from 0 to 23" },
+                { "HH", "Hour, using a 24-hour clock from 00 to 23" },
+                { "K", "Time zone information" },
+                { "m", "Minute, from 0 to 59" },
+                { "mm", "Minute, from 00 to 59" },
+                { "M", "Month, from 1 to 12" },
+                { "MM", "Month, from 01 to 12" },
+                { "MMM", "Abbreviated name of the month" },
+                { "MMMM", "Full name of the month" },
+                { "s", "Second, from 0 to 59" },
+                { "ss", "Second, from 00 to 59" },
+                { "t", "First character of the AM/PM designator" },
+                { "tt", "AM/PM designator" },
+                { "y", "Year, from 0 to 99" },
+                { "yy", "Year, from 00 to 99" },
+                { "yyyy", "Year as a four-digit number" },
+                { "z", "Hours offset from UTC, with no leading zeros" },
+                { "zz", "Hours offset from UTC, with a leading zero for a single-digit value" },
+                { "zzz", "Hours and minutes offset from UTC" },
+                { ":", "Time separator" },
+                { "/", "Date separator" },
+                { "\\", "Escape character" }
             };
             return list;
         }
