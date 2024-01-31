@@ -36,7 +36,10 @@
             <div class="col-sm-9">
                 <div class="input-group">
                     <input asp-for="RenameConfig.FilenamePattern" class="form-control" data-bs-toggle="tooltip" data-bs-title="@RenameConfig.GetRenameConfigAttributeList()[nameof(RenameConfig.FilenamePattern)]">
-                    @* <button type="button" class="btn btn-outline-secondary" data-bs-toggle="popover" title="Editor" data-bs-placement="bottom" data-bs-trigger="focus" data-bs-content="This is the editor popover..." id="FilenamePatternEditor"><span class="fa fa-pen"></span></button> *@
+
+                    @* <button id="SelectFolder" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FolderPopup"><span class="fa fa-ellipsis"></span></button> *@
+                    <button id="SelectFilenamePattern" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FilenamePatternPopup"><span class="fa fa-pen"></span></button>
+
                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="popover" title="Filename pattern placeholders" data-bs-placement="bottom" data-bs-html="true" id="FilenamePatternInfo"><span class="fa fa-info"></span></button>
                 </div>
                 <div style="display: none;">
@@ -48,6 +51,117 @@
                                 <dd>@d.Value</dd>
                             }
                         </dl>
+                    </div>
+                </div>
+                <div id="FilenamePatternPopup" class="modal" tabindex="-1" role="dialog">
+                    @* <div> *@
+                    <script>
+                        function FilenamePatternMacroChange() {
+                            const value = $('#FilenamePatternMacro').val();
+                            const date = value.indexOf(":format") >= 0;
+                            const string = value.indexOf(":start,length") >= 0;
+                            const counter = value.indexOf(":digits") >= 0;
+                            if (date)
+                                $('#FilenamePatternDateFormatDiv').show();
+                            else
+                                $('#FilenamePatternDateFormatDiv').hide();
+                            if (string)
+                                $('#FilenamePatternStringParamsDiv').show();
+                            else
+                                $('#FilenamePatternStringParamsDiv').hide();
+                            if (counter)
+                                $('#FilenamePatternCounterParamsDiv').show();
+                            else
+                                $('#FilenamePatternCounterParamsDiv').hide();
+                        }
+                    </script>
+                    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title fs-5">Filename pattern editor</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div id="FilenamePatternPopupBody" class="modal-body mb-3">
+                                <input id="FilenamePatternInput" type="hidden" />
+                                <div class="mb-3">
+                                    <label for="CurrentFilenamePattern" class="col-form-label">Filename Pattern</label>
+                                    <input id="CurrentFilenamePattern" type="text" class="form-control" />
+                                </div>
+                                <hr>
+                                <div class="row mb-3">
+                                    <label for="FilenamePatternMacro" class="col-sm-2 col-form-label">Macros</label>
+                                    <div class="col-sm-10">
+                                        <div>
+                                            <select id="FilenamePatternMacro" class="form-control" onchange="FilenamePatternMacroChange();" style="width:100%">
+                                                @foreach (var d in Rename.GetRenamePlaceholderList())
+                                                {
+                                                    <option value="@d.Key">@d.Key|@d.Value</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="FilenamePatternDateFormatDiv" class="row mb-3" style="display: none;">
+                                    <label for="FilenamePatternDateFormat" class="col-sm-2 col-form-label">Date format</label>
+                                    <div class="col-sm-10">
+                                        <div class="input-group">
+                                            <input id="FilenamePatternDateFormat" type="text" class="form-control" />
+                                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="popover" title="Date formatters" data-bs-placement="bottom" data-bs-html="true" id="DateFormattersInfo"><span class="fa fa-info"></span></button>
+                                        </div>
+                                    </div>
+                                    <div style="display: none;">
+                                        <div id="DateFormattersInfoDiv">
+                                            @foreach (var d in Rename.GetDateFormatters())
+                                            {
+                                                <div class="row">
+                                                    <button for="FilenamePatternDateFormat" data="@d.Key" type="button" class="btn btn-sm insert col-sm-1" title="Insert..."><span class="fa fa-plus fa-xs"></span></button>
+                                                    <div class="col-sm-2 d-flex align-items-center">@d.Key</div>
+                                                    <div class="col-sm-9 d-flex align-items-center">@d.Value</div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="FilenamePatternStringParamsDiv" style="display: none;">
+                                    <div class="row mb-3">
+                                        <div class="form-group col-sm-6">
+                                            <div class="row">
+                                                <label for="FilenamePatternStringStart" class="col-sm-4 col-form-label">Start</label>
+                                                <div class="col-sm-8">
+                                                    <input id="FilenamePatternStringStart" type="number" value="0" class="form-control col-sm-4" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <div class="row">
+                                                <label for="FilenamePatternStringLength" class="col-sm-4 col-form-label">Length</label>
+                                                <div class="col-sm-8">
+                                                    <input id="FilenamePatternStringLength" type="number" value="8" class="form-control col-sm-4" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="FilenamePatternCounterParamsDiv" class="row mb-3" style="display: none;">
+                                    <label for="FilenamePatternCounterDigits" class="col-sm-2 col-form-label">Digits</label>
+                                    <div class="col-sm-10">
+                                        <select id="FilenamePatternCounterDigits" class="form-control">
+                                            <option value="auto">auto</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer" style="display: block;">
+                                <button type="button" class="btn btn-primary" style="float: left;" id="AddFilenamePattern"><span class="fa fa-plus"></span> Add</button>
+                                <button type="button" class="btn btn-primary" style="float: right;" data-bs-dismiss="modal" id="SaveFilenamePattern">Save</button>
+                                <button type="button" class="btn btn-secondary" style="float: right;" data-bs-dismiss="modal" id="CancelFilenamePattern">Cancel</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -113,5 +227,6 @@
     <partial name="_SelectFolderScriptsPartial" />
     <partial name="_PopoverScriptsPartial" />
     <partial name="_Select2TwoColumnScriptsPartial" model='"#ConfigKey"' />
+    <partial name="_Select2TwoColumnScriptsPartial" model='"#FilenamePatternMacro"' />
     <partial name="_InsertButtonScriptsPartial" />
 }

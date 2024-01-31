@@ -43,12 +43,12 @@ namespace FDR.Tools.Library
         {
             var list = new Dictionary<string, string>()
             {
-                { $"{{{NOW}}}", "Current date time" },
-                { $"{{{NOW}:format}}", "Current date time with custom date format" },
                 { $"{{{NAME}}}", "Name without extension" },
                 { $"{{{NAME}:start,length}}", "Name without extension with start index and character length" },
                 { $"{{{PFOLDER}}}", "Parent folder's name" },
                 { $"{{{PFOLDER}:start,length}}", "Parent folder's name with start index and character length" },
+                { $"{{{NOW}}}", "Current date time" },
+                { $"{{{NOW}:format}}", "Current date time with custom date format" },
                 { $"{{{CDATE}}}", "Creation date" },
                 { $"{{{CDATE}:format}}", "Creation date with custom date format" },
                 { $"{{{MDATE}}}", "Modify date" },
@@ -58,7 +58,7 @@ namespace FDR.Tools.Library
                 { $"{{{SDATE}}}", $"Shooting date (={EDATE})" },
                 { $"{{{SDATE}:format}}", $"Shooting date (={EDATE}) with custom date format" },
                 { $"{{{COUNTER}}}", "File counter" },
-                { $"{{{COUNTER}:digits}}", "File counter with custom number of digits starting with 1 or 'auto'" }
+                { $"{{{COUNTER}:digits}}", "File counter with custom number of digits or 'auto'" }
             };
             return list;
         }
