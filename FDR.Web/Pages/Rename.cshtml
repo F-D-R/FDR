@@ -36,11 +36,8 @@
             <div class="col-sm-9">
                 <div class="input-group">
                     <input asp-for="RenameConfig.FilenamePattern" class="form-control" data-bs-toggle="tooltip" data-bs-title="@RenameConfig.GetRenameConfigAttributeList()[nameof(RenameConfig.FilenamePattern)]">
-
-                    @* <button id="SelectFolder" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FolderPopup"><span class="fa fa-ellipsis"></span></button> *@
                     <button id="SelectFilenamePattern" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FilenamePatternPopup"><span class="fa fa-pen"></span></button>
-
-                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="popover" title="Filename pattern placeholders" data-bs-placement="bottom" data-bs-html="true" id="FilenamePatternInfo"><span class="fa fa-info"></span></button>
+                    <button id="FilenamePatternInfo" type="button" class="btn btn-outline-primary" data-bs-toggle="popover" title="Filename pattern placeholders" data-bs-placement="bottom" data-bs-html="true"><span class="fa fa-info"></span></button>
                 </div>
                 <div style="display: none;">
                     <div id="FilenamePatternInfoDiv">
@@ -54,7 +51,6 @@
                     </div>
                 </div>
                 <div id="FilenamePatternPopup" class="modal" tabindex="-1" role="dialog">
-                    @* <div> *@
                     <script>
                         function FilenamePatternMacroChange() {
                             const value = $('#FilenamePatternMacro').val();
