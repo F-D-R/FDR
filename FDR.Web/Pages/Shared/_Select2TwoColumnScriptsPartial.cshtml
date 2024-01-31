@@ -4,11 +4,13 @@
 
 <script>
     $(document).ready(function () {
-        $('select' + '@Model').select2({
+        const select = $('select' + '@Model');
+        const modal = select.parents('.modal');
+        select.select2({
             selectionCssClass: 'form-select w-100',
             width: 'resolve',
             minimumResultsForSearch: 20,
-            dropdownParent: ($('select' + '@Model').parents('.modal').length ? $('select' + '@Model').parents('.modal') : null),
+            dropdownParent: modal.length ? modal : null,
             templateResult: function (data) {
                 var r = data.text.split('|');
                 var result = jQuery(
