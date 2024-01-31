@@ -5,14 +5,16 @@
 <script>
     $(document).ready(function () {
         $('select' + '@Model').select2({
-            selectionCssClass: 'form-select',
+            selectionCssClass: 'form-select w-100',
+            width: 'resolve',
             minimumResultsForSearch: 20,
+            dropdownParent: ($('select' + '@Model').parents('.modal').length ? $('select' + '@Model').parents('.modal') : null),
             templateResult: function (data) {
                 var r = data.text.split('|');
                 var result = jQuery(
                     '<div class="row select-result">' +
                     '<div class="col-md-3 select-col1">' + r[0] + '</div>' +
-                    (r.length > 1 ? '<div class="col-md-8 select-col2">' + r[1] + '</div>' : '') +
+                    (r.length > 1 ? '<div class="col-md-9 select-col2">' + r[1] + '</div>' : '') +
                     '</div>'
                 );
                 return result;
@@ -22,7 +24,7 @@
                 var result = jQuery(
                     '<div class="row select-selection">' +
                     '<div class="col-md-3 select-col1">' + r[0] + '</div>' +
-                    (r.length > 1 ? '<div class="col-md-8 select-col2">' + r[1] + '</div>' : '') +
+                    (r.length > 1 ? '<div class="col-md-9 select-col2">' + r[1] + '</div>' : '') +
                     '</div>'
                 );
                 return result;
