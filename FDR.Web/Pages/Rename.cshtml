@@ -14,7 +14,7 @@
             <div class="row mb-3">
                 <label asp-for="ConfigKey" class="col-sm-3 col-form-label">Predefined rename config</label>
                 <div class="col-sm-9">
-                    <select asp-for="ConfigKey" class="form-select" onchange="location = '?config=' + this.value;">
+                    <select asp-for="ConfigKey" class="form-select select2" onchange="location = '?config=' + this.value;">
                         <option value="">Default config...|</option>
                         @foreach (var kvp in Model.AppConfig!.RenameConfigs!)
                         {
@@ -37,19 +37,7 @@
             <div class="col-sm-9">
                 <div class="input-group">
                     <input asp-for="RenameConfig.FilenamePattern" class="form-control" data-bs-toggle="tooltip" data-bs-title="@RenameConfig.GetRenameConfigAttributeList()[nameof(RenameConfig.FilenamePattern)]">
-                    <button id="SelectFilenamePattern" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#RenameConfig_FilenamePatternFilenamePatternPopup" onclick="RenameConfig_FilenamePatternSelectFilenamePatternClick();"><span class="fa fa-pen"></span></button>
-                    @* <button id="FilenamePatternInfo" type="button" class="btn btn-outline-primary" data-bs-toggle="popover" title="Filename pattern placeholders" data-bs-placement="bottom" data-bs-html="true"><span class="fa fa-info"></span></button> *@
-                </div>
-                <div style="display: none;">
-                    <div id="FilenamePatternInfoDiv">
-                        <dl>
-                            @foreach (var d in Rename.GetRenamePlaceholderList())
-                            {
-                                <dt>@d.Key <button for="RenameConfig_FilenamePattern" data="@d.Key" type="button" class="btn insert" style="float: right;" title="Insert..."><span class="fa fa-plus"></span></button></dt>
-                                <dd>@d.Value</dd>
-                            }
-                        </dl>
-                    </div>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#RenameConfig_FilenamePatternFilenamePatternPopup" onclick="RenameConfig_FilenamePatternSelectFilenamePatternClick();"><span class="fa fa-pen"></span></button>
                 </div>
             </div>
         </div>
@@ -111,8 +99,6 @@
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
     <partial name="_PopoverScriptsPartial" />
-    <partial name="_Select2TwoColumnScriptsPartial" model='"#ConfigKey"' />
-    @* <partial name="_Select2TwoColumnScriptsPartial" model='"#FilenamePatternMacro"' /> *@
-    <partial name="_Select2TwoColumnScriptsPartial" model='"#RenameConfig_FilenamePatternFilenamePatternMacro"' />
+    <partial name="_Select2Script" />
     <partial name="_InsertButtonScriptsPartial" />
 }

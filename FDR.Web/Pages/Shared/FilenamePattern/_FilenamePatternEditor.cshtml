@@ -106,7 +106,7 @@
                     <label for="@Html.Raw(Model)FilenamePatternMacro" class="col-sm-2 col-form-label">Macros</label>
                     <div class="col-sm-10">
                         <div>
-                            <select id="@Html.Raw(Model)FilenamePatternMacro" class="form-control" onchange="@Html.Raw(Model)FilenamePatternMacroChange();" style="width:100%">
+                            <select id="@Html.Raw(Model)FilenamePatternMacro" class="form-control select2" onchange="@Html.Raw(Model)FilenamePatternMacroChange();" style="width:100%">
                                 @foreach (var d in Rename.GetRenamePlaceholderList())
                                 {
                                     <option value="@d.Key">@d.Key|@d.Value</option>
@@ -180,5 +180,5 @@
 </div>
 
 @section Scripts{
-    @* <partial name="_Select2TwoColumnScriptsPartial" model='"#@Html.Raw(Model)FilenamePatternMacro"' /> *@
+    <partial name="_Select2Script" />
 }

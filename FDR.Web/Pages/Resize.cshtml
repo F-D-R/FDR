@@ -14,7 +14,7 @@
             <div class="row mb-3">
                 <label asp-for="ConfigKey" class="col-sm-3 col-form-label">Predefined resize config</label>
                 <div class="col-sm-9">
-                    <select asp-for="ConfigKey" class="form-select" onchange="location = '?config=' + this.value;">
+                    <select asp-for="ConfigKey" class="form-select select2" onchange="location = '?config=' + this.value;">
                         <option value="">Default config...|</option>
                         @foreach (var kvp in Model.AppConfig!.ResizeConfigs!)
                         {
@@ -62,23 +62,12 @@
             </div>
         </div>
         <div class="row mb-3">
+            <partial name="/Pages/Shared/FilenamePattern/_FilenamePatternEditor.cshtml" model='"ResizeConfig_FilenamePattern"' />
             <label asp-for="ResizeConfig.FilenamePattern" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-9">
                 <div class="input-group">
                     <input asp-for="ResizeConfig.FilenamePattern" class="form-control" data-bs-toggle="tooltip" data-bs-title="@ResizeConfig.GetResizeConfigAttributeList()[nameof(ResizeConfig.FilenamePattern)]">
-                    @* <button type="button" class="btn btn-outline-secondary" data-bs-toggle="popover" title="Editor" data-bs-placement="bottom" data-bs-trigger="focus" data-bs-content="This is the editor popover..." id="FilenamePatternEditor"><span class="fa fa-pen"></span></button> *@
-                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="popover" title="Filename pattern placeholders" data-bs-placement="bottom" data-bs-html="true" id="FilenamePatternInfo"><span class="fa fa-info"></span></button>
-                </div>
-                <div style="display: none;">
-                    <div id="FilenamePatternInfoDiv">
-                        <dl>
-                            @foreach (var d in Rename.GetRenamePlaceholderList())
-                            {
-                                <dt>@d.Key <button for="ResizeConfig_FilenamePattern" data="@d.Key" type="button" class="btn insert" style="float: right;" title="Insert..."><span class="fa fa-plus"></span></button></dt>
-                                <dd>@d.Value</dd>
-                            }
-                        </dl>
-                    </div>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#ResizeConfig_FilenamePatternFilenamePatternPopup" onclick="ResizeConfig_FilenamePatternSelectFilenamePatternClick();"><span class="fa fa-pen"></span></button>
                 </div>
             </div>
         </div>
@@ -134,6 +123,6 @@
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
     <partial name="_PopoverScriptsPartial" />
-    <partial name="_Select2TwoColumnScriptsPartial" model='"#ConfigKey"' />
+    <partial name="_Select2Script" />
     <partial name="_InsertButtonScriptsPartial" />
 }
