@@ -10,6 +10,7 @@
                 input.value = input.value.substring(0, startPos)
                     + data
                     + input.value.substring(endPos, input.value.length);
+                input.selectionStart = input.selectionEnd = input.value.length;
             } else {
                 input.value += data;
             }

@@ -37,19 +37,19 @@
                 <div class="input-group">
                     <input asp-for="RenameConfig.FilenamePattern" class="form-control" data-bs-toggle="tooltip" data-bs-title="@RenameConfig.GetRenameConfigAttributeList()[nameof(RenameConfig.FilenamePattern)]">
                     <button id="SelectFilenamePattern" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FilenamePatternPopup" onclick="SelectFilenamePatternClick();"><span class="fa fa-pen"></span></button>
-                    @* <button id="FilenamePatternInfo" type="button" class="btn btn-outline-primary" data-bs-toggle="popover" title="Filename pattern placeholders" data-bs-placement="bottom" data-bs-html="true"><span class="fa fa-info"></span></button> *@
+                    <button id="FilenamePatternInfo" type="button" class="btn btn-outline-primary" data-bs-toggle="popover" title="Filename pattern placeholders" data-bs-placement="bottom" data-bs-html="true"><span class="fa fa-info"></span></button>
                 </div>
-                @* <div style="display: none;">
-                <div id="FilenamePatternInfoDiv">
-                <dl>
-                @foreach (var d in Rename.GetRenamePlaceholderList())
-                {
-                <dt>@d.Key <button for="RenameConfig_FilenamePattern" data="@d.Key" type="button" class="btn insert" style="float: right;" title="Insert..."><span class="fa fa-plus"></span></button></dt>
-                <dd>@d.Value</dd>
-                }
-                </dl>
+                <div style="display: none;">
+                    <div id="FilenamePatternInfoDiv">
+                        <dl>
+                            @foreach (var d in Rename.GetRenamePlaceholderList())
+                            {
+                                <dt>@d.Key <button for="RenameConfig_FilenamePattern" data="@d.Key" type="button" class="btn insert" style="float: right;" title="Insert..."><span class="fa fa-plus"></span></button></dt>
+                                <dd>@d.Value</dd>
+                            }
+                        </dl>
+                    </div>
                 </div>
-                </div> *@
                 <div id="FilenamePatternPopup" class="modal" tabindex="-1" role="dialog">
                     <script>
                         function FilenamePatternMacroChange() {
@@ -91,6 +91,7 @@
                                 input.value = input.value.substring(0, startPos)
                                     + data
                                     + input.value.substring(endPos, input.value.length);
+                                input.selectionStart = input.selectionEnd = input.value.length;
                             } else {
                                 input.value += data;
                             }
@@ -129,7 +130,7 @@
                                 <div class="row mb-0">
                                     <label for="FilenamePatternExample" class="col-sm-2 col-form-label">Example</label>
                                     <div class="col-sm-10">
-                                        <input id="FilenamePatternExample" type="text" readonly class="form-control-plaintext fw-lighter px-3" />
+                                        <input id="FilenamePatternExample" type="text" readonly class="form-control-plaintext fw-lighter px-3" title="For '@(new System.IO.DirectoryInfo(System.IO.Path.GetTempPath()).Name)/rename_example.jpg' at date '2001-02-03T04:05:06''" />
                                     </div>
                                 </div>
                                 <hr>
