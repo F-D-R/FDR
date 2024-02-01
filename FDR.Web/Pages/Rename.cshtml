@@ -32,12 +32,13 @@
             </div>
         </div>
         <div class="row mb-3">
+            <partial name="/Pages/Shared/FilenamePattern/_FilenamePatternEditor.cshtml" model='"RenameConfig_FilenamePattern"' />
             <label asp-for="RenameConfig.FilenamePattern" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-9">
                 <div class="input-group">
                     <input asp-for="RenameConfig.FilenamePattern" class="form-control" data-bs-toggle="tooltip" data-bs-title="@RenameConfig.GetRenameConfigAttributeList()[nameof(RenameConfig.FilenamePattern)]">
-                    <button id="SelectFilenamePattern" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FilenamePatternPopup" onclick="SelectFilenamePatternClick();"><span class="fa fa-pen"></span></button>
-                    <button id="FilenamePatternInfo" type="button" class="btn btn-outline-primary" data-bs-toggle="popover" title="Filename pattern placeholders" data-bs-placement="bottom" data-bs-html="true"><span class="fa fa-info"></span></button>
+                    <button id="SelectFilenamePattern" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#RenameConfig_FilenamePatternFilenamePatternPopup" onclick="RenameConfig_FilenamePatternSelectFilenamePatternClick();"><span class="fa fa-pen"></span></button>
+                    @* <button id="FilenamePatternInfo" type="button" class="btn btn-outline-primary" data-bs-toggle="popover" title="Filename pattern placeholders" data-bs-placement="bottom" data-bs-html="true"><span class="fa fa-info"></span></button> *@
                 </div>
                 <div style="display: none;">
                     <div id="FilenamePatternInfoDiv">
@@ -48,166 +49,6 @@
                                 <dd>@d.Value</dd>
                             }
                         </dl>
-                    </div>
-                </div>
-                <div id="FilenamePatternPopup" class="modal" tabindex="-1" role="dialog">
-                    <script>
-                        function FilenamePatternMacroChange() {
-                            const value = $('#FilenamePatternMacro').val();
-                            const date = value.indexOf(":format") >= 0;
-                            const string = value.indexOf(":start,length") >= 0;
-                            const counter = value.indexOf(":digits") >= 0;
-                            if (date)
-                                $('#FilenamePatternDateFormatDiv').show();
-                            else
-                                $('#FilenamePatternDateFormatDiv').hide();
-                            if (string)
-                                $('#FilenamePatternStringParamsDiv').show();
-                            else
-                                $('#FilenamePatternStringParamsDiv').hide();
-                            if (counter)
-                                $('#FilenamePatternCounterParamsDiv').show();
-                            else
-                                $('#FilenamePatternCounterParamsDiv').hide();
-
-                            bootstrap.Popover.getInstance('#DateFormattersInfo').hide();
-                        }
-
-                        function AddFilenamePatternClick() {
-                            const input = $('#CurrentFilenamePattern')[0];
-                            let data = $('#FilenamePatternMacro').val();
-                            data = data.replace('start', $('#FilenamePatternStringStart').val());
-                            data = data.replace('length', $('#FilenamePatternStringLength').val());
-                            data = data.replace('digits', $('#FilenamePatternCounterDigits').val());
-                            const format = $('#FilenamePatternDateFormat').val();
-                            if (format && format.trim())
-                                data = data.replace('format', $('#FilenamePatternDateFormat').val().trim());
-                            else
-                                data = data.replace(':format', '');
-
-                            if (input.selectionStart || input.selectionStart == '0') {
-                                var startPos = input.selectionStart;
-                                var endPos = input.selectionEnd;
-                                input.value = input.value.substring(0, startPos)
-                                    + data
-                                    + input.value.substring(endPos, input.value.length);
-                                input.selectionStart = input.selectionEnd = input.value.length;
-                            } else {
-                                input.value += data;
-                            }
-                            CurrentFilenamePatternChange();
-                        }
-
-                        function SelectFilenamePatternClick() {
-                            $('#CurrentFilenamePattern').val('');
-                            $('#CurrentFilenamePattern').val($('#RenameConfig_FilenamePattern').val());
-                            CurrentFilenamePatternChange();
-                        }
-
-                        function SaveFilenamePatternClick() {
-                            $('#RenameConfig_FilenamePattern').val($('#CurrentFilenamePattern').val());
-                        }
-
-                        function CurrentFilenamePatternChange() {
-                            const pattern = $('#CurrentFilenamePattern').val();
-                            $.ajax({ url: `/Rename/CalculateExample?pattern=${encodeURIComponent(pattern)}`, type: 'GET', complete: function (res) { $('#FilenamePatternExample').val(res.responseText); } });
-                        }
-                    </script>
-                    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title fs-5">Filename pattern editor</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div id="FilenamePatternPopupBody" class="modal-body mb-3">
-                                <input id="FilenamePatternInput" type="hidden" />
-                                <div class="row mb-2">
-                                    <label for="CurrentFilenamePattern" class="col-sm-2 col-form-label">Pattern</label>
-                                    <div class="col-sm-10">
-                                        <input id="CurrentFilenamePattern" type="text" class="form-control fw-bold" onchange="CurrentFilenamePatternChange();" />
-                                    </div>
-                                </div>
-                                <div class="row mb-0">
-                                    <label for="FilenamePatternExample" class="col-sm-2 col-form-label">Example</label>
-                                    <div class="col-sm-10">
-                                        <input id="FilenamePatternExample" type="text" readonly class="form-control-plaintext fw-lighter px-3" title="For '@(new System.IO.DirectoryInfo(System.IO.Path.GetTempPath()).Name)/rename_example.jpg' at date '2001-02-03T04:05:06''" />
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="row mb-3">
-                                    <label for="FilenamePatternMacro" class="col-sm-2 col-form-label">Macros</label>
-                                    <div class="col-sm-10">
-                                        <div>
-                                            <select id="FilenamePatternMacro" class="form-control" onchange="FilenamePatternMacroChange();" style="width:100%">
-                                                @foreach (var d in Rename.GetRenamePlaceholderList())
-                                                {
-                                                    <option value="@d.Key">@d.Key|@d.Value</option>
-                                                }
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id="FilenamePatternDateFormatDiv" class="row mb-3" style="display: none;">
-                                    <label for="FilenamePatternDateFormat" class="col-sm-2 col-form-label">Date format</label>
-                                    <div class="col-sm-10">
-                                        <div class="input-group">
-                                            <input id="FilenamePatternDateFormat" type="text" class="form-control" />
-                                            <button id="DateFormattersInfo" type="button" class="btn btn-outline-primary" data-bs-toggle="popover" title="Date formatters" data-bs-placement="bottom" data-bs-html="true"><span class="fa fa-info"></span></button>
-                                        </div>
-                                    </div>
-                                    <div style="display: none;">
-                                        <div id="DateFormattersInfoDiv">
-                                            @foreach (var d in Rename.GetDateFormatters())
-                                            {
-                                                <div class="row">
-                                                    <button for="FilenamePatternDateFormat" data="@d.Key" type="button" class="btn btn-sm insert col-sm-1" title="Insert..."><span class="fa fa-plus fa-xs"></span></button>
-                                                    <div class="col-sm-2 d-flex align-items-center">@d.Key</div>
-                                                    <div class="col-sm-9 d-flex align-items-center">@d.Value</div>
-                                                </div>
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id="FilenamePatternStringParamsDiv" style="display: none;">
-                                    <div class="row mb-3">
-                                        <div class="form-group col-sm-6">
-                                            <div class="row">
-                                                <label for="FilenamePatternStringStart" class="col-sm-4 col-form-label">Start</label>
-                                                <div class="col-sm-8">
-                                                    <input id="FilenamePatternStringStart" type="number" value="0" class="form-control col-sm-4" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group col-sm-6">
-                                            <div class="row">
-                                                <label for="FilenamePatternStringLength" class="col-sm-4 col-form-label">Length</label>
-                                                <div class="col-sm-8">
-                                                    <input id="FilenamePatternStringLength" type="number" value="8" class="form-control col-sm-4" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id="FilenamePatternCounterParamsDiv" class="row mb-3" style="display: none;">
-                                    <label for="FilenamePatternCounterDigits" class="col-sm-2 col-form-label">Digits</label>
-                                    <div class="col-sm-10">
-                                        <select id="FilenamePatternCounterDigits" class="form-control">
-                                            <option value="auto">auto</option>
-                                            <option value="1">1</option>
-                                            <option value="2">2</option>
-                                            <option value="3">3</option>
-                                            <option value="4">4</option>
-                                            <option value="5">5</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer" style="display: block;">
-                                <button id="AddFilenamePattern" type="button" class="btn btn-primary" style="float: left;" onclick="AddFilenamePatternClick();"><span class="fa fa-plus"></span> Add</button>
-                                <button id="SaveFilenamePattern" type="button" class="btn btn-primary" style="float: right;" data-bs-dismiss="modal" onclick="SaveFilenamePatternClick();">Save</button>
-                                <button id="CancelFilenamePattern" type="button" class="btn btn-secondary" style="float: right;" data-bs-dismiss="modal">Cancel</button>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -271,6 +112,7 @@
     <partial name="_ValidationScriptsPartial" />
     <partial name="_PopoverScriptsPartial" />
     <partial name="_Select2TwoColumnScriptsPartial" model='"#ConfigKey"' />
-    <partial name="_Select2TwoColumnScriptsPartial" model='"#FilenamePatternMacro"' />
+    @* <partial name="_Select2TwoColumnScriptsPartial" model='"#FilenamePatternMacro"' /> *@
+    <partial name="_Select2TwoColumnScriptsPartial" model='"#RenameConfig_FilenamePatternFilenamePatternMacro"' />
     <partial name="_InsertButtonScriptsPartial" />
 }

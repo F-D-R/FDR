@@ -1,0 +1,184 @@
+﻿@model string
+
+<script>
+    function @Html.Raw(Model)FilenamePatternMacroChange() {
+        const value = $('#@Html.Raw(Model)FilenamePatternMacro').val();
+        const date = value.indexOf(":format") >= 0;
+        const string = value.indexOf(":start,length") >= 0;
+        const counter = value.indexOf(":digits") >= 0;
+        if (date)
+            $('#@Html.Raw(Model)FilenamePatternDateFormatDiv').show();
+        else
+            $('#@Html.Raw(Model)FilenamePatternDateFormatDiv').hide();
+        if (string)
+            $('#@Html.Raw(Model)FilenamePatternStringParamsDiv').show();
+        else
+            $('#@Html.Raw(Model)FilenamePatternStringParamsDiv').hide();
+        if (counter)
+            $('#@Html.Raw(Model)FilenamePatternCounterParamsDiv').show();
+        else
+            $('#@Html.Raw(Model)FilenamePatternCounterParamsDiv').hide();
+
+        bootstrap.Popover.getInstance('#@Html.Raw(Model)DateFormattersInfo').hide();
+    }
+
+    function @Html.Raw(Model)InsertDateFormatClick(data) {
+        const input = $('#@Html.Raw(Model)FilenamePatternDateFormat')[0];
+        if (input.selectionStart || input.selectionStart == '0') {
+            var startPos = input.selectionStart;
+            var endPos = input.selectionEnd;
+            input.value = input.value.substring(0, startPos)
+                + data
+                + input.value.substring(endPos, input.value.length);
+            const length = input.value.length;
+            input.selectionStart = length;
+            input.selectionEnd = length;
+        } else {
+            input.value += data;
+        }
+    }
+
+    function @Html.Raw(Model)AddFilenamePatternClick() {
+        const input = $('#@Html.Raw(Model)CurrentFilenamePattern')[0];
+        let data = $('#@Html.Raw(Model)FilenamePatternMacro').val();
+        data = data.replace('start', $('#@Html.Raw(Model)FilenamePatternStringStart').val());
+        data = data.replace('length', $('#@Html.Raw(Model)FilenamePatternStringLength').val());
+        data = data.replace('digits', $('#@Html.Raw(Model)FilenamePatternCounterDigits').val());
+        const format = $('#@Html.Raw(Model)FilenamePatternDateFormat').val();
+        if (format && format.trim())
+            data = data.replace('format', format.trim());
+        else
+            data = data.replace(':format', '');
+
+        if (input.selectionStart || input.selectionStart == '0') {
+            var startPos = input.selectionStart;
+            var endPos = input.selectionEnd;
+            input.value = input.value.substring(0, startPos)
+                + data
+                + input.value.substring(endPos, input.value.length);
+            const length = input.value.length;
+            input.selectionStart = length;
+            input.selectionEnd = length;
+        } else {
+            input.value += data;
+        }
+    @Html.Raw(Model)CurrentFilenamePatternChange();
+    }
+
+    function @Html.Raw(Model)SelectFilenamePatternClick() {
+        $('#@Html.Raw(Model)CurrentFilenamePattern').val('');
+        $('#@Html.Raw(Model)CurrentFilenamePattern').val($('#@Html.Raw(Model)').val());
+    @Html.Raw(Model)CurrentFilenamePatternChange();
+    }
+
+    function @Html.Raw(Model)SaveFilenamePatternClick() {
+        $('#@Html.Raw(Model)').val($('#@Html.Raw(Model)CurrentFilenamePattern').val());
+    }
+
+    function @Html.Raw(Model)CurrentFilenamePatternChange() {
+        const pattern = $('#@Html.Raw(Model)CurrentFilenamePattern').val();
+        $.ajax({ url: `/Rename/CalculateExample?pattern=${encodeURIComponent(pattern)}`, type: 'GET', complete: function (res) { $('#@Html.Raw(Model)FilenamePatternExample').val(res.responseText); } });
+    }
+</script>
+
+<div id="@Html.Raw(Model)FilenamePatternPopup" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fs-5">Filename pattern editor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="@Html.Raw(Model)FilenamePatternPopupBody" class="modal-body mb-3">
+                <div class="row mb-2">
+                    <label for="@Html.Raw(Model)CurrentFilenamePattern" class="col-sm-2 col-form-label">Pattern</label>
+                    <div class="col-sm-10">
+                        <input id="@Html.Raw(Model)CurrentFilenamePattern" type="text" class="form-control fw-bold" onchange="@Html.Raw(Model)CurrentFilenamePatternChange();" />
+                    </div>
+                </div>
+                <div class="row mb-0">
+                    <label for="@Html.Raw(Model)FilenamePatternExample" class="col-sm-2 col-form-label">Example</label>
+                    <div class="col-sm-10">
+                        <input id="@Html.Raw(Model)FilenamePatternExample" type="text" readonly class="form-control-plaintext fw-lighter px-3" title="For '@(new System.IO.DirectoryInfo(System.IO.Path.GetTempPath()).Name)/rename_example.jpg' at date '2001-02-03T04:05:06''" />
+                    </div>
+                </div>
+                <hr>
+                <div class="row mb-3">
+                    <label for="@Html.Raw(Model)FilenamePatternMacro" class="col-sm-2 col-form-label">Macros</label>
+                    <div class="col-sm-10">
+                        <div>
+                            <select id="@Html.Raw(Model)FilenamePatternMacro" class="form-control" onchange="@Html.Raw(Model)FilenamePatternMacroChange();" style="width:100%">
+                                @foreach (var d in Rename.GetRenamePlaceholderList())
+                                {
+                                    <option value="@d.Key">@d.Key|@d.Value</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="@Html.Raw(Model)FilenamePatternDateFormatDiv" class="row mb-3" style="display: none;">
+                    <label for="@Html.Raw(Model)FilenamePatternDateFormat" class="col-sm-2 col-form-label">Date format</label>
+                    <div class="col-sm-10">
+                        <div class="input-group">
+                            <input id="@Html.Raw(Model)FilenamePatternDateFormat" type="text" class="form-control" />
+                            <button id="@Html.Raw(Model)DateFormattersInfo" type="button" class="btn btn-outline-primary" data-bs-toggle="popover" title="Date formatters" data-bs-placement="bottom" data-bs-html="true"><span class="fa fa-info"></span></button>
+                        </div>
+                    </div>
+                    <div style="display: none;">
+                        <div id="@Html.Raw(Model)DateFormattersInfoDiv">
+                            @foreach (var d in Rename.GetDateFormatters())
+                            {
+                                <div class="row">
+                                    <button value="@d.Key" type="button" class="btn btn-sm col-sm-1" title="Insert..." onclick="@Html.Raw(Model)InsertDateFormatClick(this.value);"><span class="fa fa-plus fa-xs"></span></button>
+                                    <div class="col-sm-2 d-flex align-items-center">@d.Key</div>
+                                    <div class="col-sm-9 d-flex align-items-center">@d.Value</div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div id="@Html.Raw(Model)FilenamePatternStringParamsDiv" style="display: none;">
+                    <div class="row mb-3">
+                        <div class="form-group col-sm-6">
+                            <div class="row">
+                                <label for="@Html.Raw(Model)FilenamePatternStringStart" class="col-sm-4 col-form-label">Start</label>
+                                <div class="col-sm-8">
+                                    <input id="@Html.Raw(Model)FilenamePatternStringStart" type="number" value="0" class="form-control col-sm-4" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <div class="row">
+                                <label for="@Html.Raw(Model)FilenamePatternStringLength" class="col-sm-4 col-form-label">Length</label>
+                                <div class="col-sm-8">
+                                    <input id="@Html.Raw(Model)FilenamePatternStringLength" type="number" value="8" class="form-control col-sm-4" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="@Html.Raw(Model)FilenamePatternCounterParamsDiv" class="row mb-3" style="display: none;">
+                    <label for="@Html.Raw(Model)FilenamePatternCounterDigits" class="col-sm-2 col-form-label">Digits</label>
+                    <div class="col-sm-10">
+                        <select id="@Html.Raw(Model)FilenamePatternCounterDigits" class="form-control">
+                            <option value="auto">auto</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: block;">
+                <button id="@Html.Raw(Model)AddFilenamePattern" type="button" class="btn btn-primary" style="float: left;" onclick="@Html.Raw(Model)AddFilenamePatternClick();"><span class="fa fa-plus"></span> Add</button>
+                <button id="@Html.Raw(Model)SaveFilenamePattern" type="button" class="btn btn-primary" style="float: right;" data-bs-dismiss="modal" onclick="@Html.Raw(Model)SaveFilenamePatternClick();">Save</button>
+                <button id="@Html.Raw(Model)CancelFilenamePattern" type="button" class="btn btn-secondary" style="float: right;" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @* <partial name="_Select2TwoColumnScriptsPartial" model='"#@Html.Raw(Model)FilenamePatternMacro"' /> *@
+}
