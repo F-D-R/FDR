@@ -37,7 +37,7 @@ namespace FDR.Web.Pages
             var di = new DirectoryInfo(folder??DEFAULT_FOLDER);
             if (!di.Exists) { di = new DirectoryInfo(DEFAULT_FOLDER); }
 
-            return Partial("_Drives", di);
+            return Partial("/Pages/Shared/Folder/_Drives.cshtml", di);
         }
 
         public IActionResult OnGetSubfolders(string? folder)
@@ -47,7 +47,7 @@ namespace FDR.Web.Pages
             var di = new DirectoryInfo(folder??DEFAULT_FOLDER);
             if (!di.Exists) { di = new DirectoryInfo(DEFAULT_FOLDER); }
 
-            return Partial("_Subfolders", di);
+            return Partial("/Pages/Shared/Folder/_Subfolders.cshtml", di);
         }
 
     }
