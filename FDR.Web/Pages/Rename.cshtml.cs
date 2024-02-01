@@ -1,6 +1,9 @@
 using FDR.Tools.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using SixLabors.ImageSharp.Metadata.Profiles.Exif;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -53,6 +56,42 @@ namespace FDR.Web.Pages
         {
             var folder = new DirectoryInfo(Folder!);
             return new JsonResult(folder.Exists);
+        }
+
+        private FileInfo CreateTmpJpgFile()
+        {
+            var path = Path.Combine(Path.GetTempPath(), "rename_example.jpg");
+            var date = new DateTime(2001, 2, 3, 4, 5, 6);
+            using (var image = new Image<Argb32>(8, 8))
+            {
+                const string EXIF_DATE_FORMAT = "yyyy:MM:dd HH:mm:ss";
+                image.Metadata.ExifProfile = new ExifProfile();
+
+                image.Metadata.ExifProfile.SetValue(ExifTag.DateTime, date.ToString(EXIF_DATE_FORMAT));
+                image.Metadata.ExifProfile.SetValue(ExifTag.DateTimeOriginal, date.ToString(EXIF_DATE_FORMAT));
+                image.Metadata.ExifProfile.SetValue(ExifTag.DateTimeDigitized, date.ToString(EXIF_DATE_FORMAT));
+                image.SaveAsJpeg(path);
+                System.IO.File.SetCreationTime(path, date);
+                System.IO.File.SetLastWriteTime(path, date);
+            }
+            return new FileInfo(path);
+        }
+
+        public IActionResult OnGetCalculateExample(string? pattern)
+        {
+            Console.WriteLine($"RenameModel.OnGetCalculateExample... {pattern}");
+
+            FileInfo? file = null;
+            try
+            {
+                file = CreateTmpJpgFile();
+                if (file == null) return Content("");
+                return Content(Rename.EvaluateFileNamePattern(pattern??"", file, 1));
+            }
+            finally
+            {
+                if (file != null && file.Exists) file.Delete();
+            }
         }
 
         public void SelectFolder()
