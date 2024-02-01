@@ -10,20 +10,22 @@
     <div>
         <div asp-validation-summary="All" class="text-danger col-sm-12"></div>
         <div class="row mb-3">
+            <partial name="_FolderPopup" model='"Folder"' />
             <label asp-for="Folder" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-9">
                 <div class="input-group">
                     <input asp-for="Folder" class="form-control">
-                    <button id="SelectFolder" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FolderPopup"><span class="fa fa-ellipsis"></span></button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FolderFolderPopup" onclick="FolderSelectFolderClick();"><span class="fa fa-ellipsis"></span></button>
                 </div>
             </div>
         </div>
         <div class="row mb-3">
+            <partial name="_FolderPopup" model='"ReferenceFolder"' />
             <label asp-for="ReferenceFolder" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-9">
                 <div class="input-group">
                     <input asp-for="ReferenceFolder" class="form-control">
-                    <button id="SelectReferenceFolder" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#FolderPopup"><span class="fa fa-ellipsis"></span></button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#ReferenceFolderFolderPopup" onclick="ReferenceFolderSelectFolderClick();"><span class="fa fa-ellipsis"></span></button>
                 </div>
             </div>
         </div>
@@ -41,9 +43,6 @@
     </div>
 </form>
 
-<partial name="_FolderPopup" />
-
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
-    <partial name="_SelectFolderScriptsPartial" />
 }

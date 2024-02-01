@@ -1,33 +1,72 @@
-﻿@using System.Runtime.InteropServices;
+﻿@model string
 
-<div id="FolderPopup" class="modal" tabindex="-1" role="dialog">
+@using System.Runtime.InteropServices;
+
+<script>
+
+    function @Html.Raw(Model)SelectFolderClick() {
+        let folder = $('#@Html.Raw(Model)').val();
+        $.ajax({ url: `/Folder/Folder?folder=${encodeURIComponent(folder)}`, type: 'GET', complete: function (res) { $('#@Html.Raw(Model)SelectedFolder').val(res.responseText); } });
+        $('#@Html.Raw(Model)Drives').load(`/Folder/Drives?folder=${encodeURIComponent(folder)}`);
+        $('#@Html.Raw(Model)Subfolders').load(`/Folder/Subfolders?folder=${encodeURIComponent(folder)}`);
+    }
+
+    function @Html.Raw(Model)SaveFolderClick() {
+        $('#@Html.Raw(Model)').val($('#@Html.Raw(Model)SelectedFolder').val());
+    @Html.Raw(Model)ClearFolderPopup();
+    }
+
+    function @Html.Raw(Model)CancelFolder() {
+    @Html.Raw(Model)ClearFolderPopup();
+    }
+
+    function @Html.Raw(Model)ClearFolderPopup() {
+        $('#@Html.Raw(Model)SelectedFolder').val("");
+        $('#@Html.Raw(Model)Drives').val("");
+        $('#@Html.Raw(Model)Subfolders').val("");
+        $('#@Html.Raw(Model)Subfolders').empty();
+    }
+
+
+    function @Html.Raw(Model)SelectDrive() {
+        $('#@Html.Raw(Model)SelectedFolder').val($('#@Html.Raw(Model)Drives').val());
+        $('#@Html.Raw(Model)Subfolders').load(`/Folder/Subfolders?folder=${encodeURIComponent($('#@Html.Raw(Model)SelectedFolder').val())}`);
+    }
+
+    function @Html.Raw(Model)SelectSubfolder() {
+        $('#@Html.Raw(Model)SelectedFolder').val($('#@Html.Raw(Model)Subfolders').val());
+        $('#@Html.Raw(Model)Subfolders').load(`/Folder/Subfolders?folder=${encodeURIComponent($('#@Html.Raw(Model)SelectedFolder').val())}`);
+    }
+
+</script>
+
+<div id="@Html.Raw(Model)FolderPopup" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title fs-5">Select folder</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div id="FolderPopupBody" class="modal-body">
-                <input id="source" type="hidden" />
-                <div id="FolderDiv">
-                    <label for="SelectedFolder" class="col-sm-3 col-form-label">Selected folder</label>
-                    <input id="SelectedFolder" type="text" readonly class="form-control" />
+            <div id="@Html.Raw(Model)Body" class="modal-body">
+                <div>
+                    <label for="@Html.Raw(Model)SelectedFolder" class="col-sm-3 col-form-label">Selected folder</label>
+                    <input id="@Html.Raw(Model)SelectedFolder" type="text" readonly class="form-control" />
                 </div>
-                <div id="DrivesDiv">
+                <div>
                     @if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     {
-                        <label for="Drives" class="col-sm-3 col-form-label">Drives</label>
-                        <select id="Drives" class="form-control" onchange="SelectDrive();"></select>
+                        <label for="@Html.Raw(Model)Drives" class="col-sm-3 col-form-label">Drives</label>
+                        <select id="@Html.Raw(Model)Drives" class="form-control" onchange="@Html.Raw(Model)SelectDrive();"></select>
                     }
                 </div>
                 <div id="SubfoldersDiv">
-                    <label for="Subfolders" class="col-sm-3 col-form-label">Subfolders</label>
-                    <select id="Subfolders" class="form-control" size="5" ondblclick="SelectSubfolder();"></select>
+                    <label for="@Html.Raw(Model)Subfolders" class="col-sm-3 col-form-label">Subfolders</label>
+                    <select id="@Html.Raw(Model)Subfolders" class="form-control" size="5" ondblclick="@Html.Raw(Model)SelectSubfolder();"></select>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="SaveFolder">Save</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="CancelFolder">Cancel</button>
+                <button id="@Html.Raw(Model)SaveFolder" type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="@Html.Raw(Model)SaveFolderClick();">Save</button>
+                <button id="@Html.Raw(Model)CancelFolder" type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="@Html.Raw(Model)CancelFolder();">Cancel</button>
             </div>
         </div>
     </div>
