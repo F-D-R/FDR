@@ -5,13 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using SixLabors.ImageSharp.Metadata.Profiles.Exif;
-using SixLabors.ImageSharp;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Globalization;
 using System.Reflection;
+using MetadataExtractor;
 
 namespace FDR.Tools.Library
 {
@@ -109,7 +108,7 @@ namespace FDR.Tools.Library
                 Common.Msg("Folder name is missing!", ConsoleColor.Red);
                 return false;
             }
-            if (!Directory.Exists(folder))
+            if (!System.IO.Directory.Exists(folder))
             {
                 Common.Msg("Folder doesn't exist!", ConsoleColor.Red);
                 return false;
@@ -178,7 +177,7 @@ namespace FDR.Tools.Library
         public static async Task CopyFileAsync(string sourceFilePath, string destFilePath)
         {
             var destFolder = Path.GetDirectoryName(destFilePath);
-            if (destFolder != null && !Directory.Exists(destFolder)) Directory.CreateDirectory(destFolder);
+            if (destFolder != null && !System.IO.Directory.Exists(destFolder)) System.IO.Directory.CreateDirectory(destFolder);
 
             using (Stream sourceStream = File.Open(sourceFilePath, FileMode.Open, FileAccess.Read))
             using (Stream destStream = File.Create(destFilePath))
@@ -190,81 +189,134 @@ namespace FDR.Tools.Library
             File.SetLastAccessTimeUtc(destFilePath, File.GetLastAccessTimeUtc(sourceFilePath));
         }
 
-        public static DateTime? GetExifDate(ExifProfile? exif)
+        public static DateTime? GetExifDate(IEnumerable<MetadataExtractor.Directory>? exif)
         {
             if (exif == null) return null;
 
+            const string EIFD0 = "Exif IFD0";
+            const int EIFD0_DateTime = 306;
+
+            const string ESIFD = "Exif SubIFD";
+            const int ESIFD_DateTimeOriginal = 36867;
+            const int ESIFD_DateTimeDigitized = 36868;
+
+            const string QTMH = "QuickTime Movie Header";
+            const int QTMH_Created = 3;
+            const int QTMH_Modified = 4;
+
+            const string QTTH = "QuickTime Track Header";
+            const int QTTH_Created = 3;
+            const int QTTH_Modified = 4;
+
+            const string IPTC = "IPTC";
+            const int IPTC_DateCreated = 567;
+            const int IPTC_TimeCreated = 572;
+            const int IPTC_DigitalDateCreated = 574;
+            const int IPTC_DigitalTimeCreated = 575;
+
+            const string AVI = "AVI";
+            const int AVI_DateTimeOriginal = 320;
+
             try
             {
-                if (exif.TryGetValue(ExifTag.DateTimeOriginal, out IExifValue<string>? dateExif)
-                    || exif.TryGetValue(ExifTag.DateTime, out dateExif)
-                    || exif.TryGetValue(ExifTag.DateTimeDigitized, out dateExif))
-                {
-                    string? dateString = dateExif?.Value;
-                    if (string.IsNullOrWhiteSpace(dateString)) return null;
+                foreach (var directory in exif)
+                    if (directory.Name == EIFD0 && directory.ContainsTag(EIFD0_DateTime))
+                        return DateTime.ParseExact(directory.GetString(EIFD0_DateTime)!, "yyyy:MM:dd HH:mm:ss", null);
+            }
+            catch { }
 
-                    return DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", null);
-                }
-                return null;
-            }
-            catch (Exception)
+            try
             {
-                return null;
+                foreach (var directory in exif)
+                    if (directory.Name == ESIFD && directory.ContainsTag(ESIFD_DateTimeOriginal))
+                        return DateTime.ParseExact(directory.GetString(ESIFD_DateTimeOriginal)!, "yyyy:MM:dd HH:mm:ss", null);
             }
+            catch { }
+
+            try
+            {
+                foreach (var directory in exif)
+                    if (directory.Name == ESIFD && directory.ContainsTag(ESIFD_DateTimeDigitized))
+                        return DateTime.ParseExact(directory.GetString(ESIFD_DateTimeDigitized)!, "yyyy:MM:dd HH:mm:ss", null);
+            }
+            catch { }
+
+            try
+            {
+                foreach (var directory in exif)
+                    if (directory.Name == QTMH && directory.ContainsTag(QTMH_Created))
+                        return directory.GetDateTime(QTMH_Created).ToLocalTime();
+            }
+            catch { }
+
+            try
+            {
+                foreach (var directory in exif)
+                    if (directory.Name == QTMH && directory.ContainsTag(QTMH_Modified))
+                        return directory.GetDateTime(QTMH_Modified).ToLocalTime();
+            }
+            catch { }
+
+            try
+            {
+                foreach (var directory in exif)
+                    if (directory.Name == QTTH && directory.ContainsTag(QTTH_Created))
+                        return directory.GetDateTime(QTTH_Created).ToLocalTime();
+            }
+            catch { }
+
+            try
+            {
+                foreach (var directory in exif)
+                    if (directory.Name == QTTH && directory.ContainsTag(QTTH_Modified))
+                        return directory.GetDateTime(QTTH_Modified).ToLocalTime();
+            }
+            catch { }
+
+            try
+            {
+                foreach (var directory in exif)
+                    if (directory.Name == IPTC && directory.ContainsTag(IPTC_DateCreated) && directory.ContainsTag(IPTC_TimeCreated))
+                        return DateTime.ParseExact(directory.GetString(IPTC_DateCreated) + " " + directory.GetString(IPTC_TimeCreated), "yyyyMMdd HHmmss", null);
+            }
+            catch { }
+
+            try
+            {
+                foreach (var directory in exif)
+                    if (directory.Name == IPTC && directory.ContainsTag(IPTC_DigitalDateCreated) && directory.ContainsTag(IPTC_DigitalTimeCreated))
+                        return DateTime.ParseExact(directory.GetString(IPTC_DigitalDateCreated) + " " + directory.GetString(IPTC_DigitalTimeCreated), "yyyyMMdd HHmmss", null);
+            }
+            catch { }
+
+            try
+            {
+                foreach (var directory in exif)
+                    if (directory.Name == AVI && directory.ContainsTag(AVI_DateTimeOriginal))
+                        return DateTime.ParseExact(directory.GetString(AVI_DateTimeOriginal)!, "ddd MMM dd HH:mm:ss yyyy", System.Globalization.CultureInfo.InvariantCulture);
+            }
+            catch { }
+
+            return null;
         }
 
         public static DateTime? GetExifDateOnly(this FileInfo file)
         {
-            ImageInfo imageInfo;
             try
             {
-                imageInfo = Image.Identify(file.FullName);
-                if (imageInfo == null) return null;
+                IEnumerable<MetadataExtractor.Directory> directories = ImageMetadataReader.ReadMetadata(file.FullName);
+                DateTime? date = GetExifDate(directories);
+                if (date != null) return date.Value;
             }
-            catch (Exception)
-            {
-                return null;
-            }
-
-            DateTime? date = GetExifDate(imageInfo.Metadata?.ExifProfile);
-            if (date !=null) return date.Value;
-
-            if (imageInfo.FrameMetadataCollection != null)
-            {
-                foreach (var fmeta in imageInfo.FrameMetadataCollection)
-                {
-                    date = GetExifDate(fmeta?.ExifProfile);
-                    if (date != null) return date.Value;
-                }
-            }
+            catch { }
 
             return null;
         }
 
         public static DateTime GetExifDate(this FileInfo file, DateTime defaultDate)
         {
-            ImageInfo imageInfo;
-            try
-            {
-                imageInfo = Image.Identify(file.FullName);
-                if (imageInfo == null) return defaultDate;
-            }
-            catch (Exception)
-            {
-                return defaultDate;
-            }
-
-            DateTime? date = GetExifDate(imageInfo.Metadata?.ExifProfile);
+            DateTime? date = GetExifDateOnly(file);
             if (date !=null) return date.Value;
-
-            if (imageInfo.FrameMetadataCollection != null)
-            {
-                foreach (var fmeta in imageInfo.FrameMetadataCollection)
-                {
-                    date = GetExifDate(fmeta?.ExifProfile);
-                    if (date != null) return date.Value;
-                }
-            }
 
             return defaultDate;
         }

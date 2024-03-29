@@ -65,12 +65,14 @@ namespace FDR.Tools.Library.Test
 
     public class TestFiles : List<TestFile>
     {
-        public void Add(string folder, string name, bool keep = true)
+        public FileInfo Add(string folder, string name, bool keep = true)
         {
-            base.Add(new TestFile() { Keep = keep, Create = true, SourceFolder = folder, DestFolder = folder, SourceName = name, DestName = name });
+            var tf = new TestFile() { Keep = keep, Create = true, SourceFolder = folder, DestFolder = folder, SourceName = name, DestName = name };
+            base.Add(tf);
+            return new FileInfo(tf.GetSourcePath());
         }
 
-        public void Add(string sourceFolder, string sourceName, string destFolder, string destName, DateTime? created = null, DateTime? modified = null, DateTime? exif = null, int? width = 200, int? height = 200)
+        public FileInfo Add(string sourceFolder, string sourceName, string destFolder, string destName, DateTime? created = null, DateTime? modified = null, DateTime? exif = null, int? width = 200, int? height = 200)
         {
             var tf = new TestFile();
             tf.Keep = true;
@@ -85,6 +87,7 @@ namespace FDR.Tools.Library.Test
             if (width != null) tf.Width = width.Value;
             if (height != null) tf.Height = height.Value;
             base.Add(tf);
+            return new FileInfo(tf.GetSourcePath());
         }
 
         public void CreateFiles()
