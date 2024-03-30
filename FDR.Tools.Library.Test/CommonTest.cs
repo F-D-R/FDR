@@ -45,7 +45,7 @@ namespace FDR.Tools.Library.Test
             var exif = new DateTime(2001, 1, 1, 1, 1, 1);
 
             // TXT, because a JPG is always created with EXIF date
-            var txt = files.Add(tempFolderPath, txtFile, tempFolderPath, txtFile, null, null, null);
+            var txt = files.Add(tempFolderPath, txtFile, tempFolderPath, txtFile);
             var jpg = files.Add(tempFolderPath, jpgFile, tempFolderPath, jpgFile, null, null, exif);
             files.CreateFiles();
 
@@ -62,7 +62,7 @@ namespace FDR.Tools.Library.Test
             var defaultDate = new DateTime(2002, 2, 2, 2, 2, 2);
 
             // TXT, because a JPG is always created with EXIF date
-            var txt = files.Add(tempFolderPath, txtFile, tempFolderPath, txtFile, null, null, null);
+            var txt = files.Add(tempFolderPath, txtFile, tempFolderPath, txtFile);
             var jpg = files.Add(tempFolderPath, jpgFile, tempFolderPath, jpgFile, null, null, exif);
             files.CreateFiles();
 

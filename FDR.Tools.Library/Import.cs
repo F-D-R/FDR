@@ -143,15 +143,17 @@ namespace FDR.Tools.Library
             if (string.IsNullOrWhiteSpace(config.DestRoot)) throw new ArgumentNullException(nameof(config.DestRoot));
             if (!Directory.Exists(config.DestRoot)) throw new DirectoryNotFoundException($"Destination root folder doesn't exist! ({config.DestRoot})");
 
+            var folderNames = new List<string>();
+
             var files = Common.GetFiles(source, config.FileFilter, true);
             var fileCount = files.Count;
 
-            var folderNames = new List<string>();
-            //TODO: exif date...
-            var dates = files.Select(f => f.CreationTime.Date).Distinct().OrderBy(d => d).ToList();
+            var fileDates = files.Select((f, i) => new { file = f, date = f.GetExifDate() });
+
+            var dates = fileDates.Select(fd => fd.date.Date).Distinct().OrderBy(d => d).ToList();
             foreach (var date in dates)
             {
-                var count = files.Where(f => f.CreationTime.Date == date).Count();
+                var count = fileDates.Where(fd => fd.date.Date == date).Count();
 
                 var destFolder = GetAbsoluteDestFolder(config.DestRoot, config.DestStructure, date, config.DateFormat);
                 var rootFolder = Path.GetDirectoryName(destFolder);
@@ -164,7 +166,7 @@ namespace FDR.Tools.Library
                     {
                         var destFiles = Directory.GetFiles(childFolders[0], "*");
                         Common.Msg($"{date:yyyy-MM-dd}: Destination exists ({destFiles.Length} files in {childFolders[0]}), ignoring {count} files", ConsoleColor.Yellow);
-                        files = files.Where(f => f.CreationTime.Date != date).OrderBy(f => f.CreationTimeUtc).ToList();
+                        fileDates = fileDates.Where(fd => fd.date.Date != date).OrderBy(fd => fd.date).ToList();
                         continue;
                     }
                 }
@@ -175,19 +177,19 @@ namespace FDR.Tools.Library
             Common.Msg("");
 
             // Copy
-            dates = files.Select(f => f.CreationTime.Date).Distinct().OrderBy(d => d).ToList();
+            dates = fileDates.Select(fd => fd.date.Date).Distinct().OrderBy(d => d).ToList();
             var i = 0;
             Common.Progress(0);
             foreach (var date in dates)
             {
-                var count = files.Where(f => f.CreationTime.Date == date).Count();
+                var count = fileDates.Where(fd => fd.date.Date == date).Count();
                 var folder = GetAbsoluteDestFolder(config.DestRoot, config.DestStructure, date, config.DateFormat);
 
                 Common.Msg($"Copying {count} files to {folder}");
                 Trace.Indent();
-                foreach (var file in files.Where(file => file.CreationTime.Date == date).OrderBy(file => file.CreationTime))
+                foreach (var fileDate in fileDates.Where(fd => fd.date.Date == date).OrderBy(fd => fd.date))
                 {
-                    CopyFile(config.DestRoot, file, config.DestStructure, config.DateFormat, 100 * i / fileCount);
+                    CopyFile(config.DestRoot, fileDate.file, config.DestStructure, config.DateFormat, 100 * i / fileCount);
                     i++;
                 }
                 Trace.Unindent();
@@ -202,13 +204,7 @@ namespace FDR.Tools.Library
 
         internal static ImportConfig? FindConfig(DirectoryInfo sourceFolder, Dictionary<string, ImportConfig> configs)
         {
-            var matchingConfigs = new List<ImportConfig>();
-
-            configs
-                .Where(c => c.Value.Rules.Evaluate(sourceFolder)).ToList()
-                .ForEach(c => matchingConfigs.Add(c.Value));
-
-            return matchingConfigs.FirstOrDefault();
+            return configs.Where(c => c.Value.Rules.Evaluate(sourceFolder)).FirstOrDefault().Value;
         }
 
         private static List<DirectoryInfo> GetSourceFolders(DirectoryInfo? givenFolder)
@@ -245,14 +241,14 @@ namespace FDR.Tools.Library
 
         private static SourceInfo? SelectSourceInfo(List<SourceInfo> sourceInfos, bool auto)
         {
-            if (auto && sourceInfos.Count == 1)
-                return sourceInfos[0];
-
             if (sourceInfos.Count == 0)
             {
                 Common.Msg("No source has been found!", ConsoleColor.Red);
                 return null;
             }
+
+            if (auto && sourceInfos.Count == 1)
+                return sourceInfos[0];
 
             Common.Msg("Select source:");
             int i = 1;

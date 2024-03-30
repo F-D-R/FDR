@@ -72,7 +72,12 @@ namespace FDR.Tools.Library.Test
             return new FileInfo(tf.GetSourcePath());
         }
 
-        public FileInfo Add(string sourceFolder, string sourceName, string destFolder, string destName, DateTime? created = null, DateTime? modified = null, DateTime? exif = null, int? width = 200, int? height = 200)
+        public FileInfo Add(string sourceFolder, string sourceName, string destFolder, string destName, DateTime? date = null, int? width = 200, int? height = 200)
+        {
+            return this.Add(sourceFolder, sourceName, destFolder, destName, date, date, date, width, height);
+        }
+
+        public FileInfo Add(string sourceFolder, string sourceName, string destFolder, string destName, DateTime? created, DateTime? modified, DateTime? exif, int? width = 200, int? height = 200)
         {
             var tf = new TestFile();
             tf.Keep = true;

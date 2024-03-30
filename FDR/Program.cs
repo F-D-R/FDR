@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using FDR.Tools.Library;
-using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Extensions.Configuration;
 
