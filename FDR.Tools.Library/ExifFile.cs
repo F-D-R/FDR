@@ -111,7 +111,6 @@ namespace FDR.Tools.Library
 
         public void MoveToNewLocation()
         {
-            //if (string.IsNullOrWhiteSpace(NewLocation)) throw new ArgumentNullException(nameof(NewLocation));
             if (NewLocationSpecified)
             {
                 FileInfo.MoveTo(NewLocation!);

@@ -462,7 +462,7 @@ namespace FDR.Tools.Library
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
             if (file == null) throw new ArgumentNullException(nameof(file));
-            if (!string.IsNullOrWhiteSpace(file.NewLocation)) return;   //file already has new location
+            if (file.NewLocationSpecified) return;      //file already has new location
             if (!File.Exists(file.FullName)) return;    //file.Exists wouldn't work here!
 
             string origName = file.Name;
@@ -490,8 +490,11 @@ namespace FDR.Tools.Library
                 }
                 else
                 {
-                    //SetNewLocation(file, newDir, newName);
+#if RELEASE
                     Trace.WriteLine($"New location for file {file.Name} is {newName}");
+#else
+                    Trace.WriteLine($"New location for file {file.FullName} is {newFullName}");
+#endif
                     file.NewLocation = newFullName;
                 }
 
@@ -514,20 +517,11 @@ namespace FDR.Tools.Library
 
                 if (string.Compare(file.FullName, destPath, false) != 0)
                 {
-                    //var destFolder = Path.GetDirectoryName(destPath);
-                    ////TODO: only check for the first time:
-                    //if (destFolder != null && !Directory.Exists(destFolder))
-                    //{
-                    //    Trace.WriteLine($"Creating destination folder {destFolder}");
-                    //    Directory.CreateDirectory(destFolder);
-                    //}
-
 #if RELEASE
                     Trace.WriteLine($"New location for file {file.Name} is {destFile}");
 #else
                     Trace.WriteLine($"New location for file {file.FullName} is {destPath}");
 #endif
-                    //file.MoveTo(destPath);
                     file.NewLocation = destPath;
                 }
                 else
