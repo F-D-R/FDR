@@ -143,7 +143,7 @@ namespace FDR.Tools.Library
                 try
                 {
                     //TODO: calculate first + multithread move
-                    Rename.RenameFile(file.FileInfo, config.GetNewRenameConfig(), ref counter, 100 * counter / fileCount);
+                    Rename.RenameFile(file, config.GetNewRenameConfig(), ref counter, 100 * counter / fileCount);
                 }
                 catch (IOException)
                 {

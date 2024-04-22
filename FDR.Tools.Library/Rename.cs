@@ -282,7 +282,7 @@ namespace FDR.Tools.Library
             return Path.Combine(path, newName + extension);
         }
 
-        public static void RenameFile(FileInfo file, RenameConfig config, ref int counter, int progressPercent)
+        public static void RenameFile(ExifFile file, RenameConfig config, ref int counter, int progressPercent)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
             if (file == null) throw new ArgumentNullException(nameof(file));
@@ -303,7 +303,7 @@ namespace FDR.Tools.Library
                 if (config.AdditionalFiles)
                     files = Common.GetFiles(file.Directory!, Path.GetFileNameWithoutExtension(file.FullName) + ".*", false).ToList();
                 else
-                    files = new List<ExifFile>() { new ExifFile(file) };
+                    files = new List<ExifFile>() { file };
 
                 //Get the oldest file and rename all according to that
                 if (files != null && files.Count > 0)

@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using NUnit.Framework;
 using FluentAssertions;
+using System.Linq;
 
 namespace FDR.Tools.Library.Test
 {
@@ -100,22 +101,28 @@ namespace FDR.Tools.Library.Test
             var first = new DateTime(2001, 1, 1, 1, 1, 1);
             var second = new DateTime(2002, 2, 2, 2, 2, 2);
             var third = new DateTime(2003, 3, 3, 3, 3, 3);
-            var fileInfos = new List<FileInfo>();
 
-            fileInfos.Add(files.Add(tempFolderPath, file3, tempFolderPath, file3, third, third, null));
-            fileInfos.Add(files.Add(tempFolderPath, file2, tempFolderPath, file2, second, second, null));
-            fileInfos.Add(files.Add(tempFolderPath, file1, tempFolderPath, file1, first, first, null));
-            files.CreateFiles();
+            var files = new List<FileInfo>();
+            files.Add(base.files.Add(tempFolderPath, file3, tempFolderPath, file3, third, third, null));
+            files.Add(base.files.Add(tempFolderPath, file2, tempFolderPath, file2, second, second, null));
+            files.Add(base.files.Add(tempFolderPath, file1, tempFolderPath, file1, first, first, null));
+            base.files.CreateFiles();
+            files.ForEach(f => f.Refresh());
 
-            fileInfos[0].Name.Should().Be(file3);
-            fileInfos[1].Name.Should().Be(file2);
-            fileInfos[2].Name.Should().Be(file1);
+            var exifFiles = new List<ExifFile>();
+            exifFiles.Add(new ExifFile(files[0]));
+            exifFiles.Add(new ExifFile(files[1]));
+            exifFiles.Add(new ExifFile(files[2]));
 
-            fileInfos.Sort(Common.FileComparer);
+            exifFiles[0].Name.Should().Be(file3);
+            exifFiles[1].Name.Should().Be(file2);
+            exifFiles[2].Name.Should().Be(file1);
 
-            fileInfos[0].Name.Should().Be(file1);
-            fileInfos[1].Name.Should().Be(file2);
-            fileInfos[2].Name.Should().Be(file3);
+            exifFiles = exifFiles.OrderBy(f => f.ExifTime).ToList();
+
+            exifFiles[0].Name.Should().Be(file1);
+            exifFiles[1].Name.Should().Be(file2);
+            exifFiles[2].Name.Should().Be(file3);
         }
 
         [Test]
@@ -127,22 +134,22 @@ namespace FDR.Tools.Library.Test
             var first = new DateTime(2001, 1, 1, 1, 1, 1);
             var second = new DateTime(2002, 2, 2, 2, 2, 2);
             var third = new DateTime(2003, 3, 3, 3, 3, 3);
-            var fileInfos = new List<FileInfo>();
 
-            fileInfos.Add(files.Add(tempFolderPath, file3, tempFolderPath, file3, null, null, third));
-            fileInfos.Add(files.Add(tempFolderPath, file2, tempFolderPath, file2, null, null, second));
-            fileInfos.Add(files.Add(tempFolderPath, file1, tempFolderPath, file1, null, null, first));
-            files.CreateFiles();
+            var files = new List<ExifFile>();
+            files.Add(new ExifFile(base.files.Add(tempFolderPath, file3, tempFolderPath, file3, null, null, third)));
+            files.Add(new ExifFile(base.files.Add(tempFolderPath, file2, tempFolderPath, file2, null, null, second)));
+            files.Add(new ExifFile(base.files.Add(tempFolderPath, file1, tempFolderPath, file1, null, null, first)));
+            base.files.CreateFiles();
 
-            fileInfos[0].Name.Should().Be(file3);
-            fileInfos[1].Name.Should().Be(file2);
-            fileInfos[2].Name.Should().Be(file1);
+            files[0].Name.Should().Be(file3);
+            files[1].Name.Should().Be(file2);
+            files[2].Name.Should().Be(file1);
 
-            fileInfos.Sort(Common.FileComparer);
+            files = files.OrderBy(f => f.ExifTime).ToList();
 
-            fileInfos[0].Name.Should().Be(file1);
-            fileInfos[1].Name.Should().Be(file2);
-            fileInfos[2].Name.Should().Be(file3);
+            files[0].Name.Should().Be(file1);
+            files[1].Name.Should().Be(file2);
+            files[2].Name.Should().Be(file3);
         }
 
         [TestCase("b.txt", "20010101", "20010101", "20010101", "a.txt", "20020202", "20020202", "20020202")]
@@ -203,19 +210,23 @@ namespace FDR.Tools.Library.Test
             DateTime? modifiedDate2 = modified2 != null ? DateTime.ParseExact(modified2, format, null) : null;
             DateTime? exifDate2 = exif2 != null ? DateTime.ParseExact(exif2, format, null) : null;
 
-            var fileInfos = new List<FileInfo>();
+            var files = new List<FileInfo>();
+            files.Add(base.files.Add(tempFolderPath, file2, tempFolderPath, file2, createdDate2, modifiedDate2, exifDate2));
+            files.Add(base.files.Add(tempFolderPath, file1, tempFolderPath, file1, createdDate1, modifiedDate1, exifDate1));
+            base.files.CreateFiles();
+            files.ForEach(f => f.Refresh());
 
-            fileInfos.Add(files.Add(tempFolderPath, file2, tempFolderPath, file2, createdDate2, modifiedDate2, exifDate2));
-            fileInfos.Add(files.Add(tempFolderPath, file1, tempFolderPath, file1, createdDate1, modifiedDate1, exifDate1));
-            files.CreateFiles();
+            var exifFiles = new List<ExifFile>();
+            exifFiles.Add(new ExifFile(files[0]));
+            exifFiles.Add(new ExifFile(files[1]));
 
-            fileInfos[0].Name.Should().Be(file2);
-            fileInfos[1].Name.Should().Be(file1);
+            exifFiles[0].Name.Should().Be(file2);
+            exifFiles[1].Name.Should().Be(file1);
 
-            fileInfos.Sort(Common.FileComparer);
+            exifFiles = exifFiles.OrderBy(f => f.ExifTime).ToList();
 
-            fileInfos[0].Name.Should().Be(file1);
-            fileInfos[1].Name.Should().Be(file2);
+            exifFiles[0].Name.Should().Be(file1);
+            exifFiles[1].Name.Should().Be(file2);
         }
     }
 }

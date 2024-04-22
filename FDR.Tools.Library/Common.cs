@@ -35,18 +35,6 @@ namespace FDR.Tools.Library
         public const string param_configfile = "-configfile";
         public const string param_help = "-help";
 
-        private static FileDateComparer? comparer;
-
-        public static FileDateComparer FileComparer
-        {
-            get
-            {
-                comparer ??= new FileDateComparer();
-                return comparer;
-            }
-            set { comparer = value; }
-        }
-
         public static void Msg(string msg, ConsoleColor color = ConsoleColor.White, bool newline = true)
         {
             Console.BackgroundColor = ConsoleColor.Black;
@@ -318,28 +306,6 @@ namespace FDR.Tools.Library
         public static DateTime GetExifDate(this FileInfo file)
         {
             return GetExifDate(file, file.CreationTime < file.LastWriteTime ? file.CreationTime : file.LastWriteTime);
-        }
-
-        public class FileDateComparer : Comparer<FileInfo>
-        {
-            private readonly ConcurrentDictionary<string, DateTime> dates = new();
-
-            public override int Compare(FileInfo? x, FileInfo? y)
-            {
-                if (x == null || y == null) return 0;
-
-                if (!dates.TryGetValue(x.FullName, out DateTime dateX))
-                {
-                    dateX = x.GetExifDate();
-                    dates[x.FullName] = dateX;
-                }
-                if (!dates.TryGetValue(y.FullName, out DateTime dateY))
-                {
-                    dateY = y.GetExifDate();
-                    dates[y.FullName] = dateY;
-                }
-                return DateTime.Compare(dateX, dateY);
-            }
         }
 
 
