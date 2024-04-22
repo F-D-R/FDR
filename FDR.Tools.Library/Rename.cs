@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace FDR.Tools.Library
 {
@@ -208,6 +209,31 @@ namespace FDR.Tools.Library
             return result;
         }
 
+        public static string EvaluateFileNamePattern(string pattern, ExifFile? file, int counter = 1)
+        {
+            string result = pattern;
+
+            var regex = new Regex(REGEX, RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            foreach (Match match in regex.Matches(pattern).Cast<Match>())
+            {
+                string arg = match.Groups.Count > 2 ? match.Groups[2].Value : string.Empty;
+
+                switch (match.Groups[1].Value.ToLower())
+                {
+                    case EDATE:
+                    case SDATE:
+                        if (file != null)
+                        {
+                            var date = file.ExifTime;
+                            result = result.Replace(match.Value, date.ToString(arg), StringComparison.InvariantCultureIgnoreCase);
+                        }
+                        break;
+                }
+            }
+
+            return EvaluateFileNamePattern(result, file?.FileInfo, counter);
+        }
+
         public static void RenameFolder(DirectoryInfo folder, string? pattern)
         {
             if (string.IsNullOrWhiteSpace(pattern)) throw new ArgumentNullException(nameof(pattern));
@@ -227,6 +253,31 @@ namespace FDR.Tools.Library
         }
 
         public static string CalculateFileName(FileInfo file, RenameConfig config, int counter = 1)
+        {
+            //if (config == null) throw new ArgumentNullException(nameof(config));
+            if (file == null) throw new ArgumentNullException(nameof(file));
+            //if (!file.Exists) throw new FileNotFoundException("File doesn't exist!", file.FullName);
+
+            //var path = Path.GetDirectoryName(file.FullName)??"";
+
+            //var newName = EvaluateFileNamePattern(config.FilenamePattern??"{name}", file, counter);
+            //if (config.FilenameCase == CharacterCasing.lower)
+            //    newName = newName.ToLower();
+            //else if (config.FilenameCase == CharacterCasing.upper)
+            //    newName = newName.ToUpper();
+
+            //var extension = Path.GetExtension(file.Name);
+            //if (config.ExtensionCase == CharacterCasing.lower)
+            //    extension = extension.ToLower();
+            //else if (config.ExtensionCase == CharacterCasing.upper)
+            //    extension = extension.ToUpper();
+
+            //return Path.Combine(path, newName + extension);
+
+            return CalculateFileName(new ExifFile(file), config, counter);
+        }
+
+        public static string CalculateFileName(ExifFile file, RenameConfig config, int counter = 1)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
             if (file == null) throw new ArgumentNullException(nameof(file));
@@ -325,6 +376,88 @@ namespace FDR.Tools.Library
             }
         }
 
+        public static void RenameFile(ExifFile file, RenameConfig config, ref int counter, int progressPercent, List<ExifFile>? fileCache = null)
+        {
+            if (config == null) throw new ArgumentNullException(nameof(config));
+            if (file == null) throw new ArgumentNullException(nameof(file));
+            if (!File.Exists(file.FullName)) return;    //file.Exists wouldn't work here!
+
+            var origName = file.Name;
+            var newFullName = CalculateFileName(file, config, counter);
+            var newName = Path.GetFileName(newFullName);
+            string destDir = Path.GetDirectoryName(newFullName)??"";
+
+            if (string.Compare(file.FullName, newFullName, false) == 0)
+            {
+                Trace.WriteLine($"{file.FullName} matches the new name...");
+            }
+            else
+            {
+                List<ExifFile>? files = null;
+                if (config.AdditionalFiles)
+                {
+                    if (fileCache == null)
+                    {
+                        files = GetSameNamedFiles(file.FileInfo)?.Select(fi => new ExifFile(fi)).ToList();
+                    }
+                    else
+                    {
+                        var fileStart = Path.Combine(Path.GetDirectoryName(file.OriginalFullName)!, Path.GetFileNameWithoutExtension(file.OriginalName) + ".");
+                        Trace.WriteLine($"Look for additional files starting with: {fileStart}");
+                        files = fileCache.Where(f => f.FullName.StartsWith(fileStart)).ToList();
+                    }
+                }
+                else
+                    files = new List<ExifFile>() { file };
+
+                //Get the oldest file and rename all according to that
+                if (files != null && files.Count > 0)
+                {
+                    var oldestFile = files.OrderBy(f => f.ExifTime).First();
+                    newFullName = CalculateFileName(oldestFile, config, counter);
+                    newName = Path.GetFileNameWithoutExtension(newFullName);
+
+                    files.ForEach(f => Rename(f, destDir, newName));
+
+                    counter++;
+                }
+            }
+
+            Common.Progress(progressPercent);
+            return;
+
+            void Rename(ExifFile file, string destDir, string newName)
+            {
+                var ext = file.Extension;
+                if (config.ExtensionCase == CharacterCasing.lower)
+                    ext = ext.ToLower();
+                if (config.ExtensionCase == CharacterCasing.upper)
+                    ext = ext.ToUpper();
+
+                var destFile = newName + ext;
+                var destPath = Path.Combine(destDir, destFile);
+
+                if (string.Compare(file.FullName, destPath, false) != 0)
+                {
+                    var destFolder = Path.GetDirectoryName(destPath);
+                    if (destFolder != null && !Directory.Exists(destFolder))
+                    {
+                        Trace.WriteLine($"Creating destination folder {destFolder}");
+                        Directory.CreateDirectory(destFolder);
+                    }
+
+#if RELEASE
+                    Trace.WriteLine($"Moving file {file.Name} to {destFile}");
+#else
+                    Trace.WriteLine($"Moving file {file.FullName} to {destPath}");
+#endif
+                    file.MoveTo(destPath);
+                }
+                else
+                    Trace.WriteLine($"{file.Name} matches the new name...");
+            }
+        }
+
         public static void RenameFilesInFolder(DirectoryInfo folder, RenameConfig config)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
@@ -336,21 +469,46 @@ namespace FDR.Tools.Library
             if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
 
             Common.Msg($"Renaming {filter} files in {folder.FullName}");
-            Trace.Indent();
 
-            var files = Common.GetFiles(folder, filter, config.Recursive).OrderBy(f => f, Common.FileComparer).ThenBy(f => f.Name).ToList();
+            var allFiles = Common.GetExifFiles(folder, "*.*", config.Recursive);
+
+            var regex = new Regex(Common.WildcardToRegex(filter), RegexOptions.IgnoreCase);
+            Trace.WriteLine($"Regex: {regex}");
+            var files = allFiles.Where(f => regex.IsMatch(f.Name)).ToList();
             int fileCount = files.Count;
+
+            //Parallel exif loading
+            Common.Msg($"Loading EXIF date of {fileCount} files...");
+            var i = 0;
+            DateTime dummy;
+            Common.Progress(0);
+            Trace.Indent();
+            ParallelOptions parallelOptions = new() { MaxDegreeOfParallelism = 8 };
+            var task = Parallel.ForEachAsync(files, parallelOptions, async (file, token) =>
+            {
+                i++;
+                dummy = file.ExifTime;
+                Common.Progress(100 * i / fileCount);
+            });
+            task.Wait();
+            Trace.Unindent();
+
+            Common.Msg($"Ordering {fileCount} files...");
+            //TODO: ordering by the rename pattern minus counter...
+            files = files.OrderBy(f => f.ExifTime).ThenBy(f => f.Name).ToList();
+            Common.Msg($"Renaming {fileCount} files...");
 
             var originalPattern = config.FilenamePattern;
             config.FilenamePattern = originalPattern?.Replace($"{{{COUNTER}:auto}}", $"{{{COUNTER}:" + fileCount.ToString().Length + "}");
 
+            Trace.Indent();
             int counter = 1;
             Common.Progress(0);
             foreach (var file in files)
             {
                 try
                 {
-                    RenameFile(file, config, ref counter, 100 * counter / fileCount);
+                    RenameFile(file, config, ref counter, 100 * counter / fileCount, allFiles);
                 }
                 catch (Exception)
                 {

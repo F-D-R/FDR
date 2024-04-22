@@ -12,6 +12,7 @@ namespace FDR.Tools.Library.Test
         private DirectoryInfo folder;
         private string filePath;
         private FileInfo file;
+        private ExifFile exifFile;
 
         public override void SetUp()
         {
@@ -26,6 +27,7 @@ namespace FDR.Tools.Library.Test
             File.SetCreationTime(filePath, new DateTime(2007, 8, 9));
             File.SetLastWriteTime(filePath, new DateTime(2010, 11, 12));
             file = new FileInfo(filePath);
+            exifFile = new ExifFile(file);
 
             Directory.SetCreationTime(folderPath, new DateTime(2001, 2, 3));
             Directory.SetLastWriteTime(folderPath, new DateTime(2004, 5, 6));
@@ -88,13 +90,36 @@ namespace FDR.Tools.Library.Test
                 .Should().Be($"pre_2010_11_12_post");
 
             var date = DateTime.Now;
-            Rename.EvaluateFileNamePattern("pre_{now:yyyy}_{now:MM}_{now:dd}_post", null, 1)
+            Rename.EvaluateFileNamePattern("pre_{now:yyyy}_{now:MM}_{now:dd}_post", (FileInfo)null, 1)
                 .Should().Be($"pre_{date:yyyy}_{date:MM}_{date:dd}_post");
 
             Rename.EvaluateFileNamePattern("pre_{pfolder:0,2}_{pfolder:2,2}_post", file, 1)
                 .Should().Be($"pre_te_st_post");
 
-            Rename.EvaluateFileNamePattern("pre_{counter}_{counter:3}_post", null, 1)
+            Rename.EvaluateFileNamePattern("pre_{counter}_{counter:3}_post", (FileInfo)null, 1)
+                .Should().Be($"pre_1_001_post");
+        }
+
+        [Test]
+        public void EvaluateExifFileNamePattern()
+        {
+            Rename.EvaluateFileNamePattern("pre_{name:0,2}_{name:2,2}_post", exifFile, 1)
+                .Should().Be($"pre_ab_cd_post");
+
+            Rename.EvaluateFileNamePattern("pre_{cdate:yyyy}_{cdate:MM}_{cdate:dd}_post", exifFile, 1)
+                .Should().Be($"pre_2007_08_09_post");
+
+            Rename.EvaluateFileNamePattern("pre_{mdate:yyyy}_{mdate:MM}_{mdate:dd}_post", exifFile, 1)
+                .Should().Be($"pre_2010_11_12_post");
+
+            var date = DateTime.Now;
+            Rename.EvaluateFileNamePattern("pre_{now:yyyy}_{now:MM}_{now:dd}_post", (ExifFile)null, 1)
+                .Should().Be($"pre_{date:yyyy}_{date:MM}_{date:dd}_post");
+
+            Rename.EvaluateFileNamePattern("pre_{pfolder:0,2}_{pfolder:2,2}_post", exifFile, 1)
+                .Should().Be($"pre_te_st_post");
+
+            Rename.EvaluateFileNamePattern("pre_{counter}_{counter:3}_post", (ExifFile)null, 1)
                 .Should().Be($"pre_1_001_post");
         }
     }

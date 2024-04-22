@@ -116,6 +116,12 @@ namespace FDR.Tools.Library
             return true;
         }
 
+        public static string WildcardToRegex(string value)
+        {
+            //return "^" + Regex.Escape(value).Replace(".", @"\.").Replace("?", ".").Replace("*", ".*") + "$";
+            return "^" + value.Replace(".", @"\.").Replace("?", ".").Replace("*", ".*") + "$";
+        }
+
         public static List<FileInfo> GetFiles(DirectoryInfo folder, ImportConfig config)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
@@ -142,6 +148,20 @@ namespace FDR.Tools.Library
             var options = new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = recursive };
             foreach (var tmpfilter in filter.Split('|'))
                 files.AddRange(folder.GetFiles(tmpfilter, options));
+
+            return files.OrderBy(f => f.FullName).ToList();
+        }
+
+        public static List<ExifFile> GetExifFiles(DirectoryInfo folder, string filter, bool recursive)
+        {
+            if (string.IsNullOrWhiteSpace(filter)) throw new ArgumentNullException(nameof(filter));
+            if (folder == null) throw new ArgumentNullException(nameof(folder));
+            if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
+
+            var files = new List<ExifFile>();
+            var options = new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = recursive };
+            foreach (var tmpfilter in filter.Split('|'))
+                files.AddRange(folder.GetFiles(tmpfilter, options).Select(fi => new ExifFile(fi)));
 
             return files.OrderBy(f => f.FullName).ToList();
         }
@@ -305,8 +325,7 @@ namespace FDR.Tools.Library
             try
             {
                 IEnumerable<MetadataExtractor.Directory> directories = ImageMetadataReader.ReadMetadata(file.FullName);
-                DateTime? date = GetExifDate(directories);
-                if (date != null) return date.Value;
+                return GetExifDate(directories);
             }
             catch { }
 
@@ -316,9 +335,7 @@ namespace FDR.Tools.Library
         public static DateTime GetExifDate(this FileInfo file, DateTime defaultDate)
         {
             DateTime? date = GetExifDateOnly(file);
-            if (date !=null) return date.Value;
-
-            return defaultDate;
+            return date ?? defaultDate;
         }
 
         public static DateTime GetExifDate(this FileInfo file)
