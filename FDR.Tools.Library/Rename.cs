@@ -299,20 +299,20 @@ namespace FDR.Tools.Library
             }
             else
             {
-                List<FileInfo>? files = null;
+                List<ExifFile>? files = null;
                 if (config.AdditionalFiles)
                     files = Common.GetFiles(file.Directory!, Path.GetFileNameWithoutExtension(file.FullName) + ".*", false).ToList();
                 else
-                    files = new List<FileInfo>() { file };
+                    files = new List<ExifFile>() { new ExifFile(file) };
 
                 //Get the oldest file and rename all according to that
                 if (files != null && files.Count > 0)
                 {
-                    var oldestFile = files.OrderBy(f => f.GetExifDate()).First();
+                    var oldestFile = files.OrderBy(f => f.ExifTime).First();
                     newFullName = CalculateFileName(oldestFile, config, counter);
                     newName = Path.GetFileNameWithoutExtension(newFullName);
 
-                    files.ForEach(f => Rename(f, destDir, newName));
+                    files.ForEach(f => Rename(f.FileInfo, destDir, newName));
 
                     counter++;
                 }
@@ -424,7 +424,7 @@ namespace FDR.Tools.Library
 
             Common.Msg($"Renaming {filter} files in {folder.FullName}");
 
-            var allFiles = Common.GetExifFiles(folder, "*.*", config.Recursive);
+            var allFiles = Common.GetFiles(folder, "*.*", config.Recursive);
 
             var regex = new Regex(Common.WildcardToRegex(filter), RegexOptions.IgnoreCase);
             Trace.WriteLine($"Regex: {regex}");

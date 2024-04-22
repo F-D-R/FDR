@@ -129,7 +129,7 @@ namespace FDR.Tools.Library
 
             var watch = Stopwatch.StartNew();
 
-            var files = Common.GetExifFiles(folder, DEFAULT_FILTER, true);
+            var files = Common.GetFiles(folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
             int errCount = 0;
 
@@ -171,7 +171,7 @@ namespace FDR.Tools.Library
 
             var watch = Stopwatch.StartNew();
 
-            var files = Common.GetExifFiles(folder, DEFAULT_FILTER, true);
+            var files = Common.GetFiles(folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
             int errCount = 0;
             int warnCount = 0;
@@ -241,7 +241,7 @@ namespace FDR.Tools.Library
 
             var watch = Stopwatch.StartNew();
 
-            var files = Common.GetExifFiles(folder, DEFAULT_FILTER, true);
+            var files = Common.GetFiles(folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
 
             var i = 0;

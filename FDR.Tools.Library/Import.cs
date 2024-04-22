@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace FDR.Tools.Library
 {
@@ -88,9 +89,9 @@ namespace FDR.Tools.Library
             return Path.Combine(destRoot, GetRelativeDestFolder(destStruct, date, dateFormat));
         }
 
-        internal static void CopyFile(string destRoot, FileInfo file, FolderStructure destStruct, string dateFormat, int progressPercent)
+        internal static void CopyFile(string destRoot, ExifFile file, FolderStructure destStruct, string dateFormat, int progressPercent)
         {
-            var destfolder = GetAbsoluteDestFolder(destRoot, destStruct, file.CreationTime, dateFormat);
+            var destfolder = GetAbsoluteDestFolder(destRoot, destStruct, file.ExifTime, dateFormat);
             if (!Directory.Exists(destfolder)) Directory.CreateDirectory(destfolder);
 
             var dest = Path.Combine(destfolder, file.Name);
@@ -114,8 +115,26 @@ namespace FDR.Tools.Library
             Common.Msg($"Moving {filter} files in {folder.FullName} to {config.RelativeFolder}");
             Trace.Indent();
 
-            var files = Common.GetFiles(folder, filter, config.Recursive).OrderBy(f => f.GetExifDate()).ToList();
+            var files = Common.GetFiles(folder, filter, config.Recursive);
             var fileCount = files.Count;
+
+            //Parallel exif loading
+            Common.Msg($"Loading EXIF date of {fileCount} files...");
+            var i = 0;
+            DateTime dummy;
+            Common.Progress(0);
+            Trace.Indent();
+            ParallelOptions parallelOptions = new() { MaxDegreeOfParallelism = 8 };
+            var task = Parallel.ForEachAsync(files, parallelOptions, async (file, token) =>
+            {
+                i++;
+                dummy = file.ExifTime;
+                Common.Progress(100 * i / fileCount);
+            });
+            task.Wait();
+            Trace.Unindent();
+
+            files = files.OrderBy(f => f.ExifTime).ToList();
 
             int counter = 1;
             Common.Progress(0);
@@ -123,7 +142,8 @@ namespace FDR.Tools.Library
             {
                 try
                 {
-                    Rename.RenameFile(file, config.GetNewRenameConfig(), ref counter, 100 * counter / fileCount);
+                    //TODO: calculate first + multithread move
+                    Rename.RenameFile(file.FileInfo, config.GetNewRenameConfig(), ref counter, 100 * counter / fileCount);
                 }
                 catch (IOException)
                 {
@@ -148,12 +168,26 @@ namespace FDR.Tools.Library
             var files = Common.GetFiles(source, config.FileFilter, true);
             var fileCount = files.Count;
 
-            var fileDates = files.Select((f, i) => new { file = f, date = f.GetExifDate() });
+            //Parallel exif loading
+            Common.Msg($"Loading EXIF date of {fileCount} files...");
+            var i = 0;
+            DateTime dummy;
+            Common.Progress(0);
+            Trace.Indent();
+            ParallelOptions parallelOptions = new() { MaxDegreeOfParallelism = 8 };
+            var task = Parallel.ForEachAsync(files, parallelOptions, async (file, token) =>
+            {
+                i++;
+                dummy = file.ExifTime;
+                Common.Progress(100 * i / fileCount);
+            });
+            task.Wait();
+            Trace.Unindent();
 
-            var dates = fileDates.Select(fd => fd.date.Date).Distinct().OrderBy(d => d).ToList();
+            var dates = files.Select(f => f.ExifTime.Date).Distinct().OrderBy(d => d).ToList();
             foreach (var date in dates)
             {
-                var count = fileDates.Where(fd => fd.date.Date == date).Count();
+                var count = files.Where(f => f.ExifTime.Date == date).Count();
 
                 var destFolder = GetAbsoluteDestFolder(config.DestRoot, config.DestStructure, date, config.DateFormat);
                 var rootFolder = Path.GetDirectoryName(destFolder);
@@ -166,7 +200,7 @@ namespace FDR.Tools.Library
                     {
                         var destFiles = Directory.GetFiles(childFolders[0], "*");
                         Common.Msg($"{date:yyyy-MM-dd}: Destination exists ({destFiles.Length} files in {childFolders[0]}), ignoring {count} files", ConsoleColor.Yellow);
-                        fileDates = fileDates.Where(fd => fd.date.Date != date).OrderBy(fd => fd.date).ToList();
+                        files = files.Where(f => f.ExifTime.Date != date).OrderBy(f => f.ExifTime).ToList();
                         continue;
                     }
                 }
@@ -177,19 +211,19 @@ namespace FDR.Tools.Library
             Common.Msg("");
 
             // Copy
-            dates = fileDates.Select(fd => fd.date.Date).Distinct().OrderBy(d => d).ToList();
-            var i = 0;
+            dates = files.Select(f => f.ExifTime.Date).Distinct().OrderBy(d => d).ToList();
+            i = 0;
             Common.Progress(0);
             foreach (var date in dates)
             {
-                var count = fileDates.Where(fd => fd.date.Date == date).Count();
+                var count = files.Where(f => f.ExifTime.Date == date).Count();
                 var folder = GetAbsoluteDestFolder(config.DestRoot, config.DestStructure, date, config.DateFormat);
 
                 Common.Msg($"Copying {count} files to {folder}");
                 Trace.Indent();
-                foreach (var fileDate in fileDates.Where(fd => fd.date.Date == date).OrderBy(fd => fd.date))
+                foreach (var file in files.Where(f => f.ExifTime.Date == date).OrderBy(f => f.ExifTime))
                 {
-                    CopyFile(config.DestRoot, fileDate.file, config.DestStructure, config.DateFormat, 100 * i / fileCount);
+                    CopyFile(config.DestRoot, file, config.DestStructure, config.DateFormat, 100 * i / fileCount);
                     i++;
                 }
                 Trace.Unindent();

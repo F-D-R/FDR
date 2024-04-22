@@ -121,7 +121,7 @@ namespace FDR.Tools.Library
             return "^" + value.Replace(".", @"\.").Replace("?", ".").Replace("*", ".*") + "$";
         }
 
-        public static List<FileInfo> GetFiles(DirectoryInfo folder, ImportConfig config)
+        public static List<ExifFile> GetFiles(DirectoryInfo folder, ImportConfig config)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
             config.Validate();
@@ -129,21 +129,7 @@ namespace FDR.Tools.Library
             return GetFiles(folder, config.FileFilter, true);
         }
 
-        public static List<FileInfo> GetFiles(DirectoryInfo folder, string filter, bool recursive)
-        {
-            if (string.IsNullOrWhiteSpace(filter)) throw new ArgumentNullException(nameof(filter));
-            if (folder == null) throw new ArgumentNullException(nameof(folder));
-            if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
-
-            var files = new List<FileInfo>();
-            var options = new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = recursive };
-            foreach (var tmpfilter in filter.Split('|'))
-                files.AddRange(folder.GetFiles(tmpfilter, options));
-
-            return files.OrderBy(f => f.FullName).ToList();
-        }
-
-        public static List<ExifFile> GetExifFiles(DirectoryInfo folder, string filter, bool recursive)
+        public static List<ExifFile> GetFiles(DirectoryInfo folder, string filter, bool recursive)
         {
             if (string.IsNullOrWhiteSpace(filter)) throw new ArgumentNullException(nameof(filter));
             if (folder == null) throw new ArgumentNullException(nameof(folder));

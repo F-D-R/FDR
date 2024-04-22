@@ -99,6 +99,11 @@ namespace FDR.Tools.Library
 
         public bool Exists => FileInfo.Exists;
 
+        public void CopyTo(string dest)
+        {
+            FileInfo.CopyTo(dest);
+        }
+
         public void MoveTo(string dest)
         {
             FileInfo.MoveTo(dest);

@@ -98,7 +98,7 @@ namespace FDR.Tools.Library
             Trace.Indent();
 
             if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
-            var files = Common.GetExifFiles(folder, filter, false);
+            var files = Common.GetFiles(folder, filter, false);
             int fileCount = files.Count;
 
             int counter = 1;

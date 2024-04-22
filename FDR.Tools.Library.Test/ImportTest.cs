@@ -183,7 +183,7 @@ namespace FDR.Tools.Library.Test
             foreach (var f in files)
             {
                 i++;
-                Import.CopyFile(destinationRoot, new FileInfo(f.GetSourcePath()), FolderStructure.date, "yyyyMMdd", 100 * i / count);
+                Import.CopyFile(destinationRoot, new ExifFile(new FileInfo(f.GetSourcePath())), FolderStructure.date, "yyyyMMdd", 100 * i / count);
             }
 
             files.Validate();
