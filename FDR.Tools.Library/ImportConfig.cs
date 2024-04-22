@@ -71,7 +71,7 @@ namespace FDR.Tools.Library
                         break;
 
                     case ImportRuleType.contains_file:
-                        if (!Common.GetFiles(source, rule.Param??"*", true).Any())
+                        if (!Common.GetExifFiles(source, rule.Param??"*", true).Any())
                             return false;
                         break;
 

@@ -98,7 +98,7 @@ namespace FDR.Tools.Library
             Trace.Indent();
 
             if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
-            var files = Common.GetFiles(folder, filter, false);
+            var files = Common.GetExifFiles(folder, filter, false);
             int fileCount = files.Count;
 
             int counter = 1;
@@ -112,9 +112,9 @@ namespace FDR.Tools.Library
                     if (string.Compare(Path.GetExtension(newFullName), ".jpg", true) != 0)
                         newFullName = Path.Combine(path, Path.GetFileNameWithoutExtension(newFullName) + ".jpg");
 
-                    //ResizeFileAsync(file, newFullName, config);
-                    ResizeFileAsync(file, newFullName, config).Wait();
-                    //Task.Run(async () => await Resize.ResizeFileAsync(file, newFullName, config)).Wait();
+                    //ResizeFileAsync(file.FileInfo, newFullName, config);
+                    ResizeFileAsync(file.FileInfo, newFullName, config).Wait();
+                    //Task.Run(async () => await Resize.ResizeFileAsync(file.FileInfo, newFullName, config)).Wait();
 
                     Common.Progress(100 * counter / fileCount);
                 }

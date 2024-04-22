@@ -129,7 +129,7 @@ namespace FDR.Tools.Library
 
             var watch = Stopwatch.StartNew();
 
-            var files = Common.GetFiles(folder, DEFAULT_FILTER, true);
+            var files = Common.GetExifFiles(folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
             int errCount = 0;
 
@@ -143,11 +143,11 @@ namespace FDR.Tools.Library
             {
                 i++;
 
-                var md5File = GetMd5FileName(file);
+                var md5File = GetMd5FileName(file.FileInfo);
                 if (force || !File.Exists(md5File))
                 {
-                    if (!await ValidateImageAsync(file)) errCount++;
-                    await CreateHashFileAsync(md5File, await ComputeHashAsync(file), file.LastWriteTimeUtc);
+                    if (!await ValidateImageAsync(file.FileInfo)) errCount++;
+                    await CreateHashFileAsync(md5File, await ComputeHashAsync(file.FileInfo), file.LastWriteTimeUtc);
                     hashCount++;
                 }
                 else
@@ -171,7 +171,7 @@ namespace FDR.Tools.Library
 
             var watch = Stopwatch.StartNew();
 
-            var files = Common.GetFiles(folder, DEFAULT_FILTER, true);
+            var files = Common.GetExifFiles(folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
             int errCount = 0;
             int warnCount = 0;
@@ -185,11 +185,11 @@ namespace FDR.Tools.Library
             {
                 i++;
 
-                var md5File = GetMd5FileName(file);
-                var errFile = GetErrorFileName(file);
+                var md5File = GetMd5FileName(file.FileInfo);
+                var errFile = GetErrorFileName(file.FileInfo);
                 var fileDate = file.LastWriteTimeUtc;
 
-                var newHash = await ComputeHashAsync(file);
+                var newHash = await ComputeHashAsync(file.FileInfo);
 
                 if (File.Exists(md5File))
                 {
@@ -212,7 +212,7 @@ namespace FDR.Tools.Library
                 }
                 else
                 {
-                    if (!await ValidateImageAsync(file)) errCount++;
+                    if (!await ValidateImageAsync(file.FileInfo)) errCount++;
                     await CreateHashFileAsync(md5File, newHash, fileDate);
                 }
 
@@ -241,7 +241,7 @@ namespace FDR.Tools.Library
 
             var watch = Stopwatch.StartNew();
 
-            var files = Common.GetFiles(folder, DEFAULT_FILTER, true);
+            var files = Common.GetExifFiles(folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
 
             var i = 0;
@@ -262,7 +262,7 @@ namespace FDR.Tools.Library
                 var plusDir = Path.Combine(folder.FullName, "plus", relDir??"");
                 var diffDir = Path.Combine(folder.FullName, "diff", relDir??"");
 
-                var md5File = GetMd5FileName(file);
+                var md5File = GetMd5FileName(file.FileInfo);
                 if (File.Exists(md5File))
                 {
                     verified++;
