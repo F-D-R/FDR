@@ -130,14 +130,6 @@ namespace FDR.Tools.Library
             return GetFiles(folder, config.FileFilter, true);
         }
 
-        public static List<FileInfo> GetFiles(DirectoryInfo folder, ResizeConfig config)
-        {
-            if (config == null) throw new ArgumentNullException(nameof(config));
-            config.Validate();
-
-            return GetFiles(folder, config.FileFilter, config.Recursive);
-        }
-
         public static List<FileInfo> GetFiles(DirectoryInfo folder, string filter, bool recursive)
         {
             if (string.IsNullOrWhiteSpace(filter)) throw new ArgumentNullException(nameof(filter));

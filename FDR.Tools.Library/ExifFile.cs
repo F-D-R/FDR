@@ -34,6 +34,19 @@ namespace FDR.Tools.Library
 
         public DirectoryInfo? Directory => FileInfo.Directory;
 
+        string? _NewLocation;
+        public string? NewLocation
+        {
+            get { return _NewLocation; }
+            set
+            {
+                if (string.Compare(value, FullName, false) != 0)
+                    _NewLocation = value;
+            }
+        }
+
+        public bool NewLocationSpecified => !string.IsNullOrWhiteSpace(NewLocation);
+
         public readonly DateTime CreationTimeUtc;
 
         public readonly DateTime CreationTime;
@@ -94,6 +107,16 @@ namespace FDR.Tools.Library
         public void MoveTo(string dest)
         {
             FileInfo.MoveTo(dest);
+        }
+
+        public void MoveToNewLocation()
+        {
+            //if (string.IsNullOrWhiteSpace(NewLocation)) throw new ArgumentNullException(nameof(NewLocation));
+            if (NewLocationSpecified)
+            {
+                FileInfo.MoveTo(NewLocation!);
+                NewLocation = null;
+            }
         }
     }
 

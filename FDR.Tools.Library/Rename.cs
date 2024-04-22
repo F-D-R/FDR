@@ -349,7 +349,7 @@ namespace FDR.Tools.Library
                 var ext = file.Extension;
                 if (config.ExtensionCase == CharacterCasing.lower)
                     ext = ext.ToLower();
-                if (config.ExtensionCase == CharacterCasing.upper)
+                else if (config.ExtensionCase == CharacterCasing.upper)
                     ext = ext.ToUpper();
 
                 var destFile = newName + ext;
@@ -431,7 +431,7 @@ namespace FDR.Tools.Library
                 var ext = file.Extension;
                 if (config.ExtensionCase == CharacterCasing.lower)
                     ext = ext.ToLower();
-                if (config.ExtensionCase == CharacterCasing.upper)
+                else if (config.ExtensionCase == CharacterCasing.upper)
                     ext = ext.ToUpper();
 
                 var destFile = newName + ext;
@@ -452,6 +452,83 @@ namespace FDR.Tools.Library
                     Trace.WriteLine($"Moving file {file.FullName} to {destPath}");
 #endif
                     file.MoveTo(destPath);
+                }
+                else
+                    Trace.WriteLine($"{file.Name} matches the new name...");
+            }
+        }
+
+        public static void CalculateNewLocation(List<ExifFile> allFiles, ExifFile file, RenameConfig config, ref int counter, int progressPercent)
+        {
+            if (config == null) throw new ArgumentNullException(nameof(config));
+            if (file == null) throw new ArgumentNullException(nameof(file));
+            if (!string.IsNullOrWhiteSpace(file.NewLocation)) return;   //file already has new location
+            if (!File.Exists(file.FullName)) return;    //file.Exists wouldn't work here!
+
+            string origName = file.Name;
+            string newFullName = CalculateFileName(file, config, counter);
+            string newName = Path.GetFileName(newFullName);
+            string newDir = Path.GetDirectoryName(newFullName)??"";
+
+            if (string.Compare(file.FullName, newFullName, false) == 0)
+            {
+                Trace.WriteLine($"{file.FullName} matches the new name...");
+            }
+            else
+            {
+                if (config.AdditionalFiles)
+                {
+                    string fileStart = Path.Combine(Path.GetDirectoryName(file.OriginalFullName)!, Path.GetFileNameWithoutExtension(file.OriginalName) + ".");
+                    Trace.WriteLine($"Look for additional files starting with: {fileStart}");
+                    var files = allFiles.Where(f => f.FullName.StartsWith(fileStart)).ToList();
+
+                    var oldestFile = files.OrderBy(f => f.ExifTime).First();
+                    newFullName = CalculateFileName(oldestFile, config, counter);
+                    newName = Path.GetFileNameWithoutExtension(newFullName);
+
+                    files.ForEach(f => SetNewLocation(f, newDir, newName));
+                }
+                else
+                {
+                    //SetNewLocation(file, newDir, newName);
+                    Trace.WriteLine($"New location for file {file.Name} is {newName}");
+                    file.NewLocation = newFullName;
+                }
+
+                counter++;
+            }
+
+            Common.Progress(progressPercent);
+            return;
+
+            void SetNewLocation(ExifFile file, string newDir, string newName)
+            {
+                var ext = file.Extension;
+                if (config.ExtensionCase == CharacterCasing.lower)
+                    ext = ext.ToLower();
+                else if (config.ExtensionCase == CharacterCasing.upper)
+                    ext = ext.ToUpper();
+
+                var destFile = newName + ext;
+                var destPath = Path.Combine(newDir, destFile);
+
+                if (string.Compare(file.FullName, destPath, false) != 0)
+                {
+                    //var destFolder = Path.GetDirectoryName(destPath);
+                    ////TODO: only check for the first time:
+                    //if (destFolder != null && !Directory.Exists(destFolder))
+                    //{
+                    //    Trace.WriteLine($"Creating destination folder {destFolder}");
+                    //    Directory.CreateDirectory(destFolder);
+                    //}
+
+#if RELEASE
+                    Trace.WriteLine($"New location for file {file.Name} is {destFile}");
+#else
+                    Trace.WriteLine($"New location for file {file.FullName} is {destPath}");
+#endif
+                    //file.MoveTo(destPath);
+                    file.NewLocation = destPath;
                 }
                 else
                     Trace.WriteLine($"{file.Name} matches the new name...");
@@ -496,7 +573,8 @@ namespace FDR.Tools.Library
             Common.Msg($"Ordering {fileCount} files...");
             //TODO: ordering by the rename pattern minus counter...
             files = files.OrderBy(f => f.ExifTime).ThenBy(f => f.Name).ToList();
-            Common.Msg($"Renaming {fileCount} files...");
+
+            Common.Msg($"Calculating new location for {fileCount} files...");
 
             var originalPattern = config.FilenamePattern;
             config.FilenamePattern = originalPattern?.Replace($"{{{COUNTER}:auto}}", $"{{{COUNTER}:" + fileCount.ToString().Length + "}");
@@ -508,13 +586,49 @@ namespace FDR.Tools.Library
             {
                 try
                 {
-                    RenameFile(file, config, ref counter, 100 * counter / fileCount, allFiles);
+                    CalculateNewLocation(allFiles, file, config, ref counter, 100 * counter / fileCount);
                 }
                 catch (Exception)
                 {
                     if (config.StopOnError) throw;
                 }
             }
+            Trace.Unindent();
+
+            //Folder creation
+            Common.Msg($"Creating destination folder(s)...");
+            Trace.Indent();
+            files.Where(f => f.NewLocationSpecified).Select(f => Path.GetDirectoryName(f.NewLocation)).Distinct().ToList().ForEach(d =>
+            {
+                if (!Directory.Exists(d))
+                {
+                    Trace.WriteLine($"Creating folder {d}");
+                    Directory.CreateDirectory(d!);
+                }
+            });
+            Trace.Unindent();
+
+            //Parallel renaming
+            Common.Msg($"Renaming {fileCount} files...");
+            i = 0;
+            Common.Progress(0);
+            Trace.Indent();
+            task = Parallel.ForEachAsync(allFiles, parallelOptions, async (file, token) =>
+            {
+                try
+                {
+                    i++;
+                    Trace.WriteLine($"Moving file {file.FullName} to {file.NewLocation}");
+                    file.MoveToNewLocation();
+                    Common.Progress(100 * i / allFiles.Count);
+                }
+                catch (Exception)
+                {
+                    if (config.StopOnError) throw;
+                }
+            });
+            task.Wait();
+            Trace.Unindent();
 
             config.FilenamePattern = originalPattern;
             Trace.Unindent();
