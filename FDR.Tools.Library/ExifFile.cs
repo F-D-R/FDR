@@ -97,11 +97,6 @@ namespace FDR.Tools.Library
             return GetExifDate(CreationTime < LastWriteTime ? CreationTime : LastWriteTime);
         }
 
-        public bool IsImageFile()
-        {
-            return Common.IsImageFile(Name);
-        }
-
         public bool Exists => FileInfo.Exists;
 
         public void MoveTo(string dest)

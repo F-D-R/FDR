@@ -254,25 +254,7 @@ namespace FDR.Tools.Library
 
         public static string CalculateFileName(FileInfo file, RenameConfig config, int counter = 1)
         {
-            //if (config == null) throw new ArgumentNullException(nameof(config));
             if (file == null) throw new ArgumentNullException(nameof(file));
-            //if (!file.Exists) throw new FileNotFoundException("File doesn't exist!", file.FullName);
-
-            //var path = Path.GetDirectoryName(file.FullName)??"";
-
-            //var newName = EvaluateFileNamePattern(config.FilenamePattern??"{name}", file, counter);
-            //if (config.FilenameCase == CharacterCasing.lower)
-            //    newName = newName.ToLower();
-            //else if (config.FilenameCase == CharacterCasing.upper)
-            //    newName = newName.ToUpper();
-
-            //var extension = Path.GetExtension(file.Name);
-            //if (config.ExtensionCase == CharacterCasing.lower)
-            //    extension = extension.ToLower();
-            //else if (config.ExtensionCase == CharacterCasing.upper)
-            //    extension = extension.ToUpper();
-
-            //return Path.Combine(path, newName + extension);
 
             return CalculateFileName(new ExifFile(file), config, counter);
         }
@@ -300,11 +282,6 @@ namespace FDR.Tools.Library
             return Path.Combine(path, newName + extension);
         }
 
-        private static List<FileInfo>? GetSameNamedFiles(FileInfo file)
-        {
-            return Common.GetFiles(file.Directory!, Path.GetFileNameWithoutExtension(file.FullName) + ".*", false).ToList();
-        }
-
         public static void RenameFile(FileInfo file, RenameConfig config, ref int counter, int progressPercent)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
@@ -324,7 +301,7 @@ namespace FDR.Tools.Library
             {
                 List<FileInfo>? files = null;
                 if (config.AdditionalFiles)
-                    files = GetSameNamedFiles(file);
+                    files = Common.GetFiles(file.Directory!, Path.GetFileNameWithoutExtension(file.FullName) + ".*", false).ToList();
                 else
                     files = new List<FileInfo>() { file };
 
@@ -364,94 +341,8 @@ namespace FDR.Tools.Library
                         Directory.CreateDirectory(destFolder);
                     }
 
-#if RELEASE
-                    Trace.WriteLine($"Moving file {file.Name} to {destFile}");
-#else
                     Trace.WriteLine($"Moving file {file.FullName} to {destPath}");
-#endif
                     File.Move(file.FullName, destPath);
-                }
-                else
-                    Trace.WriteLine($"{file.Name} matches the new name...");
-            }
-        }
-
-        public static void RenameFile(ExifFile file, RenameConfig config, ref int counter, int progressPercent, List<ExifFile>? fileCache = null)
-        {
-            if (config == null) throw new ArgumentNullException(nameof(config));
-            if (file == null) throw new ArgumentNullException(nameof(file));
-            if (!File.Exists(file.FullName)) return;    //file.Exists wouldn't work here!
-
-            var origName = file.Name;
-            var newFullName = CalculateFileName(file, config, counter);
-            var newName = Path.GetFileName(newFullName);
-            string destDir = Path.GetDirectoryName(newFullName)??"";
-
-            if (string.Compare(file.FullName, newFullName, false) == 0)
-            {
-                Trace.WriteLine($"{file.FullName} matches the new name...");
-            }
-            else
-            {
-                List<ExifFile>? files = null;
-                if (config.AdditionalFiles)
-                {
-                    if (fileCache == null)
-                    {
-                        files = GetSameNamedFiles(file.FileInfo)?.Select(fi => new ExifFile(fi)).ToList();
-                    }
-                    else
-                    {
-                        var fileStart = Path.Combine(Path.GetDirectoryName(file.OriginalFullName)!, Path.GetFileNameWithoutExtension(file.OriginalName) + ".");
-                        Trace.WriteLine($"Look for additional files starting with: {fileStart}");
-                        files = fileCache.Where(f => f.FullName.StartsWith(fileStart)).ToList();
-                    }
-                }
-                else
-                    files = new List<ExifFile>() { file };
-
-                //Get the oldest file and rename all according to that
-                if (files != null && files.Count > 0)
-                {
-                    var oldestFile = files.OrderBy(f => f.ExifTime).First();
-                    newFullName = CalculateFileName(oldestFile, config, counter);
-                    newName = Path.GetFileNameWithoutExtension(newFullName);
-
-                    files.ForEach(f => Rename(f, destDir, newName));
-
-                    counter++;
-                }
-            }
-
-            Common.Progress(progressPercent);
-            return;
-
-            void Rename(ExifFile file, string destDir, string newName)
-            {
-                var ext = file.Extension;
-                if (config.ExtensionCase == CharacterCasing.lower)
-                    ext = ext.ToLower();
-                else if (config.ExtensionCase == CharacterCasing.upper)
-                    ext = ext.ToUpper();
-
-                var destFile = newName + ext;
-                var destPath = Path.Combine(destDir, destFile);
-
-                if (string.Compare(file.FullName, destPath, false) != 0)
-                {
-                    var destFolder = Path.GetDirectoryName(destPath);
-                    if (destFolder != null && !Directory.Exists(destFolder))
-                    {
-                        Trace.WriteLine($"Creating destination folder {destFolder}");
-                        Directory.CreateDirectory(destFolder);
-                    }
-
-#if RELEASE
-                    Trace.WriteLine($"Moving file {file.Name} to {destFile}");
-#else
-                    Trace.WriteLine($"Moving file {file.FullName} to {destPath}");
-#endif
-                    file.MoveTo(destPath);
                 }
                 else
                     Trace.WriteLine($"{file.Name} matches the new name...");
@@ -490,11 +381,7 @@ namespace FDR.Tools.Library
                 }
                 else
                 {
-#if RELEASE
-                    Trace.WriteLine($"New location for file {file.Name} is {newName}");
-#else
                     Trace.WriteLine($"New location for file {file.FullName} is {newFullName}");
-#endif
                     file.NewLocation = newFullName;
                 }
 
@@ -517,11 +404,7 @@ namespace FDR.Tools.Library
 
                 if (string.Compare(file.FullName, destPath, false) != 0)
                 {
-#if RELEASE
-                    Trace.WriteLine($"New location for file {file.Name} is {destFile}");
-#else
                     Trace.WriteLine($"New location for file {file.FullName} is {destPath}");
-#endif
                     file.NewLocation = destPath;
                 }
                 else

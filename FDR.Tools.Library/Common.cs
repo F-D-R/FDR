@@ -118,7 +118,6 @@ namespace FDR.Tools.Library
 
         public static string WildcardToRegex(string value)
         {
-            //return "^" + Regex.Escape(value).Replace(".", @"\.").Replace("?", ".").Replace("*", ".*") + "$";
             return "^" + value.Replace(".", @"\.").Replace("?", ".").Replace("*", ".*") + "$";
         }
 
