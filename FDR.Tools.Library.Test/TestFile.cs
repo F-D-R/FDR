@@ -51,7 +51,7 @@ namespace FDR.Tools.Library.Test
 
         public void CreateFile()
         {
-            if (!Directory.Exists(SourceFolder)) Directory.CreateDirectory(SourceFolder);
+            if (!Directory.Exists(Path.GetDirectoryName(GetSourcePath()))) Directory.CreateDirectory(Path.GetDirectoryName(GetSourcePath()));
             if (Path.GetExtension(GetSourcePath())?.ToLower() == ".jpg")
                 CreateJpgFile();
             else

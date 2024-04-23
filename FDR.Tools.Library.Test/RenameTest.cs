@@ -10,7 +10,7 @@ namespace FDR.Tools.Library.Test
     public class RenameTest : TempFolderTestBase
     {
         [Test]
-        public void RenameFilesInFolderWithFileLowerCaseFilterUpperCase()
+        public void RenameFilesInFolderWithLowerCaseFileUpperCaseFilter()
         {
             var config = new RenameConfig();
             config.Should().NotBeNull();
@@ -26,7 +26,7 @@ namespace FDR.Tools.Library.Test
         }
 
         [Test]
-        public void RenameFilesInFolderWithFileUpperCaseFilterLowerCase()
+        public void RenameFilesInFolderWithUpperCaseFileLowerCaseFilter()
         {
             var config = new RenameConfig();
             config.Should().NotBeNull();
@@ -42,7 +42,7 @@ namespace FDR.Tools.Library.Test
         }
 
         [Test]
-        public void RenameFilesInFolderWithFileLowerCaseAdditionalTypeUpperCase()
+        public void RenameFilesInFolderWithLowerCaseFilePlusAdditionalUpperCaseFilter()
         {
             var config = new RenameConfig();
             config.Should().NotBeNull();
@@ -60,7 +60,7 @@ namespace FDR.Tools.Library.Test
         }
 
         [Test]
-        public void RenameFilesInFolderWithFileUpperCaseAdditionalTypeLowerCase()
+        public void RenameFilesInFolderWithUpperCaseFilePlusAdditionalLowerCaseFilter()
         {
             var config = new RenameConfig();
             config.Should().NotBeNull();
@@ -341,6 +341,82 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "12.pri", tempFolderPath, "000101_12.pri", date, date, date);
             files.Add(tempFolderPath, "09.pri", tempFolderPath, "000101_09.pri", date, date, date);
             files.Add(tempFolderPath, "10.pri", tempFolderPath, "000101_10.pri", date, date, date);
+            files.CreateFiles();
+
+            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+
+            files.Validate();
+        }
+
+        [Test]
+        public void RenameFilesInFolderWithPlusInRecursiveFolders()
+        {
+            var config = new RenameConfig();
+            config.Should().NotBeNull();
+            config.FileFilter = "*.PR*";
+            config.FilenamePattern = "{cdate:yyMMdd}_{counter:2}";
+            config.AdditionalFiles = false;
+            config.Recursive = true;
+
+            files.Add(tempFolderPath, "dir1/1.pr1", tempFolderPath, "dir1/000109_03.pr1", new DateTime(2000, 1, 9));
+            files.Add(tempFolderPath, "dir1/1.se1", tempFolderPath, "dir1/1.se1", new DateTime(2000, 1, 7));
+            files.Add(tempFolderPath, "dir1/1.se2", tempFolderPath, "dir1/1.se2", new DateTime(2000, 1, 8));
+            files.Add(tempFolderPath, "dir2/2.pr2", tempFolderPath, "dir2/000101_01.pr2", new DateTime(2000, 1, 1));
+            files.Add(tempFolderPath, "dir2/2.se1", tempFolderPath, "dir2/2.se1", new DateTime(2000, 1, 2));
+            files.Add(tempFolderPath, "dir2/2.se2", tempFolderPath, "dir2/2.se2", new DateTime(2000, 1, 3));
+            files.Add(tempFolderPath, "dir1/dir3/3.pr3", tempFolderPath, "dir1/dir3/000106_02.pr3", new DateTime(2000, 1, 6));
+            files.Add(tempFolderPath, "dir1/dir3/3.se1", tempFolderPath, "dir1/dir3/3.se1", new DateTime(2000, 1, 5));
+            files.Add(tempFolderPath, "dir1/dir3/3.se2", tempFolderPath, "dir1/dir3/3.se2", new DateTime(2000, 1, 4));
+            files.CreateFiles();
+
+            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+
+            files.Validate();
+        }
+
+        [Test]
+        public void RenameFilesInFolderWithAdditionalInRecursiveFolders()
+        {
+            var config = new RenameConfig();
+            config.Should().NotBeNull();
+            config.FileFilter = "*.PR*";
+            config.FilenamePattern = "{cdate:yyMMdd}_{counter:2}";
+            config.Recursive = true;
+
+            files.Add(tempFolderPath, "dir1/1.pr1", tempFolderPath, "dir1/000107_03.pr1", new DateTime(2000, 1, 9));
+            files.Add(tempFolderPath, "dir1/1.se1", tempFolderPath, "dir1/000107_03.se1", new DateTime(2000, 1, 7));
+            files.Add(tempFolderPath, "dir1/1.se2", tempFolderPath, "dir1/000107_03.se2", new DateTime(2000, 1, 8));
+            files.Add(tempFolderPath, "dir2/2.pr2", tempFolderPath, "dir2/000101_01.pr2", new DateTime(2000, 1, 1));
+            files.Add(tempFolderPath, "dir2/2.se1", tempFolderPath, "dir2/000101_01.se1", new DateTime(2000, 1, 2));
+            files.Add(tempFolderPath, "dir2/2.se2", tempFolderPath, "dir2/000101_01.se2", new DateTime(2000, 1, 3));
+            files.Add(tempFolderPath, "dir1/dir3/3.pr3", tempFolderPath, "dir1/dir3/000104_02.pr3", new DateTime(2000, 1, 6));
+            files.Add(tempFolderPath, "dir1/dir3/3.se1", tempFolderPath, "dir1/dir3/000104_02.se1", new DateTime(2000, 1, 5));
+            files.Add(tempFolderPath, "dir1/dir3/3.se2", tempFolderPath, "dir1/dir3/000104_02.se2", new DateTime(2000, 1, 4));
+            files.CreateFiles();
+
+            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+
+            files.Validate();
+        }
+
+        [Test]
+        public void RenameFilesInFolderWithAdditionalMatchingFileFilterInRecursiveFolders()
+        {
+            var config = new RenameConfig();
+            config.Should().NotBeNull();
+            config.FileFilter = "*.*";
+            config.FilenamePattern = "{cdate:yyMMdd}_{counter:2}";
+            config.Recursive = true;
+
+            files.Add(tempFolderPath, "dir1/1.pr1", tempFolderPath, "dir1/000107_03.pr1", new DateTime(2000, 1, 9));
+            files.Add(tempFolderPath, "dir1/1.se1", tempFolderPath, "dir1/000107_03.se1", new DateTime(2000, 1, 7));
+            files.Add(tempFolderPath, "dir1/1.se2", tempFolderPath, "dir1/000107_03.se2", new DateTime(2000, 1, 8));
+            files.Add(tempFolderPath, "dir2/2.pr2", tempFolderPath, "dir2/000101_01.pr2", new DateTime(2000, 1, 1));
+            files.Add(tempFolderPath, "dir2/2.se1", tempFolderPath, "dir2/000101_01.se1", new DateTime(2000, 1, 2));
+            files.Add(tempFolderPath, "dir2/2.se2", tempFolderPath, "dir2/000101_01.se2", new DateTime(2000, 1, 3));
+            files.Add(tempFolderPath, "dir1/dir3/3.pr3", tempFolderPath, "dir1/dir3/000104_02.pr3", new DateTime(2000, 1, 6));
+            files.Add(tempFolderPath, "dir1/dir3/3.se1", tempFolderPath, "dir1/dir3/000104_02.se1", new DateTime(2000, 1, 5));
+            files.Add(tempFolderPath, "dir1/dir3/3.se2", tempFolderPath, "dir1/dir3/000104_02.se2", new DateTime(2000, 1, 4));
             files.CreateFiles();
 
             Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
