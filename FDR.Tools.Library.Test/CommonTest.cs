@@ -20,6 +20,16 @@ namespace FDR.Tools.Library.Test
             Common.IsFolderValid("").Should().BeFalse();
         }
 
+        [TestCase("*.*", @"^.*\..*$")]
+        [TestCase("*.CR3", @"^.*\.CR3$")]
+        [TestCase("*.CR2|*.CR3", @"^.*\.CR2|.*\.CR3$")]
+        [TestCase("*.CR?", @"^.*\.CR.$")]
+        [TestCase("*.??3", @"^.*\...3$")]
+        public void WildcardToRegexTests(string filter, string result)
+        {
+            Common.WildcardToRegex(filter).Should().Be(result);
+        }
+
         [TestCase(".CR3", false)]
         [TestCase(".CR2", false)]
         [TestCase(".CRW", false)]
