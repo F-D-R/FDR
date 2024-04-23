@@ -238,5 +238,48 @@ namespace FDR.Tools.Library.Test
             exifFiles[0].Name.Should().Be(file1);
             exifFiles[1].Name.Should().Be(file2);
         }
+
+        [TestCase(".", "*.xxx")]
+        [TestCase(".", null, typeof(ArgumentNullException))]
+        [TestCase(".", "  ", typeof(ArgumentNullException))]
+        [TestCase(null, "*.*", typeof(ArgumentNullException))]
+        [TestCase("xxxxxxxxxxxx", "*.*", typeof(DirectoryNotFoundException))]
+        public void GetFilesValidationTests(string folder, string filter, Type ex = null)
+        {
+            DirectoryInfo di = null;
+            if (!string.IsNullOrWhiteSpace(folder))
+                di = new DirectoryInfo(folder);
+
+            if (ex != null)
+                Assert.Throws(ex, delegate { Common.GetFiles(di, filter, false); });
+            else
+                Assert.That(Common.GetFiles(di, filter, false), Is.Not.Null);
+        }
+
+        [TestCase(".", true)]
+        [TestCase(".", null, typeof(ArgumentNullException))]
+        [TestCase(".", false, typeof(InvalidDataException))]
+        [TestCase(null, true, typeof(ArgumentNullException))]
+        [TestCase("xxxxxxxxxxxx", true, typeof(DirectoryNotFoundException))]
+        public void GetFilesWithImportConfigValidationTests(string folder, bool? validConfig, Type ex = null)
+        {
+            DirectoryInfo di = null;
+            if (!string.IsNullOrWhiteSpace(folder))
+                di = new DirectoryInfo(folder);
+
+            var config = new ImportConfig();
+            if (validConfig == null)
+                config = null;
+            else if (validConfig == true)
+                config.DestRoot = ".";
+            else if (validConfig == false)
+                config.DestRoot = null;
+
+            if (ex != null)
+                Assert.Throws(ex, delegate { Common.GetFiles(di, config); });
+            else
+                Assert.That(Common.GetFiles(di, config), Is.Not.Null);
+        }
+
     }
 }
