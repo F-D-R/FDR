@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using System;
 
 namespace FDR.Tools.Library
 {
@@ -69,6 +70,17 @@ namespace FDR.Tools.Library
 
         [DisplayName("Stop on errors")]
         public bool StopOnError { get; set; } = true;
+
+        public bool NeedsOrdering()
+        {
+            return FilenamePattern?.Contains("{COUNTER", StringComparison.InvariantCultureIgnoreCase) == true;
+        }
+
+        public bool HasExifDate()
+        {
+            return FilenamePattern?.Contains("{EDATE", StringComparison.InvariantCultureIgnoreCase) == true
+                || FilenamePattern?.Contains("{SDATE", StringComparison.InvariantCultureIgnoreCase) == true;
+        }
 
         public RenameConfig Clone()
         {

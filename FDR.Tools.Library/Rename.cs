@@ -431,25 +431,31 @@ namespace FDR.Tools.Library
             var files = allFiles.Where(f => regex.IsMatch(f.Name)).ToList();
             int fileCount = files.Count;
 
-            //Parallel exif loading
-            Common.Msg($"Loading EXIF date of {fileCount} files...");
-            var i = 0;
-            DateTime dummy;
-            Common.Progress(0);
-            Trace.Indent();
             ParallelOptions parallelOptions = new() { MaxDegreeOfParallelism = 8 };
-            var task = Parallel.ForEachAsync(files, parallelOptions, async (file, token) =>
-            {
-                i++;
-                dummy = file.ExifTime;
-                Common.Progress(100 * i / fileCount);
-            });
-            task.Wait();
-            Trace.Unindent();
 
-            Common.Msg($"Ordering {fileCount} files...");
-            //TODO: ordering by the rename pattern minus counter...
-            files = files.OrderBy(f => f.ExifTime).ThenBy(f => f.Name).ToList();
+            int i = 0;
+            Task task;
+            if (config.NeedsOrdering())
+            {
+                //Parallel exif loading
+                Common.Msg($"Loading EXIF date of {fileCount} files...");
+                i = 0;
+                DateTime dummy;
+                Common.Progress(0);
+                Trace.Indent();
+                task = Parallel.ForEachAsync(files, parallelOptions, async (file, token) =>
+                {
+                    i++;
+                    dummy = file.ExifTime;
+                    Common.Progress(100 * i / fileCount);
+                });
+                task.Wait();
+                Trace.Unindent();
+
+                Common.Msg($"Ordering {fileCount} files...");
+                //TODO: ordering by the rename pattern without counter??? (plus the original name as secondary)
+                files = files.OrderBy(f => f.ExifTime).ThenBy(f => f.Name).ToList();
+            }
 
             Common.Msg($"Calculating new location for {fileCount} files...");
 

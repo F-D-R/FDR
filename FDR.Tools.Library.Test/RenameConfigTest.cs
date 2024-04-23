@@ -34,5 +34,43 @@ namespace FDR.Tools.Library.Test
             config.FilenamePattern = "{name}";
             validate.Should().NotThrow();
         }
+
+        [TestCase("{name}", false)]
+        [TestCase("anything", false)]
+        [TestCase("counter", false)]
+        [TestCase("...{counter}...", true)]
+        [TestCase("...{CoUnTeR}...", true)]
+        [TestCase("...{counter:3}...", true)]
+        [TestCase("...{COUNTER:auto}...", true)]
+        public void NeedsOrderingTests(string filenamePatter, bool result)
+        {
+            var config = new RenameConfig();
+            config.Should().NotBeNull();
+
+            config.FilenamePattern = filenamePatter;
+            config.NeedsOrdering().Should().Be(result, config.FilenamePattern);
+        }
+
+        [TestCase("{name}", false)]
+        [TestCase("anything", false)]
+        [TestCase("edate", false)]
+        [TestCase("sdate", false)]
+        [TestCase("...{edate}...", true)]
+        [TestCase("...{sdate}...", true)]
+        [TestCase("...{EdAtE}...", true)]
+        [TestCase("...{SdAtE}...", true)]
+        [TestCase("...{edate:yyMMdd}...", true)]
+        [TestCase("...{EDATE:yyMMdd}...", true)]
+        [TestCase("...{sdate:yyMMdd}...", true)]
+        [TestCase("...{SDATE:yyMMdd}...", true)]
+        public void HasExifDateTests(string filenamePatter, bool result)
+        {
+            var config = new RenameConfig();
+            config.Should().NotBeNull();
+
+            config.FilenamePattern = filenamePatter;
+            config.HasExifDate().Should().Be(result, config.FilenamePattern);
+        }
+
     }
 }

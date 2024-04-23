@@ -109,49 +109,59 @@ namespace FDR.Tools.Library
             if (folder == null) throw new ArgumentNullException(nameof(folder));
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
-            var filter = config.FileFilter;
-            if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
+            //var filter = config.FileFilter;
+            //if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
 
-            Common.Msg($"Moving {filter} files in {folder.FullName} to {config.RelativeFolder}");
-            Trace.Indent();
+            //var files = Common.GetFiles(folder, filter, config.Recursive);
+            //var fileCount = files.Count;
 
-            var files = Common.GetFiles(folder, filter, config.Recursive);
-            var fileCount = files.Count;
+            //bool usesExif = config.FilenamePattern?.Contains("{EDATE", StringComparison.InvariantCultureIgnoreCase) == true
+            //    || config.FilenamePattern?.Contains("{SDATE", StringComparison.InvariantCultureIgnoreCase) == true;
 
-            //Parallel exif loading
-            Common.Msg($"Loading EXIF date of {fileCount} files...");
-            var i = 0;
-            DateTime dummy;
-            Common.Progress(0);
-            Trace.Indent();
-            ParallelOptions parallelOptions = new() { MaxDegreeOfParallelism = 8 };
-            var task = Parallel.ForEachAsync(files, parallelOptions, async (file, token) =>
-            {
-                i++;
-                dummy = file.ExifTime;
-                Common.Progress(100 * i / fileCount);
-            });
-            task.Wait();
-            Trace.Unindent();
+            //Task task;
+            //if (usesExif)
+            //{
+            //    //Parallel exif loading if needed
+            //    Common.Msg($"Loading EXIF date of {fileCount} files...");
+            //    var i = 0;
+            //    DateTime dummy;
+            //    Common.Progress(0);
+            //    Trace.Indent();
+            //    ParallelOptions parallelOptions = new() { MaxDegreeOfParallelism = 8 };
+            //    task = Parallel.ForEachAsync(files, parallelOptions, async (file, token) =>
+            //    {
+            //        i++;
+            //        dummy = file.ExifTime;
+            //        Common.Progress(100 * i / fileCount);
+            //    });
+            //    task.Wait();
+            //    Trace.Unindent();
 
-            files = files.OrderBy(f => f.ExifTime).ToList();
+            //    files = files.OrderBy(f => f.ExifTime).ToList();
+            //}
 
-            int counter = 1;
-            Common.Progress(0);
-            foreach (var file in files)
-            {
-                try
-                {
-                    //TODO: calculate first + multithread move
-                    Rename.RenameFile(file, config.GetNewRenameConfig(), ref counter, 100 * counter / fileCount);
-                }
-                catch (IOException)
-                {
-                    if (config.StopOnError) throw;
-                }
-            }
+            Common.Msg($"Moving {config.FileFilter} files in {folder.FullName} to {config.RelativeFolder}");
 
-            Trace.Unindent();
+            //Trace.Indent();
+            //int counter = 1;
+            //Common.Progress(0);
+            //foreach (var file in files)
+            //{
+            //    try
+            //    {
+            //        //TODO: calculate first + multithread move
+            //        Rename.RenameFile(file, config.GetNewRenameConfig(), ref counter, 100 * counter / fileCount);
+            //    }
+            //    catch (IOException)
+            //    {
+            //        if (config.StopOnError) throw;
+            //    }
+            //}
+            //Trace.Unindent();
+
+
+            Rename.RenameFilesInFolder(folder, config.GetNewRenameConfig());
+
         }
 
         public static void ImportFiles(DirectoryInfo source, ImportConfig config, bool force, CancellationToken token)
