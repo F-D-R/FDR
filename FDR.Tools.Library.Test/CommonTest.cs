@@ -47,6 +47,8 @@ namespace FDR.Tools.Library.Test
         public void IsImageFileTests(string file, bool result)
         {
             Common.IsImageFile(file).Should().Be(result);
+            var fi = new FileInfo("dummy" + file);
+            Common.IsImageFile(fi).Should().Be(result);
         }
 
         [Test]
