@@ -302,6 +302,29 @@ namespace FDR.Tools.Library.Test
         }
 
         [Test]
+        public void GetFilesWithImportConfigFindAll()
+        {
+            files.Add(tempFolderPath, "1.aaa");
+            files.Add(tempFolderPath, "2.bbb");
+            files.Add(tempFolderPath, "3.ccc");
+            files.CreateFiles();
+
+            var config = new ImportConfig();
+            config.DestRoot = tempFolderPath;
+            config.FileFilter = "*.*";
+
+            var getFiles = Common.GetFiles(tempFolder, config);
+
+            Console.WriteLine("files:");
+            files.ForEach(f => Console.WriteLine(f.GetSourcePath()));
+            Console.WriteLine("GetFiles:");
+            getFiles.ForEach(f => Console.WriteLine(f.FullName));
+
+            getFiles.Where(gf => !files.Select(f => f.GetSourcePath()).Contains(gf.FullName)).Any().Should().BeFalse("'GetFiles has more results'");
+            files.Where(f => !getFiles.Select(gf => gf.FullName).Contains(f.GetSourcePath())).Any().Should().BeFalse("'There are files missing from GetFiles result'");
+        }
+
+        [Test]
         public void GetFilesFindSome()
         {
             files.Add(tempFolderPath, "1.aaa");
@@ -310,6 +333,29 @@ namespace FDR.Tools.Library.Test
             files.CreateFiles();
 
             var getFiles = Common.GetFiles(tempFolder, "*.AAA", false);
+
+            Console.WriteLine("files:");
+            files.ForEach(f => Console.WriteLine(f.GetSourcePath()));
+            Console.WriteLine("GetFiles:");
+            getFiles.ForEach(f => Console.WriteLine(f.FullName));
+
+            getFiles.Where(gf => !files.Where(f => f.Name.EndsWith(".AAA", StringComparison.InvariantCultureIgnoreCase)).Select(f => f.GetSourcePath()).Contains(gf.FullName)).Any().Should().BeFalse("'GetFiles has more results'");
+            files.Where(f => f.Name.EndsWith(".AAA", StringComparison.InvariantCultureIgnoreCase) && !getFiles.Select(gf => gf.FullName).Contains(f.GetSourcePath())).Any().Should().BeFalse("'There are files missing from GetFiles result'");
+        }
+
+        [Test]
+        public void GetFilesWithImportConfigFindSome()
+        {
+            files.Add(tempFolderPath, "1.aaa");
+            files.Add(tempFolderPath, "2.bbb");
+            files.Add(tempFolderPath, "3.aaa");
+            files.CreateFiles();
+
+            var config = new ImportConfig();
+            config.DestRoot = tempFolderPath;
+            config.FileFilter = "*.AAA";
+
+            var getFiles = Common.GetFiles(tempFolder, config);
 
             Console.WriteLine("files:");
             files.ForEach(f => Console.WriteLine(f.GetSourcePath()));
@@ -367,6 +413,32 @@ namespace FDR.Tools.Library.Test
         }
 
         [Test]
+        public void GetFilesWithImportConfigFindAllRecursive()
+        {
+            var sep = Path.DirectorySeparatorChar;
+            files.Add(tempFolderPath, "1.aaa");
+            files.Add(tempFolderPath, "2.bbb");
+            files.Add(tempFolderPath, "3.ccc");
+            files.Add(tempFolderPath, $"subfolder{sep}4.ddd");
+            files.Add(tempFolderPath, $"subfolder{sep}5.eee");
+            files.CreateFiles();
+
+            var config = new ImportConfig();
+            config.DestRoot = tempFolderPath;
+            config.FileFilter = "*.*";
+
+            var getFiles = Common.GetFiles(tempFolder, config);
+
+            Console.WriteLine("files:");
+            files.ForEach(f => Console.WriteLine(f.GetSourcePath()));
+            Console.WriteLine("GetFiles:");
+            getFiles.ForEach(f => Console.WriteLine(f.FullName));
+
+            getFiles.Where(gf => !files.Select(f => f.GetSourcePath()).Contains(gf.FullName)).Any().Should().BeFalse("'GetFiles has more results'");
+            files.Where(f => !getFiles.Select(gf => gf.FullName).Contains(f.GetSourcePath())).Any().Should().BeFalse("'There are files missing from GetFiles result'");
+        }
+
+        [Test]
         public void GetFilesFindSomeRecursive()
         {
             var sep = Path.DirectorySeparatorChar;
@@ -378,6 +450,32 @@ namespace FDR.Tools.Library.Test
             files.CreateFiles();
 
             var getFiles = Common.GetFiles(tempFolder, "*.AAA", true);
+
+            Console.WriteLine("files:");
+            files.ForEach(f => Console.WriteLine(f.GetSourcePath()));
+            Console.WriteLine("GetFiles:");
+            getFiles.ForEach(f => Console.WriteLine(f.FullName));
+
+            getFiles.Where(gf => !files.Where(f => f.Name.EndsWith(".AAA", StringComparison.InvariantCultureIgnoreCase)).Select(f => f.GetSourcePath()).Contains(gf.FullName)).Any().Should().BeFalse("'GetFiles has more results'");
+            files.Where(f => f.Name.EndsWith(".AAA", StringComparison.InvariantCultureIgnoreCase) && !getFiles.Select(gf => gf.FullName).Contains(f.GetSourcePath())).Any().Should().BeFalse("'There are files missing from GetFiles result'");
+        }
+
+        [Test]
+        public void GetFilesWithImportConfigFindSomeRecursive()
+        {
+            var sep = Path.DirectorySeparatorChar;
+            files.Add(tempFolderPath, "1.aaa");
+            files.Add(tempFolderPath, "2.bbb");
+            files.Add(tempFolderPath, "3.aaa");
+            files.Add(tempFolderPath, $"subfolder{sep}4.ddd");
+            files.Add(tempFolderPath, $"subfolder{sep}5.aaa");
+            files.CreateFiles();
+
+            var config = new ImportConfig();
+            config.DestRoot = tempFolderPath;
+            config.FileFilter = "*.AAA";
+
+            var getFiles = Common.GetFiles(tempFolder, config);
 
             Console.WriteLine("files:");
             files.ForEach(f => Console.WriteLine(f.GetSourcePath()));
