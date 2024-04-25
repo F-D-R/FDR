@@ -135,13 +135,12 @@ namespace FDR.Tools.Library
             Common.Progress(0);
             Trace.Indent();
             ParallelOptions parallelOptions = new() { MaxDegreeOfParallelism = 8 };
-            var task = Parallel.ForEachAsync(files, parallelOptions, async (file, token) =>
+            Parallel.ForEach(files, parallelOptions, file =>
             {
                 i++;
                 dummy = file.ExifTime;
                 Common.Progress(100 * i / fileCount);
             });
-            task.Wait();
             Trace.Unindent();
 
             var dates = files.Select(f => f.ExifTime.Date).Distinct().OrderBy(d => d).ToList();

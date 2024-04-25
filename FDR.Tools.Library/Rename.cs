@@ -10,15 +10,15 @@ namespace FDR.Tools.Library
 {
     public static class Rename
     {
-        private const string REGEX = "{([^:}]*):?([^}]*)}";
-        private const string NOW = "now";                   // Current date time
-        private const string NAME = "name";                 // Name without extension
-        private const string PFOLDER = "pfolder";           // Parent folder
-        private const string CDATE = "cdate";               // Creation date
-        private const string MDATE = "mdate";               // Modify date
-        private const string EDATE = "edate";               // EXIF date (=SDATE)
-        private const string SDATE = "sdate";               // Shooting date (=EDATE)
-        private const string COUNTER = "counter";           // File counter starting with 1
+        internal const string REGEX = "{([^:}]*)(?::([^:}]*))?(?::([^:}]*))?}";
+        internal const string NOW = "now";                   // Current date time
+        internal const string NAME = "name";                 // Name without extension
+        internal const string PFOLDER = "pfolder";           // Parent folder
+        internal const string CDATE = "cdate";               // Creation date
+        internal const string MDATE = "mdate";               // Modify date
+        internal const string EDATE = "edate";               // EXIF date (=SDATE)
+        internal const string SDATE = "sdate";               // Shooting date (=EDATE)
+        internal const string COUNTER = "counter";           // File counter starting with 1
 
         public static void ShowRenameHelp()
         {
@@ -105,7 +105,7 @@ namespace FDR.Tools.Library
             string result = pattern;
 
             var regex = new Regex(REGEX, RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            foreach (Match match in regex.Matches(pattern).Cast<Match>())
+            foreach (Match match in regex.Matches(pattern))
             {
                 string arg = match.Groups.Count > 2 ? match.Groups[2].Value : string.Empty;
 
@@ -146,7 +146,7 @@ namespace FDR.Tools.Library
             string result = EvaluateNamePattern(pattern, folder);
 
             var regex = new Regex(REGEX, RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            foreach (Match match in regex.Matches(pattern).Cast<Match>())
+            foreach (Match match in regex.Matches(pattern))
             {
                 string arg = match.Groups.Count > 2 ? match.Groups[2].Value : string.Empty;
 
@@ -173,7 +173,7 @@ namespace FDR.Tools.Library
             string result = EvaluateNamePattern(pattern, file);
 
             var regex = new Regex(REGEX, RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            foreach (Match match in regex.Matches(pattern).Cast<Match>())
+            foreach (Match match in regex.Matches(pattern))
             {
                 string arg = match.Groups.Count > 2 ? match.Groups[2].Value : string.Empty;
 
@@ -214,7 +214,7 @@ namespace FDR.Tools.Library
             string result = pattern;
 
             var regex = new Regex(REGEX, RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            foreach (Match match in regex.Matches(pattern).Cast<Match>())
+            foreach (Match match in regex.Matches(pattern))
             {
                 string arg = match.Groups.Count > 2 ? match.Groups[2].Value : string.Empty;
 
@@ -434,7 +434,6 @@ namespace FDR.Tools.Library
             ParallelOptions parallelOptions = new() { MaxDegreeOfParallelism = 8 };
 
             int i = 0;
-            Task task;
             if (config.NeedsOrdering())
             {
                 //Parallel exif loading
@@ -443,13 +442,12 @@ namespace FDR.Tools.Library
                 DateTime dummy;
                 Common.Progress(0);
                 Trace.Indent();
-                task = Parallel.ForEachAsync(files, parallelOptions, async (file, token) =>
+                Parallel.ForEach(files, parallelOptions, file =>
                 {
                     i++;
                     dummy = file.ExifTime;
                     Common.Progress(100 * i / fileCount);
                 });
-                task.Wait();
                 Trace.Unindent();
 
                 Common.Msg($"Ordering {fileCount} files...");
@@ -496,7 +494,7 @@ namespace FDR.Tools.Library
             i = 0;
             Common.Progress(0);
             Trace.Indent();
-            task = Parallel.ForEachAsync(allFiles, parallelOptions, async (file, token) =>
+            Parallel.ForEach(allFiles, parallelOptions, file =>
             {
                 try
                 {
@@ -510,7 +508,6 @@ namespace FDR.Tools.Library
                     if (config.StopOnError) throw;
                 }
             });
-            task.Wait();
             Trace.Unindent();
 
             config.FilenamePattern = originalPattern;
