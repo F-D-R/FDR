@@ -97,6 +97,27 @@ namespace FDR.Tools.Library
             return GetExifDate(CreationTime < LastWriteTime ? CreationTime : LastWriteTime);
         }
 
+        public string CalculateNewLocation(RenameConfig config, int counter = 1)
+        {
+            if (config == null) throw new ArgumentNullException(nameof(config));
+            if (!Exists) throw new FileNotFoundException("File doesn't exist!", FullName);
+
+            var newName = Rename.EvaluateFileNamePattern(config.FilenamePattern??"{name}", this, counter);
+            if (config.FilenameCase == CharacterCasing.lower)
+                newName = newName.ToLower();
+            else if (config.FilenameCase == CharacterCasing.upper)
+                newName = newName.ToUpper();
+
+            var extension = Path.GetExtension(Name);
+            if (config.ExtensionCase == CharacterCasing.lower)
+                extension = extension.ToLower();
+            else if (config.ExtensionCase == CharacterCasing.upper)
+                extension = extension.ToUpper();
+
+            NewLocation = Path.Combine(DirectoryName??"", newName + extension);
+            return NewLocation;
+        }
+
         public bool Exists => FileInfo.Exists;
 
         public void CopyTo(string dest)

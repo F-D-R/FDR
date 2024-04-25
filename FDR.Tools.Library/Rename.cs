@@ -252,20 +252,11 @@ namespace FDR.Tools.Library
             RenameFolder(folder, config.FilenamePattern);
         }
 
-        public static string CalculateFileName(FileInfo file, RenameConfig config, int counter = 1)
-        {
-            if (file == null) throw new ArgumentNullException(nameof(file));
-
-            return CalculateFileName(new ExifFile(file), config, counter);
-        }
-
         public static string CalculateFileName(ExifFile file, RenameConfig config, int counter = 1)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
             if (file == null) throw new ArgumentNullException(nameof(file));
             if (!file.Exists) throw new FileNotFoundException("File doesn't exist!", file.FullName);
-
-            var path = Path.GetDirectoryName(file.FullName)??"";
 
             var newName = EvaluateFileNamePattern(config.FilenamePattern??"{name}", file, counter);
             if (config.FilenameCase == CharacterCasing.lower)
@@ -279,19 +270,19 @@ namespace FDR.Tools.Library
             else if (config.ExtensionCase == CharacterCasing.upper)
                 extension = extension.ToUpper();
 
-            return Path.Combine(path, newName + extension);
+            return Path.Combine(file.DirectoryName??"", newName + extension);
         }
 
         public static void RenameFile(ExifFile file, RenameConfig config, ref int counter, int progressPercent)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
             if (file == null) throw new ArgumentNullException(nameof(file));
-            if (!File.Exists(file.FullName)) return;    //file.Exists wouldn't work here!
+            if (!File.Exists(file.FullName)) return;    //file.Exists wouldn't work here without Refresh()!
 
             var origName = file.Name;
             var newFullName = CalculateFileName(file, config, counter);
             var newName = Path.GetFileName(newFullName);
-            string destDir = Path.GetDirectoryName(newFullName)??"";
+            string newDir = Path.GetDirectoryName(newFullName)??"";
 
             if (string.Compare(file.FullName, newFullName, false) == 0)
             {
@@ -312,7 +303,7 @@ namespace FDR.Tools.Library
                     newFullName = CalculateFileName(oldestFile, config, counter);
                     newName = Path.GetFileNameWithoutExtension(newFullName);
 
-                    files.ForEach(f => Rename(f.FileInfo, destDir, newName));
+                    files.ForEach(f => Rename(f.FileInfo, newDir, newName));
 
                     counter++;
                 }
@@ -321,7 +312,7 @@ namespace FDR.Tools.Library
             Common.Progress(progressPercent);
             return;
 
-            void Rename(FileInfo file, string destDir, string newName)
+            void Rename(FileInfo file, string newDir, string newName)
             {
                 var ext = file.Extension;
                 if (config.ExtensionCase == CharacterCasing.lower)
@@ -330,7 +321,7 @@ namespace FDR.Tools.Library
                     ext = ext.ToUpper();
 
                 var destFile = newName + ext;
-                var destPath = Path.Combine(destDir, destFile);
+                var destPath = Path.Combine(newDir, destFile);
 
                 if (string.Compare(file.FullName, destPath, false) != 0)
                 {
@@ -354,7 +345,7 @@ namespace FDR.Tools.Library
             if (config == null) throw new ArgumentNullException(nameof(config));
             if (file == null) throw new ArgumentNullException(nameof(file));
             if (file.NewLocationSpecified) return;      //file already has new location
-            if (!File.Exists(file.FullName)) return;    //file.Exists wouldn't work here!
+            if (!File.Exists(file.FullName)) return;    //file.Exists wouldn't work here without Refresh()!
 
             string origName = file.Name;
             string newFullName = CalculateFileName(file, config, counter);
