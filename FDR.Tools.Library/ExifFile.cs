@@ -69,8 +69,6 @@ namespace FDR.Tools.Library
             }
         }
 
-        public DateOnly ExifDate => DateOnly.FromDateTime(ExifTime);
-
         private bool _IsExifLoaded = false;
         public bool IsExifLoaded => _IsExifLoaded;
 
@@ -120,9 +118,9 @@ namespace FDR.Tools.Library
 
         public bool Exists => FileInfo.Exists;
 
-        public void CopyTo(string dest)
+        public FileInfo CopyTo(string dest)
         {
-            FileInfo.CopyTo(dest);
+            return FileInfo.CopyTo(dest);
         }
 
         public void MoveTo(string dest)
