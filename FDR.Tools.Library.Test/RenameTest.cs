@@ -425,12 +425,12 @@ namespace FDR.Tools.Library.Test
         }
 
         [Test]
-        public void RenameFolderTests()
+        public void RenameFolderWithPattern()
         {
-            var config = new RenameConfig() { FilenamePattern = "{pfolder}" };
-            config.Should().NotBeNull();
+            string pattern = "{pfolder}";
 
             var folderPath = Path.Combine(tempFolderPath, "folder");
+            var newFolderPath = Path.Combine(tempFolderPath, Path.GetFileName(tempFolderPath));
             Directory.CreateDirectory(folderPath);
             Directory.SetCreationTime(folderPath, new DateTime(2001, 2, 3));
             Directory.SetLastWriteTime(folderPath, new DateTime(2004, 5, 6));
@@ -441,9 +441,42 @@ namespace FDR.Tools.Library.Test
             parentPath.Should().NotBeNullOrWhiteSpace();
             parentPath.Should().Be(tempFolderPath);
 
+            files.Add(folderPath, "1.aaa", newFolderPath, "1.aaa");
+            files.Add(folderPath, "2.bbb", newFolderPath, "2.bbb");
+            files.CreateFiles();
+
+            Rename.RenameFolder(folder, pattern);
+
+            files.Validate();
+            Directory.Delete(newFolderPath, true);
+        }
+
+        [Test]
+        public void RenameFolderWithRenameConfig()
+        {
+            var config = new RenameConfig() { FilenamePattern = "{pfolder}" };
+            config.Should().NotBeNull();
+
+            var folderPath = Path.Combine(tempFolderPath, "folder");
+            var newFolderPath = Path.Combine(tempFolderPath, Path.GetFileName(tempFolderPath));
+            Directory.CreateDirectory(folderPath);
+            Directory.SetCreationTime(folderPath, new DateTime(2001, 2, 3));
+            Directory.SetLastWriteTime(folderPath, new DateTime(2004, 5, 6));
+            var folder = new DirectoryInfo(folderPath);
+            folder.Should().NotBeNull();
+            folder.Parent.Should().NotBeNull();
+            var parentPath = folder.Parent.FullName;
+            parentPath.Should().NotBeNullOrWhiteSpace();
+            parentPath.Should().Be(tempFolderPath);
+
+            files.Add(folderPath, "1.aaa", newFolderPath, "1.aaa");
+            files.Add(folderPath, "2.bbb", newFolderPath, "2.bbb");
+            files.CreateFiles();
+
             Rename.RenameFolder(folder, config);
 
             files.Validate();
+            Directory.Delete(newFolderPath, true);
         }
     }
 }
