@@ -158,5 +158,108 @@ namespace FDR.Tools.Library.Test
             Rename.EvaluateFileNamePattern("pre_{counter}_{counter:3}_post", (ExifFile)null, 1)
                 .Should().Be($"pre_1_001_post");
         }
+
+        [Test]
+        public void CalculateFileName()
+        {
+            var config = new RenameConfig();
+            var date = DateTime.Now;
+
+            config.FilenamePattern = "PRE_{name:0,2}_{name:2,2}_post";
+            config.FilenameCase = CharacterCasing.unchanged;
+            config.ExtensionCase = CharacterCasing.unchanged;
+            Rename.CalculateFileName(exifFile, config)
+                .Should().Be(Path.Combine(folderPath, "PRE_ab_cd_post.txt"));
+
+            config.FilenamePattern = "PRE_{name:0,2}_{name:2,2}_post";
+            config.FilenameCase = CharacterCasing.upper;
+            config.ExtensionCase = CharacterCasing.lower;
+            Rename.CalculateFileName(exifFile, config)
+                .Should().Be(Path.Combine(folderPath, "PRE_AB_CD_POST.txt"));
+
+            config.FilenamePattern = "PRE_{name:0,2}_{name:2,2}_post";
+            config.FilenameCase = CharacterCasing.lower;
+            config.ExtensionCase = CharacterCasing.upper;
+            Rename.CalculateFileName(exifFile, config)
+                .Should().Be(Path.Combine(folderPath, "pre_ab_cd_post.TXT"));
+
+
+            config.FilenamePattern = "PRE_{cdate:yyyy}_{cdate:MM}_{cdate:dd}_post";
+            config.FilenameCase = CharacterCasing.unchanged;
+            config.ExtensionCase = CharacterCasing.unchanged;
+            Rename.CalculateFileName(exifFile, config)
+                .Should().Be(Path.Combine(folderPath, "PRE_2007_08_09_post.txt"));
+
+            config.FilenamePattern = "PRE_{cdate:yyyy}_{cdate:MM}_{cdate:dd}_post";
+            config.FilenameCase = CharacterCasing.upper;
+            config.ExtensionCase = CharacterCasing.lower;
+            Rename.CalculateFileName(exifFile, config)
+                .Should().Be(Path.Combine(folderPath, "PRE_2007_08_09_POST.txt"));
+
+            config.FilenamePattern = "PRE_{cdate:yyyy}_{cdate:MM}_{cdate:dd}_post";
+            config.FilenameCase = CharacterCasing.lower;
+            config.ExtensionCase = CharacterCasing.upper;
+            Rename.CalculateFileName(exifFile, config)
+                .Should().Be(Path.Combine(folderPath, "pre_2007_08_09_post.TXT"));
+
+
+            config.FilenamePattern = "PRE_{mdate:yyyy}_{mdate:MM}_{mdate:dd}_post";
+            config.FilenameCase = CharacterCasing.unchanged;
+            config.ExtensionCase = CharacterCasing.unchanged;
+            Rename.CalculateFileName(exifFile, config)
+                .Should().Be(Path.Combine(folderPath, "PRE_2010_11_12_post.txt"));
+
+            config.FilenamePattern = "PRE_{mdate:yyyy}_{mdate:MM}_{mdate:dd}_post";
+            config.FilenameCase = CharacterCasing.upper;
+            config.ExtensionCase = CharacterCasing.lower;
+            Rename.CalculateFileName(exifFile, config)
+                .Should().Be(Path.Combine(folderPath, "PRE_2010_11_12_POST.txt"));
+
+            config.FilenamePattern = "PRE_{mdate:yyyy}_{mdate:MM}_{mdate:dd}_post";
+            config.FilenameCase = CharacterCasing.lower;
+            config.ExtensionCase = CharacterCasing.upper;
+            Rename.CalculateFileName(exifFile, config)
+                .Should().Be(Path.Combine(folderPath, "pre_2010_11_12_post.TXT"));
+
+
+            config.FilenamePattern = "PRE_{now:yyyy}_{now:MM}_{now:dd}_post";
+            config.FilenameCase = CharacterCasing.unchanged;
+            config.ExtensionCase = CharacterCasing.unchanged;
+            Rename.CalculateFileName(exifFile, config)
+                .Should().Be(Path.Combine(folderPath, $"PRE_{date:yyyy}_{date:MM}_{date:dd}_post.txt"));
+
+            config.FilenamePattern = "PRE_{now:yyyy}_{now:MM}_{now:dd}_post";
+            config.FilenameCase = CharacterCasing.upper;
+            config.ExtensionCase = CharacterCasing.lower;
+            Rename.CalculateFileName(exifFile, config)
+                .Should().Be(Path.Combine(folderPath, $"PRE_{date:yyyy}_{date:MM}_{date:dd}_POST.txt"));
+
+            config.FilenamePattern = "PRE_{now:yyyy}_{now:MM}_{now:dd}_post";
+            config.FilenameCase = CharacterCasing.lower;
+            config.ExtensionCase = CharacterCasing.upper;
+            Rename.CalculateFileName(exifFile, config)
+                .Should().Be(Path.Combine(folderPath, $"pre_{date:yyyy}_{date:MM}_{date:dd}_post.TXT"));
+        }
+
+        [TestCase("abcdef.txt", true)]
+        [TestCase("abcdef.txt", null, typeof(ArgumentNullException))]
+        [TestCase(null, true, typeof(ArgumentNullException))]
+        [TestCase("xxxxxxxxxxxx", true, typeof(FileNotFoundException))]
+        public void CalculateFileNameValidationTests(string fileName, bool? validConfig, Type ex = null)
+        {
+            ExifFile ef = null;
+            if (!string.IsNullOrWhiteSpace(fileName))
+                ef = new ExifFile(new FileInfo(Path.Combine(folderPath, fileName)));
+
+            var config = new RenameConfig();
+            if (validConfig == null)
+                config = null;
+
+            if (ex != null)
+                Assert.Throws(ex, delegate { Rename.CalculateFileName(ef, config); });
+            else
+                Assert.That(Rename.CalculateFileName(ef, config), Is.Not.Null);
+        }
+
     }
 }
