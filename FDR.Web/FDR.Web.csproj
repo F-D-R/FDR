@@ -5,9 +5,9 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>c4a96018-9ac7-4862-9189-ebe41543b3ba</UserSecretsId>
-    <AssemblyVersion>8.0.1.2</AssemblyVersion>
-    <FileVersion>8.0.1.2</FileVersion>
-    <Version>8.0.1.2</Version>
+    <AssemblyVersion>8.0.2.0</AssemblyVersion>
+    <FileVersion>8.0.2.0</FileVersion>
+    <Version>8.0.2.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
