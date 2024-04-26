@@ -91,6 +91,7 @@ namespace FDR.Tools.Library
 
         internal static void CopyFile(string destRoot, ExifFile file, FolderStructure destStruct, string dateFormat, int progressPercent)
         {
+            //TODO: configurable dest folder structure date source
             var destfolder = GetAbsoluteDestFolder(destRoot, destStruct, file.ExifTime, dateFormat);
             if (!Directory.Exists(destfolder)) Directory.CreateDirectory(destfolder);
 
@@ -128,6 +129,9 @@ namespace FDR.Tools.Library
             var files = Common.GetFiles(source, config.FileFilter, true);
             var fileCount = files.Count;
 
+            //TODO: configurable dest folder structure date source
+            //TODO: exif loading only if necessary, i.e. date source is edate
+
             //Parallel exif loading
             Common.Msg($"Loading EXIF date of {fileCount} files...");
             var i = 0;
@@ -143,6 +147,7 @@ namespace FDR.Tools.Library
             });
             Trace.Unindent();
 
+            //TODO: configurable file ordering
             var dates = files.Select(f => f.ExifTime.Date).Distinct().OrderBy(d => d).ToList();
             foreach (var date in dates)
             {

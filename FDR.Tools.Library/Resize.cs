@@ -101,6 +101,9 @@ namespace FDR.Tools.Library
             var files = Common.GetFiles(folder, filter, false);
             int fileCount = files.Count;
 
+            //TODO: parallel exif loading if necessary
+            //TODO: configurable order
+
             int counter = 1;
             Common.Progress(0);
             foreach (var file in files.OrderBy(f => f.FullName).ToList())

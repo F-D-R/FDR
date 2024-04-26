@@ -18,7 +18,7 @@ namespace FDR.Tools.Library
             LastWriteTime = file.LastWriteTime;
         }
 
-        public FileInfo FileInfo;
+        public readonly FileInfo FileInfo;
 
         public string FullName => FileInfo.FullName;
 

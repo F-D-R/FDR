@@ -442,6 +442,7 @@ namespace FDR.Tools.Library
                 Trace.Unindent();
 
                 Common.Msg($"Ordering {fileCount} files...");
+                //TODO: configurable ordering
                 //TODO: ordering by the rename pattern without counter??? (plus the original name as secondary)
                 files = files.OrderBy(f => f.ExifTime).ThenBy(f => f.Name).ToList();
             }
