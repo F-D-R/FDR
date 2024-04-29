@@ -4,6 +4,7 @@ using System.IO;
 using System.Security.Cryptography;
 using SixLabors.ImageSharp;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace FDR.Tools.Library
 {
@@ -129,7 +130,8 @@ namespace FDR.Tools.Library
 
             var watch = Stopwatch.StartNew();
 
-            var files = Common.GetFiles(folder, DEFAULT_FILTER, true);
+            var allFiles = Common.GetFiles(folder, "*.*", true);
+            var files = Common.GetFiles(allFiles, folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
             int errCount = 0;
 
@@ -144,13 +146,15 @@ namespace FDR.Tools.Library
                 i++;
 
                 var md5File = GetMd5FileName(file.FileInfo);
-                if (force || !File.Exists(md5File))
+
+                var md5 = Common.GetFiles(allFiles, folder, md5File, true).FirstOrDefault();
+                if (md5 == null || force)
                 {
                     if (!await ValidateImageAsync(file.FileInfo)) errCount++;
                     await CreateHashFileAsync(md5File, await ComputeHashAsync(file.FileInfo), file.LastWriteTimeUtc);
                     hashCount++;
                 }
-                else
+                else if (!md5.FileInfo.Attributes.HasFlag(FileAttributes.Hidden)) 
                     File.SetAttributes(md5File, FileAttributes.Hidden);
 
                 Common.Progress(100 * i / fileCount);
@@ -171,7 +175,8 @@ namespace FDR.Tools.Library
 
             var watch = Stopwatch.StartNew();
 
-            var files = Common.GetFiles(folder, DEFAULT_FILTER, true);
+            var allFiles = Common.GetFiles(folder, "*.*", true);
+            var files = Common.GetFiles(allFiles, folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
             int errCount = 0;
             int warnCount = 0;
