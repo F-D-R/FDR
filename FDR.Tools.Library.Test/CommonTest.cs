@@ -21,11 +21,10 @@ namespace FDR.Tools.Library.Test
             Common.IsFolderValid("  ").Should().BeFalse();
         }
 
-        [TestCase("*.*", @"^.*\..*$")]
-        [TestCase("*.CR3", @"^.*\.CR3$")]
-        [TestCase("*.CR2|*.CR3", @"^.*\.CR2|.*\.CR3$")]
-        [TestCase("*.CR?", @"^.*\.CR.$")]
-        [TestCase("*.??3", @"^.*\...3$")]
+        [TestCase("*.*",  @"[^\\]*\.[^\\]*")]
+        [TestCase("*.CR3", @"[^\\]*\.CR3")]
+        [TestCase("*.CR?", @"[^\\]*\.CR[^\\]")]
+        [TestCase("*.??3", @"[^\\]*\.[^\\][^\\]3")]
         public void WildcardToRegexTests(string filter, string result)
         {
             Common.WildcardToRegex(filter).Should().Be(result);
@@ -486,6 +485,110 @@ namespace FDR.Tools.Library.Test
 
             getFiles.Where(gf => !files.Where(f => f.Name.EndsWith(".AAA", StringComparison.InvariantCultureIgnoreCase)).Select(f => f.GetSourcePath()).Contains(gf.FullName)).Any().Should().BeFalse("'GetFiles has more results'");
             files.Where(f => f.Name.EndsWith(".AAA", StringComparison.InvariantCultureIgnoreCase) && !getFiles.Select(gf => gf.FullName).Contains(f.GetSourcePath())).Any().Should().BeFalse("'There are files missing from GetFiles result'");
+        }
+
+        [Test]
+        public void GetFilesRegexFindSomeRecursive()
+        {
+            var sep = Path.DirectorySeparatorChar;
+            files.Add(tempFolderPath, "1.aaa");
+            files.Add(tempFolderPath, "2.bbb");
+            files.Add(tempFolderPath, "3.aaa");
+            files.Add(tempFolderPath, $"subfolder{sep}4.ddd");
+            files.Add(tempFolderPath, $"subfolder{sep}5.aaa");
+            files.CreateFiles();
+
+            var allFiles = Common.GetFiles(tempFolder, "*.*", true);
+
+            var getFiles = Common.GetFiles(allFiles, tempFolder, "*.AAA", true);
+
+            Console.WriteLine("files:");
+            files.ForEach(f => Console.WriteLine(f.GetSourcePath()));
+            Console.WriteLine("GetFiles:");
+            getFiles.ForEach(f => Console.WriteLine(f.FullName));
+
+            getFiles.Where(gf => !files.Where(f => f.Name.EndsWith(".AAA", StringComparison.InvariantCultureIgnoreCase)).Select(f => f.GetSourcePath()).Contains(gf.FullName)).Any().Should().BeFalse("'GetFiles has more results'");
+            files.Where(f => f.Name.EndsWith(".AAA", StringComparison.InvariantCultureIgnoreCase) && !getFiles.Select(gf => gf.FullName).Contains(f.GetSourcePath())).Any().Should().BeFalse("'There are files missing from GetFiles result'");
+        }
+
+        [Test]
+        public void GetFilesRegexFindSomeNonRecursive()
+        {
+            var sep = Path.DirectorySeparatorChar;
+            files.Add(tempFolderPath, "1.aaa");
+            files.Add(tempFolderPath, "2.bbb");
+            files.Add(tempFolderPath, "3.AAA");
+            files.Add(tempFolderPath, $"subfolder{sep}4.ddd");
+            files.Add(tempFolderPath, $"subfolder{sep}5.aaa");
+            files.CreateFiles();
+
+            var allFiles = Common.GetFiles(tempFolder, "*.*", true);
+
+            var getFiles = Common.GetFiles(allFiles, tempFolder, "*.AAA", false);
+
+            Console.WriteLine("files:");
+            files.ForEach(f => Console.WriteLine(f.GetSourcePath()));
+            Console.WriteLine("GetFiles:");
+            getFiles.ForEach(f => Console.WriteLine(f.FullName));
+
+            getFiles.Count.Should().Be(2);
+            var validFiles = new List<string>() { files[0].GetSourcePath(), files[2].GetSourcePath() };
+            getFiles.Where(gf => !validFiles.Contains(gf.FullName)).Any().Should().BeFalse("'GetFiles has more results'");
+            validFiles.Where(f => !getFiles.Select(gf => gf.FullName).Contains(f)).Any().Should().BeFalse("'There are files missing from GetFiles result'");
+        }
+
+        [Test]
+        public void GetFilesRegexFindSomeNonRecursiveInSubfolder()
+        {
+            var sep = Path.DirectorySeparatorChar;
+            files.Add(tempFolderPath, "1.aaa");
+            files.Add(tempFolderPath, "2.bbb");
+            files.Add(tempFolderPath, "3.AAA");
+            files.Add(tempFolderPath, $"subfolder{sep}4.ddd");
+            files.Add(tempFolderPath, $"subfolder{sep}5.aaa");
+            files.CreateFiles();
+
+            var allFiles = Common.GetFiles(tempFolder, "*.*", true);
+
+            var getFiles = Common.GetFiles(allFiles, new DirectoryInfo(Path.Combine(tempFolderPath, "subfolder")), "*.AAA", false);
+
+            Console.WriteLine("files:");
+            files.ForEach(f => Console.WriteLine(f.GetSourcePath()));
+            Console.WriteLine("GetFiles:");
+            getFiles.ForEach(f => Console.WriteLine(f.FullName));
+
+            getFiles.Count.Should().Be(1);
+            var validFiles = new List<string>() { files[4].GetSourcePath() };
+            getFiles.Where(gf => !validFiles.Contains(gf.FullName)).Any().Should().BeFalse("'GetFiles has more results'");
+            validFiles.Where(f => !getFiles.Select(gf => gf.FullName).Contains(f)).Any().Should().BeFalse("'There are files missing from GetFiles result'");
+        }
+
+        [Test]
+        public void GetFilesRegexFindSomeRecursiveInSubfolder()
+        {
+            var sep = Path.DirectorySeparatorChar;
+            files.Add(tempFolderPath, "1.aaa");
+            files.Add(tempFolderPath, "2.bbb");
+            files.Add(tempFolderPath, "3.AAA");
+            files.Add(tempFolderPath, $"subfolder{sep}4.ddd");
+            files.Add(tempFolderPath, $"subfolder{sep}5.aaa");
+            files.Add(tempFolderPath, $"subfolder{sep}subsubfolder{sep}6.fff");
+            files.Add(tempFolderPath, $"subfolder{sep}subsubfolder{sep}7.aaa");
+            files.CreateFiles();
+
+            var allFiles = Common.GetFiles(tempFolder, "*.*", true);
+
+            var getFiles = Common.GetFiles(allFiles, new DirectoryInfo(Path.Combine(tempFolderPath, "subfolder")), "*.AAA", true);
+
+            Console.WriteLine("files:");
+            files.ForEach(f => Console.WriteLine(f.GetSourcePath()));
+            Console.WriteLine("GetFiles:");
+            getFiles.ForEach(f => Console.WriteLine(f.FullName));
+
+            getFiles.Count.Should().Be(2);
+            var validFiles = new List<string>() { files[4].GetSourcePath(), files[6].GetSourcePath() };
+            getFiles.Where(gf => !validFiles.Contains(gf.FullName)).Any().Should().BeFalse("'GetFiles has more results'");
+            validFiles.Where(f => !getFiles.Select(gf => gf.FullName).Contains(f)).Any().Should().BeFalse("'There are files missing from GetFiles result'");
         }
 
     }

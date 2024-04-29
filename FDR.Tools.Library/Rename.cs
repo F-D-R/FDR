@@ -416,10 +416,7 @@ namespace FDR.Tools.Library
             Common.Msg($"Renaming {filter} files in {folder.FullName}");
 
             var allFiles = Common.GetFiles(folder, "*.*", config.Recursive);
-
-            var regex = new Regex(Common.WildcardToRegex(filter), RegexOptions.IgnoreCase);
-            Trace.WriteLine($"Regex: {regex}");
-            var files = allFiles.Where(f => regex.IsMatch(f.Name)).ToList();
+            var files = Common.GetFiles(allFiles, folder, filter, config.Recursive);
             int fileCount = files.Count;
 
             ParallelOptions parallelOptions = new() { MaxDegreeOfParallelism = 8 };
