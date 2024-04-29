@@ -47,6 +47,9 @@ namespace FDR.Tools.Library
 
         public bool NewLocationSpecified => !string.IsNullOrWhiteSpace(NewLocation);
 
+        private bool _IsDeleted = false;
+        public bool IsDeleted => _IsDeleted;
+
         public readonly DateTime CreationTimeUtc;
 
         public readonly DateTime CreationTime;
@@ -135,6 +138,12 @@ namespace FDR.Tools.Library
                 FileInfo.MoveTo(NewLocation!);
                 NewLocation = null;
             }
+        }
+
+        public void Delete()
+        {
+            FileInfo.Delete();
+            _IsDeleted = true;
         }
     }
 

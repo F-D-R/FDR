@@ -124,6 +124,12 @@ namespace FDR.Tools.Library.Test
 
             files.CreateFiles();
 
+            files.ForEach(f =>
+            {
+                if (string.Compare(Path.GetExtension(f.Name), ".md5", true) == 0)
+                    File.SetAttributes(f.GetSourcePath(), File.GetAttributes(f.GetSourcePath()) | FileAttributes.Hidden);
+            });
+
             Raw.CleanupFolder(tempFolder, token);
 
             files.ValidateExistance();
@@ -193,6 +199,11 @@ namespace FDR.Tools.Library.Test
             files.Add(panoramaFolderPath, "missing4.jpg.error", false);
 
             files.CreateFiles();
+
+            files.ForEach(f => { 
+                if (string.Compare(Path.GetExtension(f.Name), ".md5", true) == 0)
+                    File.SetAttributes(f.GetSourcePath(), File.GetAttributes(f.GetSourcePath()) | FileAttributes.Hidden);
+            });
 
             Raw.CleanupFolder(tempFolder, token);
 

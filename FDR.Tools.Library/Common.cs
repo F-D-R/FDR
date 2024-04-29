@@ -126,7 +126,7 @@ namespace FDR.Tools.Library
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
             var files = new List<ExifFile>();
-            var options = new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = recursive };
+            var options = new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = recursive, AttributesToSkip = FileAttributes.System };
             foreach (var tmpfilter in filter.Split('|'))
                 files.AddRange(folder.GetFiles(tmpfilter, options).Select(fi => new ExifFile(fi)));
 
@@ -147,15 +147,24 @@ namespace FDR.Tools.Library
             {
                 if (recursive)
                 {
-                    var regex = new Regex(Common.WildcardToRegex(folder.FullName + Path.DirectorySeparatorChar) + ".*" + Common.WildcardToRegex(tmpfilter), RegexOptions.IgnoreCase);
+                    var regex = new Regex("^" + Common.WildcardToRegex(folder.FullName + Path.DirectorySeparatorChar) + ".*" + Common.WildcardToRegex(tmpfilter) + "$", RegexOptions.IgnoreCase);
                     Trace.WriteLine($"Regex (recursive): {regex}");
                     result.AddRange(files.Where(f => regex.IsMatch(f.FullName)));
                 }
                 else
                 {
-                    var regex = new Regex(Common.WildcardToRegex(folder.FullName + Path.DirectorySeparatorChar + tmpfilter), RegexOptions.IgnoreCase);
-                    Trace.WriteLine($"Regex (non-recursive): {regex}");
-                    result.AddRange(files.Where(f => regex.IsMatch(f.FullName)));
+                    if (Path.IsPathRooted(tmpfilter))
+                    {
+                        var regex = new Regex("^" + Common.WildcardToRegex(tmpfilter) + "$", RegexOptions.IgnoreCase);
+                        Trace.WriteLine($"Regex (non-recursive): {regex}");
+                        result.AddRange(files.Where(f => regex.IsMatch(f.FullName)));
+                    }
+                    else
+                    {
+                        var regex = new Regex("^" + Common.WildcardToRegex(folder.FullName + Path.DirectorySeparatorChar + tmpfilter) + "$", RegexOptions.IgnoreCase);
+                        Trace.WriteLine($"Regex (non-recursive): {regex}");
+                        result.AddRange(files.Where(f => regex.IsMatch(f.FullName)));
+                    }
                 }
             }
             return result.OrderBy(f => f.FullName).ToList();

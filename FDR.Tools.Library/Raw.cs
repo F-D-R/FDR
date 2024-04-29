@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -15,7 +17,10 @@ namespace FDR.Tools.Library
 
             Common.Msg($"Cleaning up folder {folder}");
 
-            var worker = new CleanupWorker(folder);
+            Common.Msg($"Loading files from {folder}...");
+            var files = Common.GetFiles(folder, "*.*", true);
+
+            var worker = new CleanupWorker(folder, files);
             try
             {
                 worker.CleanupErrorFiles(token);
@@ -30,11 +35,17 @@ namespace FDR.Tools.Library
 
         private sealed class CleanupWorker
         {
-            internal CleanupWorker(DirectoryInfo folder) => Folder = folder;
+            internal CleanupWorker(DirectoryInfo folder, List<ExifFile> files)
+            {
+                Folder = folder; 
+                Files = files;
+            }
 
             private const string DEFAULT_RAW_FOLDER = "RAW";
 
             private DirectoryInfo Folder { get; }
+
+            private List<ExifFile> Files { get; }
 
             private int rawCount = 0;
             public int RawCount => rawCount;
@@ -53,22 +64,18 @@ namespace FDR.Tools.Library
 
             public void CleanupRawFiles(CancellationToken token)
             {
-                var files = Common.EnumerateFiles(Folder, "*.CR?|*.DNG", true);
-
-                var jpgOptions = new EnumerationOptions
-                {
-                    MatchCasing = MatchCasing.CaseInsensitive,
-                    RecurseSubdirectories = false
-                };
+                var files = Common.GetFiles(Files, Folder, "*.CR?|*.DNG", true);
 
                 var i = 0;
                 Trace.Indent();
 
                 ParallelOptions parallelOptions = new()
                 {
-                    MaxDegreeOfParallelism = 4, 
+                    MaxDegreeOfParallelism = 4,
                     CancellationToken = token
                 };
+
+                var folderContainsJpg = new ConcurrentDictionary<string, bool>();
 
                 Parallel.ForEach(files, parallelOptions, (file, token) =>
                 {
@@ -83,25 +90,36 @@ namespace FDR.Tools.Library
                     if (jpgFolder == null) return;
 
                     // Exit if JPG folder is empty, i.e. the RAW files are not jet converted:
-                    if (!jpgFolder.EnumerateFiles("*.JPG", jpgOptions).Any()) return;
+                    lock (this)
+                    {
+                        if (folderContainsJpg.ContainsKey(jpgFolder.FullName))
+                        {
+                            if (!folderContainsJpg[jpgFolder.FullName]) return;
+                        }
+                        else
+                        {
+                            folderContainsJpg[jpgFolder.FullName] = Common.GetFiles(Files, jpgFolder, "*.JPG", false).Any();
+                            if (!folderContainsJpg[jpgFolder.FullName]) return;
+                        }
+                    }
 
                     // Exit if there is a JPG file:
-                    if (Directory.EnumerateFiles(jpgFolder.FullName, Path.GetFileNameWithoutExtension(file.Name) + "*.jpg", jpgOptions).Any()) return;
+                    if (Common.GetFiles(Files, jpgFolder, Path.GetFileNameWithoutExtension(file.Name) + "*.jpg", false).Any()) return;
 
                     Trace.WriteLine($"Deleting raw file: {file.FullName}");
                     IncrementRawCount();
                     file.Delete();
 
-                    var hashFile = Verify.GetMd5FileName(file);
-                    if (File.Exists(hashFile))
+                    var hashFile = Verify.GetMd5FileName(file.FileInfo);
+                    if (Common.GetFiles(Files, rawFolder!, hashFile, false).Any())
                     {
                         Trace.WriteLine($"Deleting raw hash file: {hashFile}");
                         IncrementHashCount();
                         File.Delete(hashFile);
                     }
 
-                    var errFile = Verify.GetErrorFileName(file);
-                    if (File.Exists(errFile))
+                    var errFile = Verify.GetErrorFileName(file.FileInfo);
+                    if (Common.GetFiles(Files, rawFolder!, errFile, false).Any())
                     {
                         Trace.WriteLine($"Deleting raw error file: {errFile}");
                         IncrementErrCount();
@@ -129,13 +147,7 @@ namespace FDR.Tools.Library
 
             public void CleanupHashFiles(CancellationToken token)
             {
-                var options = new EnumerationOptions
-                {
-                    MatchCasing = MatchCasing.CaseInsensitive,
-                    RecurseSubdirectories = true,
-                    AttributesToSkip = FileAttributes.System
-                };
-                var files = Folder.EnumerateFiles("*.md5", options);
+                var files = Common.GetFiles(Files, Folder, "*.md5", true);
 
                 var i = 0;
                 Trace.Indent();
@@ -150,7 +162,7 @@ namespace FDR.Tools.Library
                 {
                     i++;
 
-                    if (!File.Exists(Verify.GetFileNameFromMD5(file)))
+                    if (!File.Exists(Verify.GetFileNameFromMD5(file.FileInfo)))
                     {
                         Trace.WriteLine($"Deleting hash file: {file.FullName}");
                         IncrementHashCount();
@@ -172,13 +184,7 @@ namespace FDR.Tools.Library
 
             public void CleanupErrorFiles(CancellationToken token)
             {
-                var options = new EnumerationOptions
-                {
-                    MatchCasing = MatchCasing.CaseInsensitive,
-                    RecurseSubdirectories = true,
-                    AttributesToSkip = FileAttributes.System
-                };
-                var files = Folder.EnumerateFiles("*.error", options);
+                var files = Common.GetFiles(Files, Folder, "*.error", true);
 
                 var i = 0;
                 Trace.Indent();
@@ -193,7 +199,7 @@ namespace FDR.Tools.Library
                 {
                     i++;
 
-                    if (!File.Exists(Verify.GetFileNameFromError(file)))
+                    if (!File.Exists(Verify.GetFileNameFromError(file.FileInfo)))
                     {
                         Trace.WriteLine($"Deleting error file: {file.FullName}");
                         IncrementErrCount();
@@ -212,7 +218,6 @@ namespace FDR.Tools.Library
                     Common.Msg($"    Error files processed: {done}                  \r", ConsoleColor.Gray, newline);
                 }
             }
-
         }
     }
 }
