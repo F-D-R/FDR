@@ -61,6 +61,11 @@ namespace FDR.Tools.Library.Test
 }
 """;
 
+        AppConfig appConfig;
+        RenameConfig renameConfig;
+        MoveConfig moveConfig;
+        ImportConfig importConfig;
+
 
         [SetUp]
         public override void SetUp()
@@ -96,6 +101,18 @@ namespace FDR.Tools.Library.Test
             Directory.CreateDirectory(raw1);
             raw2 = Path.Combine(dest2, "RAW");
             Directory.CreateDirectory(raw2);
+
+            appConfig = new AppConfig();
+            renameConfig = new RenameConfig() { FilenamePattern = "{cdate:yyMMdd}_{counter:auto}" };
+            moveConfig = new MoveConfig() { FileFilter = "*.CR?|*.DNG", RelativeFolder = "RAW" };
+            importConfig = new ImportConfig() { DestRoot = destinationRoot, DestStructure = FolderStructure.year_date };
+            appConfig.RenameConfigs.Add("rc", renameConfig);
+            appConfig.MoveConfigs.Add("mc", moveConfig);
+            var renameAction = new Action(appConfig) { Type = ActionType.rename, Config = "rc" };
+            var moveAction = new Action(appConfig) { Type = ActionType.move, Config = "mc" };
+            importConfig.Actions.Add(renameAction);
+            importConfig.Actions.Add(moveAction);
+            appConfig.ImportConfigs.Add("ic", importConfig);
         }
 
         [Test]
@@ -410,6 +427,167 @@ namespace FDR.Tools.Library.Test
             Directory.Delete(dest2, true);
             var import1 = appConfig.ImportConfigs["import1"];
             Import.ImportFiles(new DirectoryInfo(source1), import1, false, token);
+
+            files.Validate();
+        }
+
+        [Test]
+        public void ImportDate()
+        {
+            renameConfig.FilenamePattern = "{cdate:yyMMdd}_{counter:auto}";
+            importConfig.DestStructure = FolderStructure.date;
+            appConfig.Validate();
+
+            files.Add(source1, "aaa.dng", destinationRoot, "230101/RAW/230101_1.dng", new DateTime(2023, 1, 1, 13, 59, 1));
+            files.Add(source1, "aaa.jpg", destinationRoot, "230101/230101_1.jpg", new DateTime(2023, 1, 1, 13, 59, 1));
+            files.Add(source1, "bbb.crw", destinationRoot, "230101/RAW/230101_2.crw", new DateTime(2023, 1, 1, 13, 59, 2));
+            files.Add(source1, "bbb.jpg", destinationRoot, "230101/230101_2.jpg", new DateTime(2023, 1, 1, 13, 59, 2));
+            files.Add(source1, "ccc.cr2", destinationRoot, "230102/RAW/230102_1.cr2", new DateTime(2023, 1, 2, 13, 59, 3));
+            files.Add(source1, "ccc.jpg", destinationRoot, "230102/230102_1.jpg", new DateTime(2023, 1, 2, 13, 59, 3));
+            files.Add(source1, "ddd.cr3", destinationRoot, "230102/RAW/230102_2.cr3", new DateTime(2023, 1, 2, 13, 59, 4));
+            files.Add(source1, "ddd.jpg", destinationRoot, "230102/230102_2.jpg", new DateTime(2023, 1, 2, 13, 59, 4));
+            files.Add(source1, "eee.cr3", destinationRoot, "230201/RAW/230201_1.cr3", new DateTime(2023, 2, 1, 13, 59, 5));
+            files.Add(source1, "eee.jpg", destinationRoot, "230201/230201_1.jpg", new DateTime(2023, 2, 1, 13, 59, 5));
+            files.Add(source1, "fff.cr3", destinationRoot, "230201/RAW/230201_2.cr3", new DateTime(2023, 2, 1, 13, 59, 6));
+            files.Add(source1, "fff.jpg", destinationRoot, "230201/230201_2.jpg", new DateTime(2023, 2, 1, 13, 59, 6));
+            files.Add(source1, "ggg.cr3", destinationRoot, "240101/RAW/240101_1.cr3", new DateTime(2024, 1, 1, 13, 59, 7));
+            files.Add(source1, "ggg.jpg", destinationRoot, "240101/240101_1.jpg", new DateTime(2024, 1, 1, 13, 59, 7));
+            files.Add(source1, "hhh.cr3", destinationRoot, "240101/RAW/240101_2.cr3", new DateTime(2024, 1, 1, 13, 59, 8));
+            files.Add(source1, "hhh.jpg", destinationRoot, "240101/240101_2.jpg", new DateTime(2024, 1, 1, 13, 59, 8));
+            files.Add(source1, "iii.cr3", destinationRoot, "240202/RAW/240202_1.cr3", new DateTime(2024, 2, 2, 13, 59, 9));
+            files.Add(source1, "iii.jpg", destinationRoot, "240202/240202_1.jpg", new DateTime(2024, 2, 2, 13, 59, 9));
+            files.CreateFiles();
+
+            Import.ImportFiles(new DirectoryInfo(source1), importConfig, false, token);
+
+            files.Validate();
+        }
+
+        [Test]
+        public void ImportYearDate()
+        {
+            renameConfig.FilenamePattern = "{cdate:yyMMdd}_{counter:auto}";
+            importConfig.DestStructure = FolderStructure.year_date;
+            appConfig.Validate();
+
+            files.Add(source1, "aaa.dng", destinationRoot, "2023/230101/RAW/230101_1.dng", new DateTime(2023, 1, 1, 13, 59, 1));
+            files.Add(source1, "aaa.jpg", destinationRoot, "2023/230101/230101_1.jpg", new DateTime(2023, 1, 1, 13, 59, 1));
+            files.Add(source1, "bbb.crw", destinationRoot, "2023/230101/RAW/230101_2.crw", new DateTime(2023, 1, 1, 13, 59, 2));
+            files.Add(source1, "bbb.jpg", destinationRoot, "2023/230101/230101_2.jpg", new DateTime(2023, 1, 1, 13, 59, 2));
+            files.Add(source1, "ccc.cr2", destinationRoot, "2023/230102/RAW/230102_1.cr2", new DateTime(2023, 1, 2, 13, 59, 3));
+            files.Add(source1, "ccc.jpg", destinationRoot, "2023/230102/230102_1.jpg", new DateTime(2023, 1, 2, 13, 59, 3));
+            files.Add(source1, "ddd.cr3", destinationRoot, "2023/230102/RAW/230102_2.cr3", new DateTime(2023, 1, 2, 13, 59, 4));
+            files.Add(source1, "ddd.jpg", destinationRoot, "2023/230102/230102_2.jpg", new DateTime(2023, 1, 2, 13, 59, 4));
+            files.Add(source1, "eee.cr3", destinationRoot, "2023/230201/RAW/230201_1.cr3", new DateTime(2023, 2, 1, 13, 59, 5));
+            files.Add(source1, "eee.jpg", destinationRoot, "2023/230201/230201_1.jpg", new DateTime(2023, 2, 1, 13, 59, 5));
+            files.Add(source1, "fff.cr3", destinationRoot, "2023/230201/RAW/230201_2.cr3", new DateTime(2023, 2, 1, 13, 59, 6));
+            files.Add(source1, "fff.jpg", destinationRoot, "2023/230201/230201_2.jpg", new DateTime(2023, 2, 1, 13, 59, 6));
+            files.Add(source1, "ggg.cr3", destinationRoot, "2024/240101/RAW/240101_1.cr3", new DateTime(2024, 1, 1, 13, 59, 7));
+            files.Add(source1, "ggg.jpg", destinationRoot, "2024/240101/240101_1.jpg", new DateTime(2024, 1, 1, 13, 59, 7));
+            files.Add(source1, "hhh.cr3", destinationRoot, "2024/240101/RAW/240101_2.cr3", new DateTime(2024, 1, 1, 13, 59, 8));
+            files.Add(source1, "hhh.jpg", destinationRoot, "2024/240101/240101_2.jpg", new DateTime(2024, 1, 1, 13, 59, 8));
+            files.Add(source1, "iii.cr3", destinationRoot, "2024/240202/RAW/240202_1.cr3", new DateTime(2024, 2, 2, 13, 59, 9));
+            files.Add(source1, "iii.jpg", destinationRoot, "2024/240202/240202_1.jpg", new DateTime(2024, 2, 2, 13, 59, 9));
+            files.CreateFiles();
+
+            Import.ImportFiles(new DirectoryInfo(source1), importConfig, false, token);
+
+            files.Validate();
+        }
+
+        [Test]
+        public void ImportYearMonthDate()
+        {
+            renameConfig.FilenamePattern = "{cdate:yyMMdd}_{counter:auto}";
+            importConfig.DestStructure = FolderStructure.year_month_date;
+            appConfig.Validate();
+
+            files.Add(source1, "aaa.dng", destinationRoot, "2023/01/230101/RAW/230101_1.dng", new DateTime(2023, 1, 1, 13, 59, 1));
+            files.Add(source1, "aaa.jpg", destinationRoot, "2023/01/230101/230101_1.jpg", new DateTime(2023, 1, 1, 13, 59, 1));
+            files.Add(source1, "bbb.crw", destinationRoot, "2023/01/230101/RAW/230101_2.crw", new DateTime(2023, 1, 1, 13, 59, 2));
+            files.Add(source1, "bbb.jpg", destinationRoot, "2023/01/230101/230101_2.jpg", new DateTime(2023, 1, 1, 13, 59, 2));
+            files.Add(source1, "ccc.cr2", destinationRoot, "2023/01/230102/RAW/230102_1.cr2", new DateTime(2023, 1, 2, 13, 59, 3));
+            files.Add(source1, "ccc.jpg", destinationRoot, "2023/01/230102/230102_1.jpg", new DateTime(2023, 1, 2, 13, 59, 3));
+            files.Add(source1, "ddd.cr3", destinationRoot, "2023/01/230102/RAW/230102_2.cr3", new DateTime(2023, 1, 2, 13, 59, 4));
+            files.Add(source1, "ddd.jpg", destinationRoot, "2023/01/230102/230102_2.jpg", new DateTime(2023, 1, 2, 13, 59, 4));
+            files.Add(source1, "eee.cr3", destinationRoot, "2023/02/230201/RAW/230201_1.cr3", new DateTime(2023, 2, 1, 13, 59, 5));
+            files.Add(source1, "eee.jpg", destinationRoot, "2023/02/230201/230201_1.jpg", new DateTime(2023, 2, 1, 13, 59, 5));
+            files.Add(source1, "fff.cr3", destinationRoot, "2023/02/230201/RAW/230201_2.cr3", new DateTime(2023, 2, 1, 13, 59, 6));
+            files.Add(source1, "fff.jpg", destinationRoot, "2023/02/230201/230201_2.jpg", new DateTime(2023, 2, 1, 13, 59, 6));
+            files.Add(source1, "ggg.cr3", destinationRoot, "2024/01/240101/RAW/240101_1.cr3", new DateTime(2024, 1, 1, 13, 59, 7));
+            files.Add(source1, "ggg.jpg", destinationRoot, "2024/01/240101/240101_1.jpg", new DateTime(2024, 1, 1, 13, 59, 7));
+            files.Add(source1, "hhh.cr3", destinationRoot, "2024/01/240101/RAW/240101_2.cr3", new DateTime(2024, 1, 1, 13, 59, 8));
+            files.Add(source1, "hhh.jpg", destinationRoot, "2024/01/240101/240101_2.jpg", new DateTime(2024, 1, 1, 13, 59, 8));
+            files.Add(source1, "iii.cr3", destinationRoot, "2024/02/240202/RAW/240202_1.cr3", new DateTime(2024, 2, 2, 13, 59, 9));
+            files.Add(source1, "iii.jpg", destinationRoot, "2024/02/240202/240202_1.jpg", new DateTime(2024, 2, 2, 13, 59, 9));
+            files.CreateFiles();
+
+            Import.ImportFiles(new DirectoryInfo(source1), importConfig, false, token);
+
+            files.Validate();
+        }
+
+        [Test]
+        public void ImportYearMonthDay()
+        {
+            renameConfig.FilenamePattern = "{cdate:yyMMdd}_{counter:auto}";
+            importConfig.DestStructure = FolderStructure.year_month_day;
+            appConfig.Validate();
+
+            files.Add(source1, "aaa.dng", destinationRoot, "2023/01/01/RAW/230101_1.dng", new DateTime(2023, 1, 1, 13, 59, 1));
+            files.Add(source1, "aaa.jpg", destinationRoot, "2023/01/01/230101_1.jpg", new DateTime(2023, 1, 1, 13, 59, 1));
+            files.Add(source1, "bbb.crw", destinationRoot, "2023/01/01/RAW/230101_2.crw", new DateTime(2023, 1, 1, 13, 59, 2));
+            files.Add(source1, "bbb.jpg", destinationRoot, "2023/01/01/230101_2.jpg", new DateTime(2023, 1, 1, 13, 59, 2));
+            files.Add(source1, "ccc.cr2", destinationRoot, "2023/01/02/RAW/230102_1.cr2", new DateTime(2023, 1, 2, 13, 59, 3));
+            files.Add(source1, "ccc.jpg", destinationRoot, "2023/01/02/230102_1.jpg", new DateTime(2023, 1, 2, 13, 59, 3));
+            files.Add(source1, "ddd.cr3", destinationRoot, "2023/01/02/RAW/230102_2.cr3", new DateTime(2023, 1, 2, 13, 59, 4));
+            files.Add(source1, "ddd.jpg", destinationRoot, "2023/01/02/230102_2.jpg", new DateTime(2023, 1, 2, 13, 59, 4));
+            files.Add(source1, "eee.cr3", destinationRoot, "2023/02/01/RAW/230201_1.cr3", new DateTime(2023, 2, 1, 13, 59, 5));
+            files.Add(source1, "eee.jpg", destinationRoot, "2023/02/01/230201_1.jpg", new DateTime(2023, 2, 1, 13, 59, 5));
+            files.Add(source1, "fff.cr3", destinationRoot, "2023/02/01/RAW/230201_2.cr3", new DateTime(2023, 2, 1, 13, 59, 6));
+            files.Add(source1, "fff.jpg", destinationRoot, "2023/02/01/230201_2.jpg", new DateTime(2023, 2, 1, 13, 59, 6));
+            files.Add(source1, "ggg.cr3", destinationRoot, "2024/01/01/RAW/240101_1.cr3", new DateTime(2024, 1, 1, 13, 59, 7));
+            files.Add(source1, "ggg.jpg", destinationRoot, "2024/01/01/240101_1.jpg", new DateTime(2024, 1, 1, 13, 59, 7));
+            files.Add(source1, "hhh.cr3", destinationRoot, "2024/01/01/RAW/240101_2.cr3", new DateTime(2024, 1, 1, 13, 59, 8));
+            files.Add(source1, "hhh.jpg", destinationRoot, "2024/01/01/240101_2.jpg", new DateTime(2024, 1, 1, 13, 59, 8));
+            files.Add(source1, "iii.cr3", destinationRoot, "2024/02/02/RAW/240202_1.cr3", new DateTime(2024, 2, 2, 13, 59, 9));
+            files.Add(source1, "iii.jpg", destinationRoot, "2024/02/02/240202_1.jpg", new DateTime(2024, 2, 2, 13, 59, 9));
+            files.CreateFiles();
+
+            Import.ImportFiles(new DirectoryInfo(source1), importConfig, false, token);
+
+            files.Validate();
+        }
+
+        [Ignore("Monthly folders don't work yet")]
+        [Test]
+        public void ImportYearMonth()
+        {
+            renameConfig.FilenamePattern = "{cdate:yyMMdd}_{counter:auto}";
+            importConfig.DestStructure = FolderStructure.year_month;
+            appConfig.Validate();
+
+            files.Add(source1, "aaa.dng", destinationRoot, "2023/01/RAW/230101_1.dng", new DateTime(2023, 1, 1, 13, 59, 1));
+            files.Add(source1, "aaa.jpg", destinationRoot, "2023/01/230101_1.jpg", new DateTime(2023, 1, 1, 13, 59, 1));
+            files.Add(source1, "bbb.crw", destinationRoot, "2023/01/RAW/230101_2.crw", new DateTime(2023, 1, 1, 13, 59, 2));
+            files.Add(source1, "bbb.jpg", destinationRoot, "2023/01/230101_2.jpg", new DateTime(2023, 1, 1, 13, 59, 2));
+            files.Add(source1, "ccc.cr2", destinationRoot, "2023/01/RAW/230102_1.cr2", new DateTime(2023, 1, 2, 13, 59, 3));
+            files.Add(source1, "ccc.jpg", destinationRoot, "2023/01/230102_1.jpg", new DateTime(2023, 1, 2, 13, 59, 3));
+            files.Add(source1, "ddd.cr3", destinationRoot, "2023/01/RAW/230102_2.cr3", new DateTime(2023, 1, 2, 13, 59, 4));
+            files.Add(source1, "ddd.jpg", destinationRoot, "2023/01/230102_2.jpg", new DateTime(2023, 1, 2, 13, 59, 4));
+            files.Add(source1, "eee.cr3", destinationRoot, "2023/02/RAW/230201_1.cr3", new DateTime(2023, 2, 1, 13, 59, 5));
+            files.Add(source1, "eee.jpg", destinationRoot, "2023/02/230201_1.jpg", new DateTime(2023, 2, 1, 13, 59, 5));
+            files.Add(source1, "fff.cr3", destinationRoot, "2023/02/RAW/230201_2.cr3", new DateTime(2023, 2, 1, 13, 59, 6));
+            files.Add(source1, "fff.jpg", destinationRoot, "2023/02/230201_2.jpg", new DateTime(2023, 2, 1, 13, 59, 6));
+            files.Add(source1, "ggg.cr3", destinationRoot, "2024/01/RAW/240101_1.cr3", new DateTime(2024, 1, 1, 13, 59, 7));
+            files.Add(source1, "ggg.jpg", destinationRoot, "2024/01/240101_1.jpg", new DateTime(2024, 1, 1, 13, 59, 7));
+            files.Add(source1, "hhh.cr3", destinationRoot, "2024/01/RAW/240101_2.cr3", new DateTime(2024, 1, 1, 13, 59, 8));
+            files.Add(source1, "hhh.jpg", destinationRoot, "2024/01/240101_2.jpg", new DateTime(2024, 1, 1, 13, 59, 8));
+            files.Add(source1, "iii.cr3", destinationRoot, "2024/02/RAW/240202_1.cr3", new DateTime(2024, 2, 2, 13, 59, 9));
+            files.Add(source1, "iii.jpg", destinationRoot, "2024/02/240202_1.jpg", new DateTime(2024, 2, 2, 13, 59, 9));
+            files.CreateFiles();
+
+            Import.ImportFiles(new DirectoryInfo(source1), importConfig, false, token);
 
             files.Validate();
         }

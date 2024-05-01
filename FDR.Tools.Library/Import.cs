@@ -148,6 +148,7 @@ namespace FDR.Tools.Library
             Trace.Unindent();
 
             //TODO: configurable file ordering
+            //TODO: monthly breaking (actions are run daily, renaming the files multiple times and collide)
             var dates = files.Select(f => f.ExifTime.Date).Distinct().OrderBy(d => d).ToList();
             foreach (var date in dates)
             {
