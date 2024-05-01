@@ -103,7 +103,7 @@ namespace FDR.Tools.Library
             File.SetLastWriteTimeUtc(dest, file.LastWriteTimeUtc);
         }
 
-        public static void MoveFilesInFolder(DirectoryInfo folder, MoveConfig config)
+        public static void MoveFilesInFolder(DirectoryInfo folder, MoveConfig config, List<ExifFile>? allFiles = null)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
             config.Validate();
@@ -112,7 +112,7 @@ namespace FDR.Tools.Library
 
             Common.Msg($"Moving {config.FileFilter} files in {folder.FullName} to {config.RelativeFolder}");
 
-            Rename.RenameFilesInFolder(folder, config.GetNewRenameConfig());
+            Rename.RenameFilesInFolder(folder, config.GetNewRenameConfig(), allFiles);
         }
 
         public static void ImportFiles(DirectoryInfo source, ImportConfig config, bool force, CancellationToken token)

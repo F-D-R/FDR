@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading;
@@ -34,7 +35,7 @@ namespace FDR.Tools.Library
 
         public string? Config { get; set; }
 
-        public void Do(DirectoryInfo folder, CancellationToken token)
+        public void Do(DirectoryInfo folder, CancellationToken token, List<ExifFile>? allFiles = null)
         {
             Validate();
 
@@ -43,27 +44,27 @@ namespace FDR.Tools.Library
                 case ActionType.rename:
                     RenameConfig? renameConfig;
                     if (AppConfig == null || !AppConfig.RenameConfigs.TryGetValue(Config??"", out renameConfig)) throw new ArgumentOutOfRangeException(nameof(Config));
-                    Rename.RenameFilesInFolder(folder, renameConfig);
+                    Rename.RenameFilesInFolder(folder, renameConfig, allFiles);
                     break;
 
                 case ActionType.move:
                     MoveConfig? moveConfig;
                     if (AppConfig == null || !AppConfig.MoveConfigs.TryGetValue(Config??"", out moveConfig)) throw new ArgumentOutOfRangeException(nameof(Config));
-                    Import.MoveFilesInFolder(folder, moveConfig);
+                    Import.MoveFilesInFolder(folder, moveConfig, allFiles);
                     break;
 
                 case ActionType.resize:
                     ResizeConfig? resizeConfig;
                     if (AppConfig == null || !AppConfig.ResizeConfigs.TryGetValue(Config??"", out resizeConfig)) throw new ArgumentOutOfRangeException(nameof(Config));
-                    Resize.ResizeFilesInFolder(folder, resizeConfig);
+                    Resize.ResizeFilesInFolder(folder, resizeConfig, allFiles);
                     break;
 
                 case ActionType.hash:
-                    Verify.HashFolder(folder);
+                    Verify.HashFolder(folder, false, allFiles);
                     break;
 
                 case ActionType.rehash:
-                    Verify.HashFolder(folder, true);
+                    Verify.HashFolder(folder, true, allFiles);
                     break;
 
                 case ActionType.cleanup:

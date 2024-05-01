@@ -6,6 +6,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace FDR.Tools.Library
 {
@@ -86,7 +87,7 @@ namespace FDR.Tools.Library
             }
         }
 
-        public static void ResizeFilesInFolder(DirectoryInfo folder, ResizeConfig config)
+        public static void ResizeFilesInFolder(DirectoryInfo folder, ResizeConfig config, List<ExifFile>? allFiles = null)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
             config.Validate();
@@ -94,11 +95,13 @@ namespace FDR.Tools.Library
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
             var filter = config.FileFilter;
+            if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
             Common.Msg($"Resizing {filter} files in {folder.FullName}");
             Trace.Indent();
 
-            if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
-            var files = Common.GetFiles(folder, filter, false);
+            if (allFiles == null)
+                allFiles = Common.GetFiles(folder, "*.*", false);
+            var files = Common.GetFiles(allFiles, folder, filter, false);
             int fileCount = files.Count;
 
             //TODO: parallel exif loading if necessary

@@ -403,7 +403,7 @@ namespace FDR.Tools.Library
             }
         }
 
-        public static void RenameFilesInFolder(DirectoryInfo folder, RenameConfig config)
+        public static void RenameFilesInFolder(DirectoryInfo folder, RenameConfig config, List<ExifFile>? allFiles = null)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
             config.Validate();
@@ -415,7 +415,8 @@ namespace FDR.Tools.Library
 
             Common.Msg($"Renaming {filter} files in {folder.FullName}");
 
-            var allFiles = Common.GetFiles(folder, "*.*", config.Recursive);
+            if (allFiles == null)
+                allFiles = Common.GetFiles(folder, "*.*", config.Recursive);
             var files = Common.GetFiles(allFiles, folder, filter, config.Recursive);
             int fileCount = files.Count;
 

@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using SixLabors.ImageSharp;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace FDR.Tools.Library
 {
@@ -124,13 +125,14 @@ namespace FDR.Tools.Library
             return true;
         }
 
-        public static void HashFolder(DirectoryInfo folder, bool force = false)
+        public static void HashFolder(DirectoryInfo folder, bool force = false, List<ExifFile>? allFiles = null)
         {
             Common.Msg($"Creating hash files for folder {folder}");
 
             var watch = Stopwatch.StartNew();
 
-            var allFiles = Common.GetFiles(folder, "*.*", true);
+            if (allFiles == null)
+                allFiles = Common.GetFiles(folder, "*.*", true);
             var files = Common.GetFiles(allFiles, folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
             int errCount = 0;
@@ -154,7 +156,7 @@ namespace FDR.Tools.Library
                     await CreateHashFileAsync(md5File, await ComputeHashAsync(file.FileInfo), file.LastWriteTimeUtc);
                     hashCount++;
                 }
-                else if (!md5.FileInfo.Attributes.HasFlag(FileAttributes.Hidden)) 
+                else if (!md5.FileInfo.Attributes.HasFlag(FileAttributes.Hidden))
                     File.SetAttributes(md5File, FileAttributes.Hidden);
 
                 Common.Progress(100 * i / fileCount);
