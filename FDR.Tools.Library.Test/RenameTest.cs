@@ -10,6 +10,40 @@ namespace FDR.Tools.Library.Test
     public class RenameTest : TempFolderTestBase
     {
         [Test]
+        public void RenameFilesInFolderToSameName()
+        {
+            var config = new RenameConfig();
+            config.Should().NotBeNull();
+            config.FilenamePattern = "samename";
+
+            files.Add(tempFolderPath, "aaa.pri", tempFolderPath, "samename.pri", new DateTime(2000, 1, 1));
+            files.Add(tempFolderPath, "bbb.pri", tempFolderPath, "bbb.pri", new DateTime(2000, 1, 2));
+            files.CreateFiles();
+
+            System.Action rename = () => Rename.RenameFilesInFolder(tempFolder, config);
+            rename.Should().Throw<IOException>();
+
+            files.Validate();
+        }
+
+        [Test]
+        public void RenameFilesInFolderToSameNameStopOnErrorFalse()
+        {
+            var config = new RenameConfig();
+            config.Should().NotBeNull();
+            config.FilenamePattern = "samename";
+            config.StopOnError = false;
+
+            files.Add(tempFolderPath, "aaa.pri", tempFolderPath, "samename.pri", new DateTime(2000, 1, 1));
+            files.Add(tempFolderPath, "bbb.pri", tempFolderPath, "bbb.pri", new DateTime(2000, 1, 2));
+            files.CreateFiles();
+
+            Rename.RenameFilesInFolder(tempFolder, config);
+
+            files.Validate();
+        }
+
+        [Test]
         public void RenameFilesInFolderWithLowerCaseFileUpperCaseFilter()
         {
             var config = new RenameConfig();
@@ -20,7 +54,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "aaa.pri", tempFolderPath, "000101_01.pri", new DateTime(2000, 1, 1));
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -36,7 +70,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "AAA.PRI", tempFolderPath, "000101_01.pri", new DateTime(2000, 1, 1));
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -54,7 +88,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "1.se2", tempFolderPath, "000101_01.se2");
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -72,7 +106,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "1.SE2", tempFolderPath, "000101_01.se2");
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -91,7 +125,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "1.ot2", tempFolderPath, "1.ot2");
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -111,7 +145,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "1.ot1", tempFolderPath, "1.ot1");
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -131,7 +165,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "1.oth", tempFolderPath, "1.oth");
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -152,7 +186,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "1.oth", tempFolderPath, "1.oth");
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -172,7 +206,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "2.se2", tempFolderPath, "020202_02.se2");
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -192,7 +226,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "2.se2", tempFolderPath, "2.se2");
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -211,7 +245,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "1.se2", tempFolderPath, "010204_02.se2");
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -231,7 +265,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "1.pr2", tempFolderPath, "000304_01.pr2", new DateTime(2000, 3, 4));
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -250,7 +284,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "1.se2", tempFolderPath, "010204_02.se2", new DateTime(2001, 2, 5));
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -269,7 +303,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "1.se2", tempFolderPath, "010202_02.se2", new DateTime(2001, 2, 2));
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -288,7 +322,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "1.pri", tempFolderPath, "000101_4.pri", new DateTime(2000, 1, 1, 0, 0, 4));
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -315,7 +349,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "01.pri", tempFolderPath, "000101_12.pri", new DateTime(2000, 1, 1, 0, 0, 12));
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -343,7 +377,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "10.pri", tempFolderPath, "000101_10.pri", date, date, date);
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -369,7 +403,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "dir1/dir3/3.se2", tempFolderPath, "dir1/dir3/3.se2", new DateTime(2000, 1, 4));
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -394,7 +428,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "dir1/dir3/3.se2", tempFolderPath, "dir1/dir3/000104_02.se2", new DateTime(2000, 1, 4));
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -419,7 +453,7 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "dir1/dir3/3.se2", tempFolderPath, "dir1/dir3/000104_02.se2", new DateTime(2000, 1, 4));
             files.CreateFiles();
 
-            Rename.RenameFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Rename.RenameFilesInFolder(tempFolder, config);
 
             files.Validate();
         }
@@ -444,10 +478,9 @@ namespace FDR.Tools.Library.Test
             files.Add(tempFolderPath, "dir1/dir3/3.se2", tempFolderPath, "dir1/dir3/000104_02.se2", new DateTime(2000, 1, 4));
             files.CreateFiles();
 
-            var folder = new DirectoryInfo(tempFolderPath);
-            var allFiles = Common.GetFiles(folder, "*.*", config.Recursive);
+            var allFiles = Common.GetFiles(tempFolder, "*.*", config.Recursive);
 
-            Rename.RenameFilesInFolder(folder, config, allFiles);
+            Rename.RenameFilesInFolder(tempFolder, config, allFiles);
 
             files.Validate();
         }
