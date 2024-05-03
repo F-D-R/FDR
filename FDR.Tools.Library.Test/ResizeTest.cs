@@ -106,7 +106,7 @@ namespace FDR.Tools.Library.Test
             config.ClearMetadata = true;
             validate.Should().NotThrow();
 
-            Resize.ResizeFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Resize.ResizeFilesInFolder(tempFolder, config);
 
             files.Validate();
             files.ValidateImageSize(50, 50);
@@ -136,7 +136,7 @@ namespace FDR.Tools.Library.Test
             config.ClearMetadata = true;
             validate.Should().NotThrow();
 
-            Resize.ResizeFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Resize.ResizeFilesInFolder(tempFolder, config);
 
             files.Validate();
             files.ValidateImageSize(50, 50);
@@ -165,7 +165,7 @@ namespace FDR.Tools.Library.Test
             config.ClearMetadata = true;
             validate.Should().NotThrow();
 
-            Resize.ResizeFilesInFolder(new DirectoryInfo(tempFolderPath), config);
+            Resize.ResizeFilesInFolder(tempFolder, config);
 
             files.Validate();
             files.ValidateImageSize(50, 50);
