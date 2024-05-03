@@ -34,8 +34,8 @@ namespace FDR.Tools.Library
 
         public static void SaveToFile(AppConfig appConfig, string configPath)
         {
-            if (appConfig == null) throw new ArgumentNullException(nameof(appConfig));
-            if (string.IsNullOrWhiteSpace(configPath)) throw new ArgumentNullException(nameof(configPath));
+            ArgumentNullException.ThrowIfNull(appConfig);
+            ArgumentException.ThrowIfNullOrWhiteSpace(configPath);
 
             File.WriteAllText(configPath, JsonConvert.SerializeObject(appConfig), Encoding.UTF8);
         }

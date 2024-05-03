@@ -113,7 +113,7 @@ namespace FDR.Tools.Library
 
         public static List<ExifFile> GetFiles(DirectoryInfo folder, ImportConfig config)
         {
-            if (config == null) throw new ArgumentNullException(nameof(config));
+            ArgumentNullException.ThrowIfNull(config);
             config.Validate();
 
             return GetFiles(folder, config.FileFilter, true);
@@ -121,8 +121,8 @@ namespace FDR.Tools.Library
 
         public static List<ExifFile> GetFiles(DirectoryInfo folder, string filter, bool recursive)
         {
-            if (string.IsNullOrWhiteSpace(filter)) throw new ArgumentNullException(nameof(filter));
-            if (folder == null) throw new ArgumentNullException(nameof(folder));
+            ArgumentException.ThrowIfNullOrWhiteSpace(filter);
+            ArgumentNullException.ThrowIfNull(folder);
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
             var files = new List<ExifFile>();
@@ -135,9 +135,9 @@ namespace FDR.Tools.Library
 
         public static List<ExifFile> GetFiles(List<ExifFile> files, DirectoryInfo folder, string filter, bool recursive)
         {
-            if (files == null) throw new ArgumentNullException(nameof(files));
-            if (string.IsNullOrWhiteSpace(filter)) throw new ArgumentNullException(nameof(filter));
-            if (folder == null) throw new ArgumentNullException(nameof(folder));
+            ArgumentNullException.ThrowIfNull(files);
+            ArgumentException.ThrowIfNullOrWhiteSpace(filter);
+            ArgumentNullException.ThrowIfNull(folder);
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
             Trace.WriteLine($"{nameof(GetFiles)} (Filter: \"{filter}\", Recursive: {recursive})");
@@ -172,8 +172,8 @@ namespace FDR.Tools.Library
 
         public static IEnumerable<FileInfo> EnumerateFiles(DirectoryInfo folder, string filter, bool recursive = true)
         {
-            if (string.IsNullOrWhiteSpace(filter)) throw new ArgumentNullException(nameof(filter));
-            if (folder == null) throw new ArgumentNullException(nameof(folder));
+            ArgumentException.ThrowIfNullOrWhiteSpace(filter);
+            ArgumentNullException.ThrowIfNull(folder);
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
             var options = new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = recursive };
@@ -409,7 +409,7 @@ namespace FDR.Tools.Library
 
         public static MemberInfo? GetPropertyInformation(Expression propertyExpression)
         {
-            if (propertyExpression == null) throw new ArgumentNullException(nameof(propertyExpression));
+            ArgumentNullException.ThrowIfNull(propertyExpression);
             MemberExpression? memberExpr = propertyExpression as MemberExpression;
             if (memberExpr == null)
             {

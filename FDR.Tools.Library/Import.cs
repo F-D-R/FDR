@@ -105,9 +105,9 @@ namespace FDR.Tools.Library
 
         public static void MoveFilesInFolder(DirectoryInfo folder, MoveConfig config, List<ExifFile>? allFiles = null)
         {
-            if (config == null) throw new ArgumentNullException(nameof(config));
+            ArgumentNullException.ThrowIfNull(config);
             config.Validate();
-            if (folder == null) throw new ArgumentNullException(nameof(folder));
+            ArgumentNullException.ThrowIfNull(folder);
             if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
 
             Common.Msg($"Moving {config.FileFilter} files in {folder.FullName} to {config.RelativeFolder}");
@@ -117,9 +117,9 @@ namespace FDR.Tools.Library
 
         public static void ImportFiles(DirectoryInfo source, ImportConfig config, bool force, CancellationToken token)
         {
-            if (config == null) throw new ArgumentNullException(nameof(config));
+            ArgumentNullException.ThrowIfNull(config);
             config.Validate();
-            if (source == null) throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
             if (!source.Exists) throw new DirectoryNotFoundException($"Source folder doesn't exist! ({source.FullName})");
             if (string.IsNullOrWhiteSpace(config.DestRoot)) throw new ArgumentNullException(nameof(config.DestRoot));
             if (!Directory.Exists(config.DestRoot)) throw new DirectoryNotFoundException($"Destination root folder doesn't exist! ({config.DestRoot})");
@@ -340,7 +340,7 @@ namespace FDR.Tools.Library
 
         public static void ImportWizard(Dictionary<string, ImportConfig> configs, DirectoryInfo? folder = null, bool auto = false, bool noactions = false, bool force = false, CancellationToken token = new())
         {
-            if (configs == null) throw new ArgumentNullException(nameof(configs));
+            ArgumentNullException.ThrowIfNull(configs);
             if (configs.Count == 0) throw new ArgumentNullException("Import configurations cannot be empty!");
             foreach (var c in configs) c.Value.Validate();
 

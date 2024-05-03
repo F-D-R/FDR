@@ -100,7 +100,7 @@ namespace FDR.Tools.Library
 
         public string CalculateNewLocation(RenameConfig config, int counter = 1)
         {
-            if (config == null) throw new ArgumentNullException(nameof(config));
+            ArgumentNullException.ThrowIfNull(config);
             if (!Exists) throw new FileNotFoundException("File doesn't exist!", FullName);
 
             var newName = Rename.EvaluateFileNamePattern(config.FilenamePattern??"{name}", this, counter);

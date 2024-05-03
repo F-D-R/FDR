@@ -243,7 +243,7 @@ namespace FDR.Tools.Library.Test
 
         [TestCase(".", "*.xxx")]
         [TestCase(".", null, typeof(ArgumentNullException))]
-        [TestCase(".", "  ", typeof(ArgumentNullException))]
+        [TestCase(".", "  ", typeof(ArgumentException))]
         [TestCase(null, "*.*", typeof(ArgumentNullException))]
         [TestCase("xxxxxxxxxxxx", "*.*", typeof(DirectoryNotFoundException))]
         public void GetFilesValidationTests(string folder, string filter, Type ex = null)
