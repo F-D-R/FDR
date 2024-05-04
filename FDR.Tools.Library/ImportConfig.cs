@@ -5,6 +5,7 @@ using Newtonsoft.Json.Converters;
 using System;
 using System.Linq;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 
 namespace FDR.Tools.Library
 {
@@ -113,13 +114,17 @@ namespace FDR.Tools.Library
 
         public ImportRules Rules { get; } = new ImportRules();
 
+        [DisplayName("Destination root folder")]
         public string? DestRoot { get; set; }
 
+        [DisplayName("Destination structure")]
         public FolderStructure DestStructure { get; set; } = FolderStructure.year_date;
 
+        [DisplayName("Date format")]
         public string DateFormat { get; set; } = DEFAULT_DATEFORMAT;
 
         private string? filter;
+        [DisplayName("File filter")]
         public string FileFilter
         {
             get { return string.IsNullOrWhiteSpace(filter) ? DEFAULT_FILTER : filter; }
