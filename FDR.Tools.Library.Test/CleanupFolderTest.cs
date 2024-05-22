@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using NUnit.Framework;
-using FluentAssertions;
 using System.Threading;
 
 namespace FDR.Tools.Library.Test
@@ -8,6 +7,8 @@ namespace FDR.Tools.Library.Test
     [TestFixture]
     public class CleanupFolderTest : TempFolderTestBase
     {
+        private string folderPath;
+        private DirectoryInfo folder;
         private string rawFolderPath;
         private string panoramaFolderPath;
         private CancellationToken token = new();
@@ -17,38 +18,42 @@ namespace FDR.Tools.Library.Test
         {
             base.OneTimeSetUp();
 
-            rawFolderPath = Path.Combine(tempFolderPath, "RAW");
+            folderPath = Path.Combine(tempFolderPath, "folder");
+            Directory.CreateDirectory(folderPath);
+            folder = new DirectoryInfo(folderPath);
+
+            rawFolderPath = Path.Combine(folderPath, "RAW");
             Directory.CreateDirectory(rawFolderPath);
 
-            panoramaFolderPath = Path.Combine(tempFolderPath, "panorama");
+            panoramaFolderPath = Path.Combine(folderPath, "panorama");
             Directory.CreateDirectory(panoramaFolderPath);
         }
 
         [Test]
         public void CleanupFolderTests()
         {
-            files.Add(tempFolderPath, "keep1m.jpg", true);
-            files.Add(tempFolderPath, "keep2m.jpg", true);
-            files.Add(tempFolderPath, "keep3m.jpg", true);
-            files.Add(tempFolderPath, "keep4m.jpg", true);
+            files.Add(folderPath, "keep1m.jpg", true);
+            files.Add(folderPath, "keep2m.jpg", true);
+            files.Add(folderPath, "keep3m.jpg", true);
+            files.Add(folderPath, "keep4m.jpg", true);
 
-            files.Add(tempFolderPath, ".keep1m.jpg.md5", true);
-            files.Add(tempFolderPath, ".keep2m.jpg.md5", true);
-            files.Add(tempFolderPath, ".keep3m.jpg.md5", true);
-            files.Add(tempFolderPath, ".keep4m.jpg.md5", true);
-            files.Add(tempFolderPath, ".missing1.jpg.md5", false);
-            files.Add(tempFolderPath, ".missing2.jpg.md5", false);
-            files.Add(tempFolderPath, ".missing3.jpg.md5", false);
-            files.Add(tempFolderPath, ".missing4.jpg.md5", false);
+            files.Add(folderPath, ".keep1m.jpg.md5", true);
+            files.Add(folderPath, ".keep2m.jpg.md5", true);
+            files.Add(folderPath, ".keep3m.jpg.md5", true);
+            files.Add(folderPath, ".keep4m.jpg.md5", true);
+            files.Add(folderPath, ".missing1.jpg.md5", false);
+            files.Add(folderPath, ".missing2.jpg.md5", false);
+            files.Add(folderPath, ".missing3.jpg.md5", false);
+            files.Add(folderPath, ".missing4.jpg.md5", false);
 
-            files.Add(tempFolderPath, "keep1m.jpg.error", true);
-            files.Add(tempFolderPath, "keep2m.jpg.error", true);
-            files.Add(tempFolderPath, "keep3m.jpg.error", true);
-            files.Add(tempFolderPath, "keep4m.jpg.error", true);
-            files.Add(tempFolderPath, "missing1.jpg.error", false);
-            files.Add(tempFolderPath, "missing2.jpg.error", false);
-            files.Add(tempFolderPath, "missing3.jpg.error", false);
-            files.Add(tempFolderPath, "missing4.jpg.error", false);
+            files.Add(folderPath, "keep1m.jpg.error", true);
+            files.Add(folderPath, "keep2m.jpg.error", true);
+            files.Add(folderPath, "keep3m.jpg.error", true);
+            files.Add(folderPath, "keep4m.jpg.error", true);
+            files.Add(folderPath, "missing1.jpg.error", false);
+            files.Add(folderPath, "missing2.jpg.error", false);
+            files.Add(folderPath, "missing3.jpg.error", false);
+            files.Add(folderPath, "missing4.jpg.error", false);
 
             files.Add(rawFolderPath, "keep1.crw", true);
             files.Add(rawFolderPath, "keep2.cr2", true);
@@ -130,7 +135,7 @@ namespace FDR.Tools.Library.Test
                     File.SetAttributes(f.GetSourcePath(), File.GetAttributes(f.GetSourcePath()) | FileAttributes.Hidden);
             });
 
-            Raw.CleanupFolder(tempFolder, token);
+            Raw.CleanupFolder(folder, token);
 
             files.ValidateExistance();
         }
@@ -205,7 +210,7 @@ namespace FDR.Tools.Library.Test
                     File.SetAttributes(f.GetSourcePath(), File.GetAttributes(f.GetSourcePath()) | FileAttributes.Hidden);
             });
 
-            Raw.CleanupFolder(tempFolder, token);
+            Raw.CleanupFolder(folder, token);
 
             files.ValidateExistance();
         }
