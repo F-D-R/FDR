@@ -140,12 +140,12 @@ namespace FDR.Tools.Library.Test
         public void HashTests()
         {
             File.Delete(md5Path);
-            File.Exists(md5Path).Should().BeFalse();
+            File.Exists(md5Path).Should().BeFalse("after deleted");
             Verify.HashFolder(tempFolder);
-            File.Exists(md5Path).Should().BeTrue();
+            File.Exists(md5Path).Should().BeTrue("after HashFolder");
             File.ReadAllText(md5Path).Should().Be(hash);
             Verify.HashFolder(tempFolder);
-            File.Exists(md5Path).Should().BeTrue();
+            File.Exists(md5Path).Should().BeTrue("after second HashFolder");
             File.ReadAllText(md5Path).Should().Be(hash);
         }
 

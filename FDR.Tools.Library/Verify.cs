@@ -149,7 +149,7 @@ namespace FDR.Tools.Library
 
                 var md5File = GetMd5FileName(file.FileInfo);
 
-                var md5 = Common.GetFiles(allFiles, folder, md5File, true).FirstOrDefault();
+                var md5 = allFiles.Where(f => string.Compare(f.FullName, md5File, false) == 0).FirstOrDefault();
                 if (md5 == null || force)
                 {
                     if (!await ValidateImageAsync(file.FileInfo)) errCount++;

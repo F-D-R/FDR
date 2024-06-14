@@ -147,7 +147,7 @@ namespace FDR.Tools.Library
             {
                 if (recursive)
                 {
-                    var regex = new Regex("^" + Common.WildcardToRegex(folder.FullName + Path.DirectorySeparatorChar) + ".*" + Common.WildcardToRegex(tmpfilter) + "$", RegexOptions.IgnoreCase);
+                    var regex = new Regex("^" + Common.WildcardToRegex(folder.FullName.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar) + ".*" + Common.WildcardToRegex(tmpfilter) + "$", RegexOptions.IgnoreCase);
                     Trace.WriteLine($"Regex (recursive): {regex}");
                     result.AddRange(files.Where(f => regex.IsMatch(f.FullName)));
                 }
@@ -161,7 +161,7 @@ namespace FDR.Tools.Library
                     }
                     else
                     {
-                        var regex = new Regex("^" + Common.WildcardToRegex(folder.FullName + Path.DirectorySeparatorChar + tmpfilter) + "$", RegexOptions.IgnoreCase);
+                        var regex = new Regex("^" + Common.WildcardToRegex(folder.FullName.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar + tmpfilter) + "$", RegexOptions.IgnoreCase);
                         Trace.WriteLine($"Regex (non-recursive): {regex}");
                         result.AddRange(files.Where(f => regex.IsMatch(f.FullName)));
                     }
