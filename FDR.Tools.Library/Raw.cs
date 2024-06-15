@@ -68,6 +68,7 @@ namespace FDR.Tools.Library
 
                 var i = 0;
                 Trace.Indent();
+                Common.Msg($"    Raw files to process: {files.Count}", ConsoleColor.Gray);
 
                 ParallelOptions parallelOptions = new()
                 {
@@ -79,7 +80,7 @@ namespace FDR.Tools.Library
 
                 Parallel.ForEach(files, parallelOptions, (file, token) =>
                 {
-                    i++;
+                    lock (this) { i++;  }
                     if (i % 10 == 0) Progress(i);
 
                     // Handle only RAW folder files:
@@ -151,6 +152,7 @@ namespace FDR.Tools.Library
 
                 var i = 0;
                 Trace.Indent();
+                Common.Msg($"    Hash files to process: {files.Count}", ConsoleColor.Gray);
 
                 ParallelOptions parallelOptions = new()
                 {
@@ -160,7 +162,7 @@ namespace FDR.Tools.Library
 
                 Parallel.ForEach(files, parallelOptions, (file, token) =>
                 {
-                    i++;
+                    lock (this) { i++; }
 
                     if (!File.Exists(Verify.GetFileNameFromMD5(file.FileInfo)))
                     {
@@ -188,6 +190,7 @@ namespace FDR.Tools.Library
 
                 var i = 0;
                 Trace.Indent();
+                Common.Msg($"    Error files to process: {files.Count}", ConsoleColor.Gray);
 
                 ParallelOptions parallelOptions = new()
                 {
@@ -197,7 +200,7 @@ namespace FDR.Tools.Library
 
                 Parallel.ForEach(files, parallelOptions, (file, token) =>
                 {
-                    i++;
+                    lock (this) { i++; }
 
                     if (!File.Exists(Verify.GetFileNameFromError(file.FileInfo)))
                     {
