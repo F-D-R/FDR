@@ -10,6 +10,7 @@
         Cleanup,
         Rename,
         Resize,
-        Web
+        Web,
+        FolderInfo
     }
 }

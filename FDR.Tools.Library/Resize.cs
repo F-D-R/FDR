@@ -100,7 +100,7 @@ namespace FDR.Tools.Library
             Trace.Indent();
 
             if (allFiles == null)
-                allFiles = Common.GetFiles(folder, "*.*", false);
+                allFiles = Common.GetFilesWithOutput(folder, "*.*", false);
             var files = Common.GetFiles(allFiles, folder, filter, false);
             int fileCount = files.Count;
 

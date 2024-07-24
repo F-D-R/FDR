@@ -132,7 +132,7 @@ namespace FDR.Tools.Library
             var watch = Stopwatch.StartNew();
 
             if (allFiles == null)
-                allFiles = Common.GetFiles(folder, "*.*", true);
+                allFiles = Common.GetFilesWithOutput(folder, "*.*", true);
             var files = Common.GetFiles(allFiles, folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
             int errCount = 0;
@@ -177,7 +177,7 @@ namespace FDR.Tools.Library
 
             var watch = Stopwatch.StartNew();
 
-            var allFiles = Common.GetFiles(folder, "*.*", true);
+            var allFiles = Common.GetFilesWithOutput(folder, "*.*", true);
             var files = Common.GetFiles(allFiles, folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
             int errCount = 0;
@@ -248,7 +248,7 @@ namespace FDR.Tools.Library
 
             var watch = Stopwatch.StartNew();
 
-            var files = Common.GetFiles(folder, DEFAULT_FILTER, true);
+            var files = Common.GetFilesWithOutput(folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
 
             var i = 0;

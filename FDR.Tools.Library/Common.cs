@@ -31,6 +31,7 @@ namespace FDR.Tools.Library
         public const string param_rename = "-rename";
         public const string param_resize = "-resize";
         public const string param_web = "-web";
+        public const string param_folderinfo = "-folderinfo";
         public const string param_config = "-config";
         public const string param_configfile = "-configfile";
         public const string param_help = "-help";
@@ -131,6 +132,16 @@ namespace FDR.Tools.Library
                 files.AddRange(folder.GetFiles(tmpfilter, options).Select(fi => new ExifFile(fi)));
 
             return files.OrderBy(f => f.FullName).ToList();
+        }
+
+        public static List<ExifFile> GetFilesWithOutput(DirectoryInfo folder, string filter, bool recursive)
+        {
+            Msg($"Loading files from {folder}...\r", ConsoleColor.DarkGray, false);
+            var stopwatch = Stopwatch.StartNew();
+            var files = GetFiles(folder, filter, recursive);
+            var time = GetTimeString(stopwatch);
+            Msg($"Loaded {files.Count} files from {folder} ({time})       ", ConsoleColor.DarkGray);
+            return files;
         }
 
         public static List<ExifFile> GetFiles(List<ExifFile> files, DirectoryInfo folder, string filter, bool recursive)
@@ -462,6 +473,7 @@ namespace FDR.Tools.Library
                 { Common.param_cleanup + " <folder>", "Delete unnecessary raw, hash and err files" },
                 { Common.param_rename + " <folder>", "Rename image files based on a given configuration" },
                 { Common.param_resize + " <folder>", "Resize image files based on a given configuration" },
+                { Common.param_folderinfo + " <folder>", "Print folder info to the output" },
                 { Common.param_configfile + " <file>", "Path of the configuration file to use instead of appsettings.json" },
                 { Common.param_config + " <config>", "Named configuration for some functions like renaming and resizing" },
                 { Common.param_web, "Start the web application" },

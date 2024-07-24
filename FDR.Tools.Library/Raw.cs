@@ -17,8 +17,7 @@ namespace FDR.Tools.Library
 
             Common.Msg($"Cleaning up folder {folder}");
 
-            Common.Msg($"Loading files from {folder}...");
-            var files = Common.GetFiles(folder, "*.*", true);
+            var files = Common.GetFilesWithOutput(folder, "*.*", true);
 
             var worker = new CleanupWorker(folder, files);
             try
@@ -37,7 +36,7 @@ namespace FDR.Tools.Library
         {
             internal CleanupWorker(DirectoryInfo folder, List<ExifFile> files)
             {
-                Folder = folder; 
+                Folder = folder;
                 Files = files;
             }
 
@@ -80,7 +79,7 @@ namespace FDR.Tools.Library
 
                 Parallel.ForEach(files, parallelOptions, (file, token) =>
                 {
-                    lock (this) { i++;  }
+                    lock (this) { i++; }
                     if (i % 10 == 0) Progress(i);
 
                     // Handle only RAW folder files:
@@ -220,6 +219,59 @@ namespace FDR.Tools.Library
                 {
                     Common.Msg($"    Error files processed: {done}                  \r", ConsoleColor.Gray, newline);
                 }
+            }
+        }
+
+        public static void PrintFolderInfo(DirectoryInfo folder, CancellationToken token)
+        {
+            Common.Msg($"Printing folder info for {folder}");
+
+            //Stopwatch stopwatch = Stopwatch.StartNew();
+
+            var files = Common.GetFilesWithOutput(folder, "*.*", true);
+            Common.Msg("");
+
+            var folderNames = files.Select(f => f.DirectoryName).Distinct().OrderBy(d => d).ToList();
+            foreach (var folderName in folderNames)
+            {
+                Common.Msg($"    {folderName}");
+                var folderFiles = files.Where(f => f.DirectoryName == folderName);
+                var size = folderFiles.Select(f => f.FileInfo.Length).Sum();
+                Common.Msg($"        Sum: {folderFiles.Count()} files {FormatSize(size)}");
+                var filesByExt = files.Where(f => f.DirectoryName == folderName).GroupBy(f => f.FileInfo.Extension).Select(g => new { Ext = g.Key, Count = g.Count(), Size = g.Sum(gi => gi.FileInfo.Length) });
+                foreach (var extStats in filesByExt)
+                {
+                    Common.Msg($"        {extStats.Ext}: {extStats.Count} files {FormatSize(extStats.Size)}");
+                }
+            }
+            Common.Msg("");
+
+            Common.Msg($"{folder}");
+            Common.Msg($"    Sum: {files.Count} files {FormatSize(files.Select(f => f.FileInfo.Length).Sum())}");
+            var allFilesByExt = files.GroupBy(f => f.FileInfo.Extension).Select(g => new { Ext = g.Key, Count = g.Count(), Size = g.Sum(gi => gi.FileInfo.Length) });
+            foreach (var extStats in allFilesByExt)
+            {
+                Common.Msg($"    {extStats.Ext}: {extStats.Count} files {FormatSize(extStats.Size)}");
+            }
+
+
+            string FormatSize(long size)
+            {
+                if (size < 1024L) return $"{size}B";
+
+                var dblsize = size / 1024.0;
+                if (dblsize < 1024) return $"{Math.Round(dblsize, 3)}kB";
+
+                dblsize /= 1024.0;
+                if (dblsize < 1024) return $"{Math.Round(dblsize, 3)}MB";
+
+                dblsize /= 1024.0;
+                if (dblsize < 1024) return $"{Math.Round(dblsize, 3)}GB";
+
+                dblsize /= 1024.0;
+                if (dblsize < 1024) return $"{Math.Round(dblsize, 3)}TB";
+
+                return $"{size}B";
             }
         }
     }

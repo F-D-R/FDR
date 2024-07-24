@@ -416,7 +416,7 @@ namespace FDR.Tools.Library
             Common.Msg($"Renaming {filter} files in {folder.FullName}");
 
             if (allFiles == null)
-                allFiles = Common.GetFiles(folder, "*.*", config.Recursive);
+                allFiles = Common.GetFilesWithOutput(folder, "*.*", config.Recursive);
             var files = Common.GetFiles(allFiles, folder, filter, config.Recursive);
             int fileCount = files.Count;
 

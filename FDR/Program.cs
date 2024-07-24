@@ -87,6 +87,11 @@ namespace FDR
                         GetParam(ref folder, nameof(folder));
                         break;
 
+                    case Common.param_folderinfo:
+                        operation = Operation.FolderInfo;
+                        GetParam(ref folder, nameof(folder));
+                        break;
+
                     case Common.param_verbose:
                         verbose = true;
                         break;
@@ -250,6 +255,12 @@ namespace FDR
                         else
                             Process.Start("dotnet", "FDR.Web.dll");
                         Process.Start("explorer", URL);
+                        break;
+
+                    case Operation.FolderInfo:
+                        Common.Msg($"FDR Tools {version} - FolderInfo", titleColor);
+                        if (!Common.IsFolderValid(folder)) return;
+                        Raw.PrintFolderInfo(new DirectoryInfo(Path.GetFullPath(folder)), token);
                         break;
 
                     default:

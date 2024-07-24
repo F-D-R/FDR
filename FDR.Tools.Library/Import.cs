@@ -126,7 +126,7 @@ namespace FDR.Tools.Library
 
             var folderNames = new List<string>();
 
-            var files = Common.GetFiles(source, config.FileFilter, true);
+            var files = Common.GetFilesWithOutput(source, config.FileFilter, true);
             var fileCount = files.Count;
 
             //TODO: configurable dest folder structure date source
