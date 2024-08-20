@@ -426,7 +426,7 @@ namespace FDR.Tools.Library
             if (config.NeedsOrdering())
             {
                 //Parallel exif loading
-                Common.Msg($"Loading EXIF date of {fileCount} files...");
+                Common.Msg($"Loading EXIF date of {fileCount} files...", ConsoleColor.DarkGray);
                 i = 0;
                 DateTime dummy;
                 Common.Progress(0);
@@ -439,13 +439,13 @@ namespace FDR.Tools.Library
                 });
                 Trace.Unindent();
 
-                Common.Msg($"Ordering {fileCount} files...");
+                Common.Msg($"Ordering {fileCount} files...", ConsoleColor.DarkGray);
                 //TODO: configurable ordering
                 //TODO: ordering by the rename pattern without counter??? (plus the original name as secondary)
                 files = files.OrderBy(f => f.ExifTime).ThenBy(f => f.Name).ToList();
             }
 
-            Common.Msg($"Calculating new location for {fileCount} files...");
+            Common.Msg($"Calculating new location for {fileCount} files...", ConsoleColor.DarkGray);
 
             var originalPattern = config.FilenamePattern;
             config.FilenamePattern = originalPattern?.Replace($"{{{COUNTER}:auto}}", $"{{{COUNTER}:" + fileCount.ToString().Length + "}");
@@ -467,7 +467,7 @@ namespace FDR.Tools.Library
             Trace.Unindent();
 
             //Folder creation
-            Common.Msg($"Creating destination folder(s)...");
+            Common.Msg($"Creating destination folder(s)...", ConsoleColor.DarkGray);
             Trace.Indent();
             files.Where(f => f.NewLocationSpecified).Select(f => Path.GetDirectoryName(f.NewLocation)).Distinct().ToList().ForEach(d =>
             {
