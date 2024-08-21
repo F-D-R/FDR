@@ -12,6 +12,7 @@ namespace FDR
     public class Program
     {
         private const ConsoleColor titleColor = ConsoleColor.White;
+        private const ConsoleColor errorColor = ConsoleColor.Red;
         private static Operation operation = Operation.Help;
         private static readonly string version = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
         private static bool verbose = false;
@@ -152,7 +153,7 @@ namespace FDR
                         if (!optional)
                         {
                             Common.Msg($"FDR Tools {version} - ERROR", titleColor);
-                            Common.Msg($"Missing parameter: {paramname}!", ConsoleColor.Red);
+                            Common.Msg($"Missing parameter: {paramname}!", errorColor);
                             OfferHelpAndExit();
                         }
                     }
@@ -176,7 +177,7 @@ namespace FDR
                         appConfig = AppConfig.Load(configfile);
                         if (appConfig.ImportConfigs == null)
                         {
-                            Common.Msg("There are no import configurations!", ConsoleColor.Red);
+                            Common.Msg("There are no import configurations!", errorColor);
                             return;
                         }
                         Import.ImportWizard(appConfig.ImportConfigs, string.IsNullOrWhiteSpace(folder) ? null : new DirectoryInfo(Path.GetFullPath(folder)), auto, noactions, force);
@@ -212,14 +213,14 @@ namespace FDR
                         if (!Common.IsFolderValid(folder)) return;
                         if (string.IsNullOrWhiteSpace(config))
                         {
-                            Common.Msg("Rename configuration is not defined!", ConsoleColor.Red);
+                            Common.Msg("Rename configuration is not defined!", errorColor);
                             return;
                         }
                         appConfig = AppConfig.Load(configfile);
                         RenameConfig? renameConfig;
                         if (!appConfig.RenameConfigs.TryGetValue(config, out renameConfig))
                         {
-                            Common.Msg("Given rename configuration does not exist!", ConsoleColor.Red);
+                            Common.Msg("Given rename configuration does not exist!", errorColor);
                             return;
                         }
                         Rename.RenameFilesInFolder(new DirectoryInfo(Path.GetFullPath(folder)), renameConfig);
@@ -230,14 +231,14 @@ namespace FDR
                         if (!Common.IsFolderValid(folder)) return;
                         if (string.IsNullOrWhiteSpace(config))
                         {
-                            Common.Msg("Resize configuration is not defined!", ConsoleColor.Red);
+                            Common.Msg("Resize configuration is not defined!", errorColor);
                             return;
                         }
                         appConfig = AppConfig.Load(configfile);
                         ResizeConfig? resizeConfig;
                         if (!appConfig.ResizeConfigs.TryGetValue(config, out resizeConfig))
                         {
-                            Common.Msg("Given resize configuration does not exist!", ConsoleColor.Red);
+                            Common.Msg("Given resize configuration does not exist!", errorColor);
                             return;
                         }
                         Resize.ResizeFilesInFolder(new DirectoryInfo(Path.GetFullPath(folder)), resizeConfig);
@@ -247,7 +248,7 @@ namespace FDR
                         Common.Msg($"FDR Tools {version} - Web", titleColor);
                         if (string.IsNullOrEmpty(URL))
                         {
-                            Common.Msg("Missing URL configuration!", ConsoleColor.Red);
+                            Common.Msg("Missing URL configuration!", errorColor);
                             return;
                         }
                         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -311,7 +312,7 @@ namespace FDR
                 else
                 {
                     Common.Msg("  dotnet FDR.dll [options]");
-                    Common.Msg("  Unsupported OS version!", ConsoleColor.Red);
+                    Common.Msg("  Unsupported OS version!", errorColor);
                 }
                 Common.Msg("");
                 Common.Msg("Where options can be:");
@@ -339,7 +340,7 @@ namespace FDR
                     Resize.ShowResizeHelp();
                 else
                 {
-                    Common.Msg("Invalid function: " + func, ConsoleColor.Red);
+                    Common.Msg("Invalid function: " + func, errorColor);
                     OfferHelpAndExit();
                 }
             }
