@@ -426,79 +426,90 @@ namespace FDR.Tools.Library
             if (config.NeedsOrdering())
             {
                 //Parallel exif loading
-                Common.Msg($"Loading EXIF date of {fileCount} files...", ConsoleColor.DarkGray);
-                i = 0;
-                DateTime dummy;
-                Common.Progress(0);
-                Trace.Indent();
-                Parallel.ForEach(files, parallelOptions, file =>
+                using (new TimedScope($"Loading EXIF date of {fileCount} files...", $"Loaded EXIF date of {fileCount} files."))
                 {
-                    i++;
-                    dummy = file.ExifTime;
-                    Common.Progress(100 * i / fileCount);
-                });
-                Trace.Unindent();
+                    i = 0;
+                    DateTime dummy;
+                    Common.Progress(0);
+                    Trace.Indent();
+                    Parallel.ForEach(files, parallelOptions, file =>
+                    {
+                        i++;
+                        dummy = file.ExifTime;
+                        Common.Progress(100 * i / fileCount);
+                    });
+                    Trace.Unindent();
+                }
 
-                Common.Msg($"Ordering {fileCount} files...", ConsoleColor.DarkGray);
-                //TODO: configurable ordering
-                //TODO: ordering by the rename pattern without counter??? (plus the original name as secondary)
-                files = files.OrderBy(f => f.ExifTime).ThenBy(f => f.Name).ToList();
+                //Ordering files
+                using (new TimedScope($"Ordering {fileCount} files...", $"Ordered {fileCount} files."))
+                {
+                    //TODO: configurable ordering
+                    //TODO: ordering by the rename pattern without counter??? (plus the original name as secondary)
+                    files = files.OrderBy(f => f.ExifTime).ThenBy(f => f.Name).ToList();
+                }
             }
 
-            Common.Msg($"Calculating new location for {fileCount} files...", ConsoleColor.DarkGray);
-
+            //Calculating new locations
             var originalPattern = config.FilenamePattern;
-            config.FilenamePattern = originalPattern?.Replace($"{{{COUNTER}:auto}}", $"{{{COUNTER}:" + fileCount.ToString().Length + "}");
-
-            Trace.Indent();
-            int counter = 1;
-            Common.Progress(0);
-            foreach (var file in files)
+            using (new TimedScope($"Calculating new location for {fileCount} files...", $"Calculated new location for {fileCount} files."))
             {
-                try
+                config.FilenamePattern = originalPattern?.Replace($"{{{COUNTER}:auto}}", $"{{{COUNTER}:" + fileCount.ToString().Length + "}");
+
+                Trace.Indent();
+                int counter = 1;
+                Common.Progress(0);
+                foreach (var file in files)
                 {
-                    CalculateNewLocation(allFiles, file, config, ref counter, 100 * counter / fileCount);
+                    try
+                    {
+                        CalculateNewLocation(allFiles, file, config, ref counter, 100 * counter / fileCount);
+                    }
+                    catch (Exception)
+                    {
+                        if (config.StopOnError) throw;
+                    }
                 }
-                catch (Exception)
-                {
-                    if (config.StopOnError) throw;
-                }
+                Trace.Unindent();
             }
-            Trace.Unindent();
 
             //Folder creation
-            Common.Msg($"Creating destination folder(s)...", ConsoleColor.DarkGray);
-            Trace.Indent();
-            files.Where(f => f.NewLocationSpecified).Select(f => Path.GetDirectoryName(f.NewLocation)).Distinct().ToList().ForEach(d =>
+            using (new TimedScope("Creating destination folder(s)...", "Created destination folder(s)."))
             {
-                if (!Directory.Exists(d))
+                Trace.Indent();
+                files.Where(f => f.NewLocationSpecified).Select(f => Path.GetDirectoryName(f.NewLocation)).Distinct().ToList().ForEach(d =>
                 {
-                    Trace.WriteLine($"Creating folder {d}");
-                    Directory.CreateDirectory(d!);
-                }
-            });
-            Trace.Unindent();
+                    if (!Directory.Exists(d))
+                    {
+                        Trace.WriteLine($"Creating folder {d}");
+                        Directory.CreateDirectory(d!);
+                    }
+                });
+                Trace.Unindent();
+            }
 
             //Parallel renaming
-            Common.Msg($"Renaming {fileCount} files...");
-            i = 0;
-            Common.Progress(0);
-            Trace.Indent();
-            Parallel.ForEach(allFiles, parallelOptions, file =>
+            using (new TimedScope($"Renaming {fileCount} files...", $"Renamed {fileCount} files.", ConsoleColor.Gray))
             {
-                try
+                i = 0;
+                Common.Progress(0);
+                Trace.Indent();
+                Parallel.ForEach(allFiles, parallelOptions, file =>
                 {
-                    i++;
-                    Trace.WriteLine($"Moving file {file.FullName} to {file.NewLocation}");
-                    file.MoveToNewLocation();
-                    Common.Progress(100 * i / allFiles.Count);
-                }
-                catch (Exception)
-                {
-                    if (config.StopOnError) throw;
-                }
-            });
-            Trace.Unindent();
+                    try
+                    {
+                        i++;
+                        Trace.WriteLine($"Moving file {file.FullName} to {file.NewLocation}");
+                        file.MoveToNewLocation();
+                        Common.Progress(100 * i / allFiles.Count);
+                    }
+                    catch (Exception)
+                    {
+                        if (config.StopOnError) throw;
+                    }
+                });
+                Trace.Unindent();
+            }
 
             config.FilenamePattern = originalPattern;
             Trace.Unindent();

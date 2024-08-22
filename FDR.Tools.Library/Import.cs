@@ -128,24 +128,27 @@ namespace FDR.Tools.Library
 
             var files = Common.GetFilesWithOutput(source, config.FileFilter, true);
             var fileCount = files.Count;
+            int i = 0;
 
             //TODO: configurable dest folder structure date source
             //TODO: exif loading only if necessary, i.e. date source is edate
 
             //Parallel exif loading
-            Common.Msg($"Loading EXIF date of {fileCount} files...");
-            var i = 0;
-            DateTime dummy;
-            Common.Progress(0);
-            Trace.Indent();
-            ParallelOptions parallelOptions = new() { MaxDegreeOfParallelism = 8 };
-            Parallel.ForEach(files, parallelOptions, file =>
+            using (new TimedScope($"Loading EXIF date of {fileCount} files...", $"Loaded EXIF date of {fileCount} files."))
             {
-                i++;
-                dummy = file.ExifTime;
-                Common.Progress(100 * i / fileCount);
-            });
-            Trace.Unindent();
+                i = 0;
+                DateTime dummy;
+                Common.Progress(0);
+                Trace.Indent();
+                ParallelOptions parallelOptions = new() { MaxDegreeOfParallelism = 8 };
+                Parallel.ForEach(files, parallelOptions, file =>
+                {
+                    i++;
+                    dummy = file.ExifTime;
+                    Common.Progress(100 * i / fileCount);
+                });
+                Trace.Unindent();
+            }
 
             //TODO: configurable file ordering
             //TODO: monthly breaking (actions are run daily, renaming the files multiple times and collide)

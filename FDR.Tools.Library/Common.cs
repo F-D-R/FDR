@@ -486,4 +486,36 @@ namespace FDR.Tools.Library
         }
 
     }
+
+    public class TimedScope : IDisposable
+    {
+        private Stopwatch stopwatch;
+        private (int Left, int Top) pos;
+        private ConsoleColor color;
+        private string msg;
+
+        public TimedScope(string beginMsg, string? endMsg = null, ConsoleColor color = ConsoleColor.DarkGray)
+        {
+            msg = endMsg ?? beginMsg;
+            this.color=color;
+            stopwatch = Stopwatch.StartNew();
+
+            if (!Console.IsOutputRedirected)
+                pos = Console.GetCursorPosition();
+            Common.Msg(beginMsg, color);
+        }
+
+        public void Dispose()
+        {
+            var time = Common.GetTimeString(stopwatch);
+            if (msg.IndexOf("{time}", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                msg.Replace("{time}", time, StringComparison.InvariantCultureIgnoreCase);
+            else
+                msg += $" ({time})";
+            if (!Console.IsOutputRedirected && Console.GetCursorPosition().Top == pos.Top + 1)
+                Console.SetCursorPosition(pos.Left, pos.Top);
+            Common.Msg(msg + "                ", color);
+            Common.Msg("                                                        \r", color, newline: false);
+        }
+    }
 }
