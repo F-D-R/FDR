@@ -89,13 +89,13 @@ namespace FDR.Tools.Library
             return Path.Combine(destRoot, GetRelativeDestFolder(destStruct, date, dateFormat));
         }
 
-        internal static void CopyFile(string destRoot, ExifFile file, FolderStructure destStruct, string dateFormat, int progressPercent)
+        internal static void ImportFile(string destRoot, ExifFile file, FolderStructure destStruct, string dateFormat, int progressPercent)
         {
             //TODO: configurable dest folder structure date source
             var destfolder = GetAbsoluteDestFolder(destRoot, destStruct, file.ExifTime, dateFormat);
             if (!Directory.Exists(destfolder)) Directory.CreateDirectory(destfolder);
 
-            var dest = Path.Combine(destfolder, file.Name);
+            var dest = Path.Combine(destfolder, file.FileInfo?.Directory?.Name + "_" + file.Name);
             Trace.WriteLine($"Copying {file.FullName} to {dest}");
             Common.Progress(progressPercent);
             file.CopyTo(dest);
@@ -191,7 +191,7 @@ namespace FDR.Tools.Library
                 Trace.Indent();
                 foreach (var file in files.Where(f => f.ExifTime.Date == date).OrderBy(f => f.ExifTime))
                 {
-                    CopyFile(config.DestRoot, file, config.DestStructure, config.DateFormat, 100 * i / fileCount);
+                    ImportFile(config.DestRoot, file, config.DestStructure, config.DateFormat, 100 * i / fileCount);
                     i++;
                 }
                 Trace.Unindent();

@@ -17,6 +17,7 @@ namespace FDR.Tools.Library.Test
         private string dcim3;
         private string dcim4;
         private string source1;
+        private string source101;
         private string source2;
         private string destinationRoot;
         private string dest1;
@@ -84,6 +85,8 @@ namespace FDR.Tools.Library.Test
             Directory.CreateDirectory(dcim4);
 
             source1 = Path.Combine(dcim1, "100CANON");
+            Directory.CreateDirectory(source1);
+            source101 = Path.Combine(dcim1, "101CANON");
             Directory.CreateDirectory(source1);
             Directory.CreateDirectory(Path.Combine(dcim1, "CANONMSC"));
             source2 = Path.Combine(dcim2, "pictures");
@@ -186,13 +189,13 @@ namespace FDR.Tools.Library.Test
         }
 
         [Test]
-        public void CopyFileTests()
+        public void ImportFileTests()
         {
-            files.Add(source1, "01.crw", dest1, "01.crw", new DateTime(2022, 01, 01));
-            files.Add(source1, "02.cr2", dest1, "02.cr2", new DateTime(2022, 01, 01));
-            files.Add(source1, "03.cr3", dest1, "03.cr3", new DateTime(2022, 01, 01));
-            files.Add(source1, "04.dng", dest1, "04.dng", new DateTime(2022, 01, 01));
-            files.Add(source1, "05.jpg", dest1, "05.jpg", new DateTime(2022, 01, 01));
+            files.Add(source1, "01.crw", dest1, "100CANON_01.crw", new DateTime(2022, 01, 01));
+            files.Add(source1, "02.cr2", dest1, "100CANON_02.cr2", new DateTime(2022, 01, 01));
+            files.Add(source1, "03.cr3", dest1, "100CANON_03.cr3", new DateTime(2022, 01, 01));
+            files.Add(source1, "04.dng", dest1, "100CANON_04.dng", new DateTime(2022, 01, 01));
+            files.Add(source1, "05.jpg", dest1, "100CANON_05.jpg", new DateTime(2022, 01, 01));
             files.CreateFiles();
 
             var count = files.Where(f => f.SourceFolder != f.DestFolder).Count();
@@ -200,7 +203,7 @@ namespace FDR.Tools.Library.Test
             foreach (var f in files)
             {
                 i++;
-                Import.CopyFile(destinationRoot, new ExifFile(new FileInfo(f.GetSourcePath())), FolderStructure.date, "yyyyMMdd", 100 * i / count);
+                Import.ImportFile(destinationRoot, new ExifFile(new FileInfo(f.GetSourcePath())), FolderStructure.date, "yyyyMMdd", 100 * i / count);
             }
 
             files.Validate();
@@ -260,14 +263,14 @@ namespace FDR.Tools.Library.Test
             appConfig.ImportConfigs.ToList().ForEach(ic => ic.Value.DestRoot = destinationRoot);
             appConfig.Validate();
 
-            files.Add(source1, "aaa.cr3", dest1, "aaa.cr3", new DateTime(2022, 1, 1, 13, 59, 4));
-            files.Add(source1, "aaa.jpg", dest1, "aaa.jpg", new DateTime(2022, 1, 1, 13, 59, 4));
-            files.Add(source1, "bbb.cr2", dest1, "bbb.cr2", new DateTime(2022, 1, 1, 13, 59, 3));
-            files.Add(source1, "bbb.jpg", dest1, "bbb.jpg", new DateTime(2022, 1, 1, 13, 59, 3));
-            files.Add(source1, "ccc.crw", dest1, "ccc.crw", new DateTime(2022, 1, 1, 13, 59, 2));
-            files.Add(source1, "ccc.jpg", dest1, "ccc.jpg", new DateTime(2022, 1, 1, 13, 59, 2));
-            files.Add(source1, "ddd.dng", dest1, "ddd.dng", new DateTime(2022, 1, 1, 13, 59, 1));
-            files.Add(source1, "ddd.jpg", dest1, "ddd.jpg", new DateTime(2022, 1, 1, 13, 59, 1));
+            files.Add(source1, "aaa.cr3", dest1, "100CANON_aaa.cr3", new DateTime(2022, 1, 1, 13, 59, 4));
+            files.Add(source1, "aaa.jpg", dest1, "100CANON_aaa.jpg", new DateTime(2022, 1, 1, 13, 59, 4));
+            files.Add(source1, "bbb.cr2", dest1, "100CANON_bbb.cr2", new DateTime(2022, 1, 1, 13, 59, 3));
+            files.Add(source1, "bbb.jpg", dest1, "100CANON_bbb.jpg", new DateTime(2022, 1, 1, 13, 59, 3));
+            files.Add(source1, "ccc.crw", dest1, "100CANON_ccc.crw", new DateTime(2022, 1, 1, 13, 59, 2));
+            files.Add(source1, "ccc.jpg", dest1, "100CANON_ccc.jpg", new DateTime(2022, 1, 1, 13, 59, 2));
+            files.Add(source1, "ddd.dng", dest1, "100CANON_ddd.dng", new DateTime(2022, 1, 1, 13, 59, 1));
+            files.Add(source1, "ddd.jpg", dest1, "100CANON_ddd.jpg", new DateTime(2022, 1, 1, 13, 59, 1));
             files.CreateFiles();
 
             Directory.Delete(dest1, true);
@@ -313,20 +316,56 @@ namespace FDR.Tools.Library.Test
             appConfig.ImportConfigs.ToList().ForEach(ic => ic.Value.DestRoot = destinationRoot);
             appConfig.Validate();
 
-            files.Add(source2, "aaa.cr3", dest2, "aaa.cr3", new DateTime(2022, 2, 2, 13, 59, 4));
-            files.Add(source2, "aaa.jpg", dest2, "aaa.jpg", new DateTime(2022, 2, 2, 13, 59, 4));
-            files.Add(source2, "bbb.cr2", dest2, "bbb.cr2", new DateTime(2022, 2, 2, 13, 59, 3));
-            files.Add(source2, "bbb.jpg", dest2, "bbb.jpg", new DateTime(2022, 2, 2, 13, 59, 3));
-            files.Add(source2, "ccc.crw", dest2, "ccc.crw", new DateTime(2022, 2, 2, 13, 59, 2));
-            files.Add(source2, "ccc.jpg", dest2, "ccc.jpg", new DateTime(2022, 2, 2, 13, 59, 2));
-            files.Add(source2, "ddd.dng", dest2, "ddd.dng", new DateTime(2022, 2, 2, 13, 59, 1));
-            files.Add(source2, "ddd.jpg", dest2, "ddd.jpg", new DateTime(2022, 2, 2, 13, 59, 1));
+            files.Add(source2, "aaa.cr3", dest2, "pictures_aaa.cr3", new DateTime(2022, 2, 2, 13, 59, 4));
+            files.Add(source2, "aaa.jpg", dest2, "pictures_aaa.jpg", new DateTime(2022, 2, 2, 13, 59, 4));
+            files.Add(source2, "bbb.cr2", dest2, "pictures_bbb.cr2", new DateTime(2022, 2, 2, 13, 59, 3));
+            files.Add(source2, "bbb.jpg", dest2, "pictures_bbb.jpg", new DateTime(2022, 2, 2, 13, 59, 3));
+            files.Add(source2, "ccc.crw", dest2, "pictures_ccc.crw", new DateTime(2022, 2, 2, 13, 59, 2));
+            files.Add(source2, "ccc.jpg", dest2, "pictures_ccc.jpg", new DateTime(2022, 2, 2, 13, 59, 2));
+            files.Add(source2, "ddd.dng", dest2, "pictures_ddd.dng", new DateTime(2022, 2, 2, 13, 59, 1));
+            files.Add(source2, "ddd.jpg", dest2, "pictures_ddd.jpg", new DateTime(2022, 2, 2, 13, 59, 1));
             files.CreateFiles();
 
             Directory.Delete(dest2, true);
             var import2 = appConfig.ImportConfigs["import2"];
             import2.Actions?.Clear();
             Import.ImportFiles(new DirectoryInfo(source2), import2, false, token);
+
+            files.Validate();
+        }
+
+        [Test]
+        public void ImportFromSeveralDirectoriesIntoOneWithSameNamedFiles()
+        {
+            var appConfig = JsonConvert.DeserializeObject<AppConfig>(appConfigJson);
+            appConfig.Should().NotBeNull();
+            appConfig.ImportConfigs.Should().HaveCount(importConfigCount);
+            appConfig.ImportConfigs.ToList().ForEach(ic => ic.Value.DestRoot = destinationRoot);
+            appConfig.Validate();
+
+            files.Add(source1, "aaa.cr3", raw1, "220101_004.cr3", new DateTime(2022, 1, 1, 13, 59, 4));
+            files.Add(source1, "aaa.jpg", dest1, "220101_004.jpg", new DateTime(2022, 1, 1, 13, 59, 4));
+            files.Add(source1, "bbb.cr2", raw1, "220101_003.cr2", new DateTime(2022, 1, 1, 13, 59, 3));
+            files.Add(source1, "bbb.jpg", dest1, "220101_003.jpg", new DateTime(2022, 1, 1, 13, 59, 3));
+            files.Add(source1, "ccc.crw", raw1, "220101_002.crw", new DateTime(2022, 1, 1, 13, 59, 2));
+            files.Add(source1, "ccc.jpg", dest1, "220101_002.jpg", new DateTime(2022, 1, 1, 13, 59, 2));
+            files.Add(source1, "ddd.dng", raw1, "220101_001.dng", new DateTime(2022, 1, 1, 13, 59, 1));
+            files.Add(source1, "ddd.jpg", dest1, "220101_001.jpg", new DateTime(2022, 1, 1, 13, 59, 1));
+
+            files.Add(source101, "aaa.cr3", raw1, "220101_008.cr3", new DateTime(2022, 1, 1, 13, 59, 8));
+            files.Add(source101, "aaa.jpg", dest1, "220101_008.jpg", new DateTime(2022, 1, 1, 13, 59, 8));
+            files.Add(source101, "bbb.cr2", raw1, "220101_007.cr2", new DateTime(2022, 1, 1, 13, 59, 7));
+            files.Add(source101, "bbb.jpg", dest1, "220101_007.jpg", new DateTime(2022, 1, 1, 13, 59, 7));
+            files.Add(source101, "ccc.crw", raw1, "220101_006.crw", new DateTime(2022, 1, 1, 13, 59, 6));
+            files.Add(source101, "ccc.jpg", dest1, "220101_006.jpg", new DateTime(2022, 1, 1, 13, 59, 6));
+            files.Add(source101, "ddd.dng", raw1, "220101_005.dng", new DateTime(2022, 1, 1, 13, 59, 5));
+            files.Add(source101, "ddd.jpg", dest1, "220101_005.jpg", new DateTime(2022, 1, 1, 13, 59, 5));
+
+            files.CreateFiles();
+
+            Directory.Delete(dest1, true);
+            var import1 = appConfig.ImportConfigs["import1"];
+            Import.ImportFiles(new DirectoryInfo(dcim1), import1, false, token);
 
             files.Validate();
         }
