@@ -408,6 +408,42 @@ namespace FDR.Tools.Library.Test
         }
 
         [Test]
+        public void ForceImportWithExistingFiles()
+        {
+            var appConfig = JsonConvert.DeserializeObject<AppConfig>(appConfigJson);
+            appConfig.Should().NotBeNull();
+            appConfig.ImportConfigs.Should().HaveCount(importConfigCount);
+            appConfig.ImportConfigs.ToList().ForEach(ic => ic.Value.DestRoot = destinationRoot);
+            appConfig.Validate();
+
+            files.Add(source1, "aaa.cr3", raw1, "220101_004.cr3", new DateTime(2022, 1, 1, 13, 59, 4));
+            files.Add(source1, "aaa.jpg", dest1, "220101_004.jpg", new DateTime(2022, 1, 1, 13, 59, 4));
+            files.Add(source1, "bbb.cr2", raw1, "220101_003.cr2", new DateTime(2022, 1, 1, 13, 59, 3));
+            files.Add(source1, "bbb.jpg", dest1, "220101_003.jpg", new DateTime(2022, 1, 1, 13, 59, 3));
+            files.Add(source1, "ccc.crw", raw1, "220101_002.crw", new DateTime(2022, 1, 1, 13, 59, 2));
+            files.Add(source1, "ccc.jpg", dest1, "220101_002.jpg", new DateTime(2022, 1, 1, 13, 59, 2));
+            files.Add(source1, "ddd.dng", raw1, "220101_001.dng", new DateTime(2022, 1, 1, 13, 59, 1));
+            files.Add(source1, "ddd.jpg", dest1, "220101_001.jpg", new DateTime(2022, 1, 1, 13, 59, 1));
+
+            files.Add(dest1, "aaa.cr3", raw1, "220101_008.cr3", new DateTime(2022, 1, 1, 13, 59, 8));
+            files.Add(dest1, "aaa.jpg", dest1, "220101_008.jpg", new DateTime(2022, 1, 1, 13, 59, 8));
+            files.Add(dest1, "bbb.cr2", raw1, "220101_007.cr2", new DateTime(2022, 1, 1, 13, 59, 7));
+            files.Add(dest1, "bbb.jpg", dest1, "220101_007.jpg", new DateTime(2022, 1, 1, 13, 59, 7));
+            files.Add(dest1, "ccc.crw", raw1, "220101_006.crw", new DateTime(2022, 1, 1, 13, 59, 6));
+            files.Add(dest1, "ccc.jpg", dest1, "220101_006.jpg", new DateTime(2022, 1, 1, 13, 59, 6));
+            files.Add(dest1, "ddd.dng", raw1, "220101_005.dng", new DateTime(2022, 1, 1, 13, 59, 5));
+            files.Add(dest1, "ddd.jpg", dest1, "220101_005.jpg", new DateTime(2022, 1, 1, 13, 59, 5));
+
+            Directory.Delete(dest1, true);
+            files.CreateFiles();
+
+            var import1 = appConfig.ImportConfigs["import1"];
+            Import.ImportFiles(new DirectoryInfo(source1), import1, true, token);
+
+            files.Validate();
+        }
+
+        [Test]
         public void ImportMultipleDaysInReverseOrder()
         {
             var appConfig = JsonConvert.DeserializeObject<AppConfig>(appConfigJson);
