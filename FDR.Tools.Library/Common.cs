@@ -36,6 +36,9 @@ namespace FDR.Tools.Library
         public const string param_configfile = "-configfile";
         public const string param_help = "-help";
 
+        private static int prevPercent = -1;
+        private static int prevOverall = -1;
+
         public static void Msg(string msg, ConsoleColor color = ConsoleColor.White, bool newline = true)
         {
             Console.BackgroundColor = ConsoleColor.Black;
@@ -49,10 +52,20 @@ namespace FDR.Tools.Library
 
         public static void Progress(int percent, int? overall = null)
         {
-            if (overall.HasValue)
-                Msg($"    {percent}% ({overall}%)      \r", ConsoleColor.Gray, false);
-            else
-                Msg($"    {percent}%                   \r", ConsoleColor.Gray, false);
+            if (percent != prevPercent || overall.HasValue && overall.Value != prevOverall)
+            {
+                prevPercent = percent;
+
+                if (overall.HasValue)
+                {
+                    prevOverall = overall.Value;
+                    Msg($"    {percent}% ({overall}%)      \r", ConsoleColor.Gray, false);
+                }
+                else
+                {
+                    Msg($"    {percent}%                   \r", ConsoleColor.Gray, false);
+                }
+            }
         }
 
         public static void ShowAttributeHelp(Dictionary<string, string> attributes, bool quoteKey = true)
