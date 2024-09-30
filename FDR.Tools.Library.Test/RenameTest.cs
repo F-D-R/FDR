@@ -309,6 +309,25 @@ namespace FDR.Tools.Library.Test
         }
 
         [Test]
+        public void RenameFilesInFolderWithOverlappingNames()
+        {
+            var config = new RenameConfig();
+            config.Should().NotBeNull();
+            config.FileFilter = "*.*";
+            config.AdditionalFiles = true;
+            config.FilenamePattern = "{cdate:yyMMdd}_{counter:2}";
+
+            files.Add(tempFolderPath, "1.pr1", tempFolderPath, "010103_03.pr1", new DateTime(2001, 1, 3));
+            files.Add(tempFolderPath, "11.pr2", tempFolderPath, "010102_02.pr2", new DateTime(2001, 1, 2));
+            files.Add(tempFolderPath, "11 1.pr3", tempFolderPath, "010101_01.pr3", new DateTime(2001, 1, 1));
+            files.CreateFiles();
+
+            Rename.RenameFilesInFolder(tempFolder, config);
+
+            files.Validate();
+        }
+
+        [Test]
         public void RenameFilesInFolderWithAutoCounterLength1()
         {
             var config = new RenameConfig();
