@@ -176,7 +176,6 @@ namespace FDR.Tools.Library
                 Common.Msg($"{date:yyyy-MM-dd}: Importing {count} files to {destFolder}");
                 folderNames.Add(destFolder);
             }
-            Common.Msg("");
 
             // Copy
             dates = files.Select(f => f.ExifTime.Date).Distinct().OrderBy(d => d).ToList();
@@ -187,14 +186,16 @@ namespace FDR.Tools.Library
                 var count = files.Where(f => f.ExifTime.Date == date).Count();
                 var folder = GetAbsoluteDestFolder(config.DestRoot, config.DestStructure, date, config.DateFormat);
 
-                Common.Msg($"Copying {count} files to {folder}");
-                Trace.Indent();
-                foreach (var file in files.Where(f => f.ExifTime.Date == date).OrderBy(f => f.ExifTime))
+                using (new TimedScope($"Copying {count} files to {folder}", $"Copied {count} files to {folder}"))
                 {
-                    ImportFile(config.DestRoot, file, config.DestStructure, config.DateFormat, 100 * i / fileCount);
-                    i++;
+                    Trace.Indent();
+                    foreach (var file in files.Where(f => f.ExifTime.Date == date).OrderBy(f => f.ExifTime))
+                    {
+                        ImportFile(config.DestRoot, file, config.DestStructure, config.DateFormat, 100 * i / fileCount);
+                        i++;
+                    }
+                    Trace.Unindent();
                 }
-                Trace.Unindent();
             }
 
             // Actions
