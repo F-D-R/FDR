@@ -98,7 +98,7 @@ namespace FDR.Tools.Library
             var dest = Path.Combine(destfolder, file.FileInfo?.Directory?.Name + "_" + file.Name);
             Trace.WriteLine($"Copying {file.FullName} to {dest}");
             Common.Progress(progressPercent);
-            file.CopyTo(dest);
+            file.CopyAndSwitchTo(dest);
             File.SetCreationTimeUtc(dest, file.CreationTimeUtc);
             File.SetLastWriteTimeUtc(dest, file.LastWriteTimeUtc);
         }
