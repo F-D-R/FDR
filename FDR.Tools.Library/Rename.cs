@@ -360,7 +360,7 @@ namespace FDR.Tools.Library
             {
                 if (config.AdditionalFiles)
                 {
-                    string fileStart = Path.Combine(Path.GetDirectoryName(file.OriginalFullName)!, Path.GetFileNameWithoutExtension(file.OriginalName) + ".");
+                    string fileStart = Path.Combine(Path.GetDirectoryName(file.FullName)!, Path.GetFileNameWithoutExtension(file.Name) + ".");
                     Trace.WriteLine($"Look for additional files starting with: {fileStart}");
                     var files = allFiles.Where(f => f.FullName.StartsWith(fileStart)).ToList();
 
