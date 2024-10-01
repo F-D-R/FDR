@@ -206,6 +206,14 @@ namespace FDR.Tools.Library
                     yield return fi;
         }
 
+        public static void EchoFiles(List<ExifFile> files, string? msg = null)
+        {
+            if(msg != null) Trace.WriteLine(msg);
+            Trace.Indent();
+            files.ForEach(f => Trace.WriteLine(f.FullName));
+            Trace.Unindent();
+        }
+
         public static string GetTimeString(Stopwatch stopwatch)
         {
             stopwatch.Stop();
