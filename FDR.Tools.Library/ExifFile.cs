@@ -126,6 +126,15 @@ namespace FDR.Tools.Library
             return FileInfo.CopyTo(dest);
         }
 
+        public void CopyToNewLocation()
+        {
+            if (NewLocationSpecified)
+            {
+                FileInfo.CopyTo(NewLocation!);
+                NewLocation = null;
+            }
+        }
+
         public void MoveTo(string dest)
         {
             FileInfo.MoveTo(dest);

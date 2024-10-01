@@ -162,6 +162,39 @@ namespace FDR.Tools.Library.Test
         }
 
         [Test]
+        public void CopyToNewLocation()
+        {
+            string fileName = "1.jpg";
+            string fileFullName = Path.Combine(tempFolderPath, fileName);
+            string fileNewName = "2.jpg";
+            string fileNewLocation = Path.Combine(tempFolderPath, fileNewName);
+
+            var fi = files.Add(tempFolderPath, fileName, true);
+            files.CreateFiles();
+            fi.Refresh();
+            files.Add(tempFolderPath, fileNewName, true);
+
+            var ef = new ExifFile(fi);
+            ef.Should().NotBeNull();
+            ef.NewLocation.Should().BeNull();
+            ef.NewLocationSpecified.Should().BeFalse();
+
+            ef.NewLocation = fileNewLocation;
+            ef.NewLocation.Should().Be(fileNewLocation);
+            ef.NewLocationSpecified.Should().BeTrue();
+
+            var nfi = ef.CopyTo(fileNewLocation);
+            nfi.FullName.Should().Be(fileNewLocation);
+            nfi.Name.Should().Be(fileNewName);
+            ef.FullName.Should().Be(fileFullName);
+            ef.Name.Should().Be(fileName);
+            ef.OriginalFullName.Should().Be(fileFullName);
+            ef.OriginalName.Should().Be(fileName);
+
+            files.Validate();
+        }
+
+        [Test]
         public void MoveToNewLocation()
         {
             string fileName = "1.jpg";
@@ -193,7 +226,6 @@ namespace FDR.Tools.Library.Test
             files.Validate();
         }
 
-        [Test]
         public void CalculateNewLocation()
         {
             var config = new RenameConfig();
