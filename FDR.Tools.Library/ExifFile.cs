@@ -18,7 +18,7 @@ namespace FDR.Tools.Library
             LastWriteTime = file.LastWriteTime;
         }
 
-        public readonly FileInfo FileInfo;
+        public FileInfo FileInfo { get; private set; }
 
         public string FullName => FileInfo.FullName;
 
@@ -126,11 +126,27 @@ namespace FDR.Tools.Library
             return FileInfo.CopyTo(dest);
         }
 
-        public void CopyToNewLocation()
+        public FileInfo CopyToNewLocation()
+        {
+            var fi = FileInfo;
+            if (NewLocationSpecified)
+            {
+                fi = FileInfo.CopyTo(NewLocation!);
+                NewLocation = null;
+            }
+            return fi;
+        }
+
+        public void CopyAndSwitchTo(string dest)
+        {
+            FileInfo = FileInfo.CopyTo(dest);
+        }
+
+        public void CopyAndSwitchToNewLocation()
         {
             if (NewLocationSpecified)
             {
-                FileInfo.CopyTo(NewLocation!);
+                FileInfo = FileInfo.CopyTo(NewLocation!);
                 NewLocation = null;
             }
         }
