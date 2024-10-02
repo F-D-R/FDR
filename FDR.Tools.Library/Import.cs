@@ -202,7 +202,7 @@ namespace FDR.Tools.Library
             if (config.Actions != null)
                 foreach (var fn in folderNames)
                     foreach (var a in config.Actions)
-                        a.Do(new DirectoryInfo(fn), token);
+                        a.Do(new DirectoryInfo(fn), token, files);
         }
 
         internal static ImportConfig? FindConfig(DirectoryInfo sourceFolder, Dictionary<string, ImportConfig> configs)

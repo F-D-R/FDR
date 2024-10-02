@@ -417,6 +417,11 @@ namespace FDR.Tools.Library
 
             if (allFiles == null)
                 allFiles = Common.GetFilesWithOutput(folder, "*.*", config.Recursive);
+            else
+            {
+                var dirFiles = Common.GetFilesWithOutput(folder, "*.*", config.Recursive);
+                allFiles.AddRange(dirFiles.Where(file => !allFiles.Where(f => string.Compare(f.FullName, file.FullName, false) == 0).Any()));
+            }
             var files = Common.GetFiles(allFiles, folder, filter, config.Recursive);
             int fileCount = files.Count;
 

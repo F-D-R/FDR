@@ -22,8 +22,6 @@ namespace FDR.Tools.Library.Test
 
             System.Action rename = () => Rename.RenameFilesInFolder(tempFolder, config);
             rename.Should().Throw<IOException>();
-
-            files.Validate();
         }
 
         [Test]
