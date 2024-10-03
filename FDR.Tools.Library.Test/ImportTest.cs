@@ -223,7 +223,7 @@ namespace FDR.Tools.Library.Test
             config.FileFilter = "*.CR3|*.CR2|*.CRW|*.DNG";
             config.RelativeFolder = "RAW";
 
-            Import.MoveFilesInFolder(new DirectoryInfo(dest1), config);
+            Rename.MoveFilesInFolder(new DirectoryInfo(dest1), config);
 
             files.Validate();
         }

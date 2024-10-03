@@ -103,18 +103,6 @@ namespace FDR.Tools.Library
             File.SetLastWriteTimeUtc(dest, file.LastWriteTimeUtc);
         }
 
-        public static void MoveFilesInFolder(DirectoryInfo folder, MoveConfig config, List<ExifFile>? allFiles = null)
-        {
-            ArgumentNullException.ThrowIfNull(config);
-            config.Validate();
-            ArgumentNullException.ThrowIfNull(folder);
-            if (!folder.Exists) throw new DirectoryNotFoundException($"Folder doesn't exist! ({folder.FullName})");
-
-            Common.Msg($"Moving {config.FileFilter} files in {folder.FullName} to {config.RelativeFolder}");
-
-            Rename.RenameFilesInFolder(folder, config.GetNewRenameConfig(), allFiles);
-        }
-
         public static void ImportFiles(DirectoryInfo source, ImportConfig config, bool force, CancellationToken token)
         {
             ArgumentNullException.ThrowIfNull(config);

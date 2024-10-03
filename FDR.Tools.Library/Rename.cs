@@ -403,7 +403,30 @@ namespace FDR.Tools.Library
             }
         }
 
+        public static void MoveFilesInFolder(DirectoryInfo folder, MoveConfig config, List<ExifFile>? allFiles = null)
+        {
+            ArgumentNullException.ThrowIfNull(config);
+            ArgumentNullException.ThrowIfNull(folder);
+
+            Common.Msg($"Moving {config.FileFilter} files in {folder.FullName} to {config.RelativeFolder}");
+
+            _RenameFilesInFolder(folder, config.GetNewRenameConfig(), allFiles);
+        }
+
         public static void RenameFilesInFolder(DirectoryInfo folder, RenameConfig config, List<ExifFile>? allFiles = null)
+        {
+            ArgumentNullException.ThrowIfNull(config);
+            ArgumentNullException.ThrowIfNull(folder);
+
+            var filter = config.FileFilter;
+            if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
+
+            Common.Msg($"Renaming {filter} files in {folder.FullName}");
+
+            _RenameFilesInFolder(folder, config, allFiles);
+        }
+
+        private static void _RenameFilesInFolder(DirectoryInfo folder, RenameConfig config, List<ExifFile>? allFiles = null)
         {
             ArgumentNullException.ThrowIfNull(config);
             config.Validate();
@@ -412,8 +435,6 @@ namespace FDR.Tools.Library
 
             var filter = config.FileFilter;
             if (string.IsNullOrWhiteSpace(filter)) filter = "*.*";
-
-            Common.Msg($"Renaming {filter} files in {folder.FullName}");
 
             var dirFiles = Common.GetFilesWithOutput(folder, "*.*", config.Recursive);
             if (allFiles == null)

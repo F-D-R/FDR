@@ -39,7 +39,7 @@ namespace FDR.Tools.Library.Test
             files.Add(sourceFolderPath, "ccc.jpg", sourceFolderPath, "ccc.jpg");
             files.CreateFiles();
 
-            Import.MoveFilesInFolder(sourceFolder, config);
+            Rename.MoveFilesInFolder(sourceFolder, config);
 
             files.Validate();
         }
@@ -57,7 +57,7 @@ namespace FDR.Tools.Library.Test
             files.Add(sourceFolderPath, "ccc.jpg", sourceFolderPath, "ccc.jpg");
             files.CreateFiles();
 
-            Import.MoveFilesInFolder(sourceFolder, config);
+            Rename.MoveFilesInFolder(sourceFolder, config);
 
             files.Validate();
         }
@@ -75,7 +75,7 @@ namespace FDR.Tools.Library.Test
             files.Add(sourceFolderPath, "ccc.jpg", sourceFolderPath, "ccc.jpg");
             files.CreateFiles();
 
-            Import.MoveFilesInFolder(sourceFolder, config);
+            Rename.MoveFilesInFolder(sourceFolder, config);
 
             files.Validate();
         }
@@ -93,7 +93,7 @@ namespace FDR.Tools.Library.Test
             files.Add(sourceFolderPath, "ccc.jpg", sourceFolderPath, "ccc.jpg");
             files.CreateFiles();
 
-            Import.MoveFilesInFolder(sourceFolder, config);
+            Rename.MoveFilesInFolder(sourceFolder, config);
 
             files.Validate();
         }
@@ -112,7 +112,7 @@ namespace FDR.Tools.Library.Test
             files.Add(sourceFolderPath, "ccc.jpg", sourceFolderPath, "ccc.jpg");
             files.CreateFiles();
 
-            Import.MoveFilesInFolder(sourceFolder, config);
+            Rename.MoveFilesInFolder(sourceFolder, config);
 
             files.Validate();
         }
@@ -131,7 +131,7 @@ namespace FDR.Tools.Library.Test
             files.Add(sourceFolderPath, "ccc.jpg", sourceFolderPath, "ccc.jpg");
             files.CreateFiles();
 
-            Import.MoveFilesInFolder(sourceFolder, config);
+            Rename.MoveFilesInFolder(sourceFolder, config);
 
             files.Validate();
         }

@@ -50,7 +50,7 @@ namespace FDR.Tools.Library
                 case ActionType.move:
                     MoveConfig? moveConfig;
                     if (AppConfig == null || !AppConfig.MoveConfigs.TryGetValue(Config??"", out moveConfig)) throw new ArgumentOutOfRangeException(nameof(Config));
-                    Import.MoveFilesInFolder(folder, moveConfig, allFiles);
+                    Rename.MoveFilesInFolder(folder, moveConfig, allFiles);
                     break;
 
                 case ActionType.resize:
