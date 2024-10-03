@@ -415,13 +415,12 @@ namespace FDR.Tools.Library
 
             Common.Msg($"Renaming {filter} files in {folder.FullName}");
 
+            var dirFiles = Common.GetFilesWithOutput(folder, "*.*", config.Recursive);
             if (allFiles == null)
-                allFiles = Common.GetFilesWithOutput(folder, "*.*", config.Recursive);
+                allFiles = dirFiles;
             else
-            {
-                var dirFiles = Common.GetFilesWithOutput(folder, "*.*", config.Recursive);
-                allFiles.AddRange(dirFiles.Where(file => !allFiles.Where(f => string.Compare(f.FullName, file.FullName, false) == 0).Any()));
-            }
+                allFiles.Merge(dirFiles);
+
             var files = Common.GetFiles(allFiles, folder, filter, config.Recursive);
             int fileCount = files.Count;
 

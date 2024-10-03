@@ -214,6 +214,12 @@ namespace FDR.Tools.Library
             Trace.Unindent();
         }
 
+        public static List<ExifFile> Merge(this List<ExifFile> files, List<ExifFile> filesToAdd)
+        {
+            files.AddRange(filesToAdd.Where(df => !files.Where(af => string.Compare(af.FullName, df.FullName, false) == 0).Any()));
+            return files;
+        }
+
         public static string GetTimeString(Stopwatch stopwatch)
         {
             stopwatch.Stop();

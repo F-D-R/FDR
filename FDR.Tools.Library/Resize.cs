@@ -99,8 +99,12 @@ namespace FDR.Tools.Library
             Common.Msg($"Resizing {filter} files in {folder.FullName}");
             Trace.Indent();
 
+            var dirFiles = Common.GetFilesWithOutput(folder, "*.*", false);
             if (allFiles == null)
-                allFiles = Common.GetFilesWithOutput(folder, "*.*", false);
+                allFiles = dirFiles;
+            else
+                allFiles.Merge(dirFiles);
+
             var files = Common.GetFiles(allFiles, folder, filter, false);
             int fileCount = files.Count;
 

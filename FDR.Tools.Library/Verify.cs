@@ -131,8 +131,12 @@ namespace FDR.Tools.Library
 
             var watch = Stopwatch.StartNew();
 
+            var dirFiles = Common.GetFilesWithOutput(folder, "*.*", true);
             if (allFiles == null)
-                allFiles = Common.GetFilesWithOutput(folder, "*.*", true);
+                allFiles = dirFiles;
+            else
+                allFiles.Merge(dirFiles);
+
             var files = Common.GetFiles(allFiles, folder, DEFAULT_FILTER, true);
             int fileCount = files.Count;
             int errCount = 0;
