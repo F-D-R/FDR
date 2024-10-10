@@ -229,7 +229,7 @@ namespace FDR.Tools.Library
 
         public static bool IsImageFile(string file)
         {
-            return ".JPG|.JPEG|.TIF|.TIFF".Contains(Path.GetExtension(file), StringComparison.InvariantCultureIgnoreCase);
+            return ".JPG|.JPEG|.TIF|.TIFF|".Contains(Path.GetExtension(file) + '|', StringComparison.InvariantCultureIgnoreCase);
         }
         public static bool IsImageFile(FileInfo file)
         {
