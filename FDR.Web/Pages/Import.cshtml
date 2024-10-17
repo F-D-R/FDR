@@ -47,10 +47,10 @@
         <div class="row mb-3">
             <label asp-for="ImportConfig.DestStructure" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-9">
-                <select asp-for="ImportConfig.DestStructure" asp-items="Html.GetEnumSelectList<FolderStructure>()" class="form-select" data-bs-toggle="tooltip" data-bs-title="@ImportConfig.GetImportConfigAttributeList()[nameof(ImportConfig.DestStructure)]"></select>
+                <select asp-for="ImportConfig.DestStructure" asp-items="Html.GetEnumSelectList<FolderStructure>()" onchange="SelectDestStructure()" class="form-select" data-bs-toggle="tooltip" data-bs-title="@ImportConfig.GetImportConfigAttributeList()[nameof(ImportConfig.DestStructure)]"></select>
             </div>
         </div>
-        <div class="row mb-3">
+        <div class="row mb-3" id="DateFormatDiv">
             <label asp-for="ImportConfig.DateFormat" class="col-sm-3 col-form-label"></label>
             <div class="col-sm-9">
                 <input asp-for="ImportConfig.DateFormat" class="form-control" data-bs-toggle="tooltip" data-bs-title="@ImportConfig.GetImportConfigAttributeList()[nameof(ImportConfig.DateFormat)]">
@@ -89,4 +89,16 @@
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        function SelectDestStructure() {
+            var select = document.getElementById("ImportConfig_DestStructure");
+            var index = select.selectedIndex;
+            var value = select.options[index].value;
+            if (value == '@((int)FolderStructure.year_month_day)' || value == '@((int)FolderStructure.year_month)') {
+                document.getElementById("DateFormatDiv").style.display = 'none';
+            } else {
+                document.getElementById("DateFormatDiv").style.display = 'flex';
+            }
+        }
+    </script>
 }

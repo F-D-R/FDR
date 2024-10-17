@@ -23,6 +23,9 @@ namespace FDR.Web.Pages
         [BindProperty]
         public ImportConfig ImportConfig { get; set; } = new ImportConfig();
 
+        [BindProperty]
+        public Boolean IsDateFormatVisible => !(ImportConfig.DestStructure == FolderStructure.year_month_day || ImportConfig.DestStructure == FolderStructure.year_month);
+
         [DisplayName("Overwrite existing folders")]
         [BindProperty]
         public bool Force { get; set; } = false;
