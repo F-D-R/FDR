@@ -49,5 +49,23 @@
 </table>
 <br>
 <div>
-    <textarea asp-for="Output" class="form-control form-text" style="height: 30em" readonly></textarea>
+    <textarea asp-for="Output" class="form-control form-text" style="height: 30em" readonly>@Model.SelectedProcess?.Output.ToString()</textarea>
 </div>
+
+@section Scripts {
+    <script>
+        const id = @Model.Id;
+        const outputArea = document.getElementById("Output");
+
+        async function refreshOutput() {
+            const response = await fetch(`?handler=Output&id=${id}`);
+            if (response.ok) {
+                const text = await response.text();
+                outputArea.value = text;
+                outputArea.scrollTop = outputArea.scrollHeight; // auto-scroll
+            }
+        }
+
+        setInterval(refreshOutput, 1000); // refresh every second
+    </script>
+}

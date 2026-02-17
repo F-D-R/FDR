@@ -68,9 +68,9 @@ namespace FDR.Web.Pages
             Console.WriteLine($"Force: {Force}");
             Console.WriteLine($"Verbose output: {Verbose}");
 
-            _ = Processes.Start(operation: Operation.Hash, folder: Folder, verbose: Verbose, force: Force);
+            var pi = Processes.Start(operation: Operation.Hash, folder: Folder, verbose: Verbose, force: Force);
 
-            return RedirectToPage("./Output");
+            return RedirectToPage("./Output", new { id = pi.Id });
         }
     }
 }

@@ -30,16 +30,18 @@ namespace FDR.Web
 
     public class ProcessInfo
     {
+        private static int lastId = 0;
+
         public ProcessInfo(Operation operation, CancellationTokenSource cancellationTokenSource, Task task)
         {
-            Id = Guid.NewGuid();
+            Id = Interlocked.Increment(ref lastId);
             StartedAt = DateTime.Now;
             Operation = operation;
             CancellationTokenSource = cancellationTokenSource;
             Task = task;
         }
 
-        public Guid Id { get; }
+        public int Id { get; }
 
         public Operation Operation { get; }
 
@@ -65,7 +67,7 @@ namespace FDR.Web
             this.Add(new(operation, cancellationTokenSource, task));
         }
 
-        public Task Start(Operation operation, string? folder = null, string? reffolder = null, bool verbose = false, bool force = false, bool auto = false, bool noactions = false, ConfigPartBase? tmpConfig = null)
+        public ProcessInfo Start(Operation operation, string? folder = null, string? reffolder = null, bool verbose = false, bool force = false, bool auto = false, bool noactions = false, ConfigPartBase? tmpConfig = null)
         {
             CancellationTokenSource tokenSource = new();
             tokenSource.Token.ThrowIfCancellationRequested();
@@ -168,7 +170,7 @@ namespace FDR.Web
             ProcessInfo proc = new(operation, tokenSource, task) { PID = process.Id };
             this.Add(proc);
 
-            return task;
+            return proc;
         }
 
         public string? CreateTmpConfigFile(ConfigPartBase config)
